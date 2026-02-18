@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 — Data Entry
 
 ## Current Position
 
-Phase: 1 of 4 (Foundation)
-Plan: 3 of 3 in current phase — PHASE COMPLETE
-Status: Phase 1 complete — ready for Phase 2
-Last activity: 2026-02-19 — 01-03 complete: Zustand store wrapping engine (21 tests, 66 total)
+Phase: 2 of 4 (Data Entry)
+Plan: 1 of 3 in current phase — Plan 1 complete
+Status: Phase 2 in progress — Plan 02-01 complete, Plans 02-02 and 02-03 remain
+Last activity: 2026-02-19 — 02-01 complete: app shell, tabs, subtotal bar, currency utils (78 tests total)
 
-Progress: [███░░░░░░░] 25%
+Progress: [████░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: 3 min
-- Total execution time: 0.15 hours
+- Total execution time: 0.20 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3 | 9 min | 3 min |
+| 02-data-entry | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min), 01-02 (3 min), 01-03 (2 min)
-- Trend: accelerating
+- Last 5 plans: 01-01 (4 min), 01-02 (3 min), 01-03 (2 min), 02-01 (3 min)
+- Trend: consistent ~3 min per plan
 
 *Updated after each plan completion*
 
@@ -55,6 +56,10 @@ Recent decisions affecting current work:
 - [Phase 01-foundation 01-03]: Dual export useBillStore (React hook via create) + createBillStore (vanilla factory via createStore) from shared stateCreator — avoids code duplication while enabling isolated test instances
 - [Phase 01-foundation 01-03]: removePerson leaves unassigned items in-place with empty assignment array — engine returns unassigned_items error, blocking calc until user reassigns or deletes item
 - [Phase 01-foundation 01-03]: getResult() is a store method calling computeSplit() fresh on each call — no derived data stored in Zustand state
+- [Phase 02-data-entry 02-01]: Bottom tab bar (not top) — better one-thumb mobile reach at restaurant table
+- [Phase 02-data-entry 02-01]: All panels mounted via CSS hidden class — preserves scroll position and input state on tab switch; unmount/remount would lose state
+- [Phase 02-data-entry 02-01]: Active tab in local useState, not Zustand — ephemeral UI navigation state, not domain data
+- [Phase 02-data-entry 02-01]: dollarsToCents checks for leading minus sign before stripping chars — "-5.00" must return null, not 500
 
 ### Pending Todos
 
@@ -63,10 +68,9 @@ None yet.
 ### Blockers/Concerns
 
 - [Phase 3 planning]: Rounding surplus UX is not fully specified — the exact display format ("$0.67 extra goes to tip"? per-person or aggregate? shown always or only when > 0?) must be resolved before Phase 3 is planned. Flag during plan-phase for Phase 3.
-- [Phase 1]: Verify current npm versions of React, Vite, Tailwind, Zustand before scaffolding — training cutoff means patch versions may have incremented.
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 01-03-PLAN.md — Phase 1 Foundation complete, ready for Phase 2
+Stopped at: Completed 02-01-PLAN.md — app shell, tabs, subtotal, currency utils complete
 Resume file: None

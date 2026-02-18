@@ -18,7 +18,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ITEM-02**: User can edit an existing item's name or price
 - [ ] **ITEM-03**: User can remove an item from the bill
 - [ ] **ITEM-04**: User can set a quantity for each item
-- [ ] **ITEM-05**: Running subtotal updates as items are added/edited/removed
+- [x] **ITEM-05**: Running subtotal updates as items are added/edited/removed
 
 ### Assignment
 
@@ -40,7 +40,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### UX
 
-- [ ] **UX-01**: Mobile-responsive layout with large tap targets for phone use at the table
+- [x] **UX-01**: Mobile-responsive layout with large tap targets for phone use at the table
 
 ## v2 Requirements
 
@@ -86,7 +86,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ITEM-02 | Phase 2 | Pending |
 | ITEM-03 | Phase 2 | Pending |
 | ITEM-04 | Phase 2 | Pending |
-| ITEM-05 | Phase 2 | Pending |
+| ITEM-05 | Phase 2 | Complete |
 | ASGN-01 | Phase 2 | Pending |
 | ASGN-02 | Phase 1 | Complete |
 | TPTX-01 | Phase 3 | Pending |
@@ -96,7 +96,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SUMM-01 | Phase 3 | Pending |
 | SUMM-02 | Phase 1 | Complete |
 | SUMM-03 | Phase 3 | Pending |
-| UX-01 | Phase 2 | Pending |
+| UX-01 | Phase 2 | Complete |
 
 **Coverage:**
 - v1 requirements: 17 total
