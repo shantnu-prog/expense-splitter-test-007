@@ -13,6 +13,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { SubtotalBar } from './SubtotalBar';
 import { TabBar, type Tab } from './TabBar';
 import { useBillStore } from '../../store/billStore';
+import { PeoplePanel } from '../people/PeoplePanel';
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<Tab>('people');
@@ -37,7 +38,7 @@ export function AppShell() {
       <main className="flex-1 overflow-y-auto pb-16">
         {/* All panels kept mounted; CSS hidden class preserves scroll/input state */}
         <div className={activeTab === 'people' ? '' : 'hidden'}>
-          <p className="p-4 text-gray-400">People panel placeholder</p>
+          <PeoplePanel />
         </div>
         <div className={activeTab === 'items' ? '' : 'hidden'}>
           <p className="p-4 text-gray-400">Items panel placeholder</p>
