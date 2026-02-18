@@ -29,12 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Each person's total is rounded up to the nearest cent and the rounding surplus is computed and accessible for display (not silently discarded)
   4. Shared items split equally among only the people who shared them (not the whole table), verified by test cases with subset assignments
   5. The Zustand store holds only input data — people, items, assignments, tip config, tax config — and no stored derived totals; all totals are computed fresh from the engine
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Project scaffold (Vite + React + TypeScript + Tailwind + Zustand + Vitest) and TypeScript type definitions
-- [ ] 01-02: Calculation engine — integer-cent arithmetic, shared item allocation, proportional distribution with largest-remainder reconciliation
-- [ ] 01-03: Zustand store — input-only state shape, actions, and Vitest integration tests
+- [ ] 01-01-PLAN.md — Project scaffold (Vite + React + TypeScript + Tailwind + Zustand + Vitest) and TypeScript type definitions
+- [ ] 01-02-PLAN.md — Calculation engine (TDD) — integer-cent arithmetic, shared item allocation, proportional distribution with largest-remainder reconciliation
+- [ ] 01-03-PLAN.md — Zustand store — input-only state shape, actions, and Vitest integration tests
 
 ### Phase 2: Data Entry
 **Goal**: Users can add everyone at the table, enter every line item from the receipt, and assign each item to the right people — with the running subtotal visible as they go — on a phone browser without mistyping
