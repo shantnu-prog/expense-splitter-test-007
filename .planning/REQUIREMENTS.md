@@ -23,19 +23,19 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Assignment
 
 - [ ] **ASGN-01**: User can assign each item to one or more people
-- [ ] **ASGN-02**: Shared items split equally among the people who shared them
+- [x] **ASGN-02**: Shared items split equally among the people who shared them
 
 ### Tip & Tax
 
 - [ ] **TPTX-01**: User can select tip percentage from presets (15%, 18%, 20%) or enter custom %
-- [ ] **TPTX-02**: User can choose tip split method: equal across everyone or proportional to order
+- [x] **TPTX-02**: User can choose tip split method: equal across everyone or proportional to order
 - [ ] **TPTX-03**: User can enter tax as a dollar amount or percentage
-- [ ] **TPTX-04**: User can choose tax split method: equal across everyone or proportional to order
+- [x] **TPTX-04**: User can choose tax split method: equal across everyone or proportional to order
 
 ### Summary
 
 - [ ] **SUMM-01**: Per-person summary shows each person's name and total owed
-- [ ] **SUMM-02**: Each person's total is rounded up to the nearest cent
+- [x] **SUMM-02**: Each person's total is rounded up to the nearest cent
 - [ ] **SUMM-03**: Copy-friendly formatted output for sharing (e.g. "Alice owes $23.50")
 
 ### UX
@@ -88,13 +88,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ITEM-04 | Phase 2 | Pending |
 | ITEM-05 | Phase 2 | Pending |
 | ASGN-01 | Phase 2 | Pending |
-| ASGN-02 | Phase 1 | Pending |
+| ASGN-02 | Phase 1 | Complete |
 | TPTX-01 | Phase 3 | Pending |
-| TPTX-02 | Phase 1 | Pending |
+| TPTX-02 | Phase 1 | Complete |
 | TPTX-03 | Phase 3 | Pending |
-| TPTX-04 | Phase 1 | Pending |
+| TPTX-04 | Phase 1 | Complete |
 | SUMM-01 | Phase 3 | Pending |
-| SUMM-02 | Phase 1 | Pending |
+| SUMM-02 | Phase 1 | Complete |
 | SUMM-03 | Phase 3 | Pending |
 | UX-01 | Phase 2 | Pending |
 
