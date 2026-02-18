@@ -1,4 +1,7 @@
+import { AppShell } from './components/layout/AppShell';
+
 function App() {
-  return <div>Expense Splitter</div>
+  return <AppShell />;
 }
-export default App
+
+export default App;
