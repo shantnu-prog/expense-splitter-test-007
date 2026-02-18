@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 ## Current Position
 
-Phase: 2 of 4 (Data Entry)
-Plan: 2 of 3 in current phase — Plans 1 and 2 complete
-Status: Phase 2 in progress — Plans 02-01 and 02-02 complete, Plan 02-03 remains
-Last activity: 2026-02-19 — 02-02 complete: People panel (add/remove/validation), Items panel (inline edit, price, stepper) — 93 tests total
+Phase: 2 of 4 (Data Entry) — COMPLETE
+Plan: 3 of 3 in current phase — All plans complete
+Status: Phase 2 complete — all three panels built and human-verified; ready for Phase 3 planning
+Last activity: 2026-02-19 — 02-03 complete: Assignment panel (item-centric checklists, Everyone toggle, amber warnings) — 103 tests total
 
-Progress: [█████░░░░░] 42%
+Progress: [██████░░░░] 55%
 
 ## Performance Metrics
 
@@ -28,11 +28,11 @@ Progress: [█████░░░░░] 42%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3 | 9 min | 3 min |
-| 02-data-entry | 2 | 5 min | 2.5 min |
+| 02-data-entry | 3 | 10 min | 3.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min), 01-02 (3 min), 01-03 (2 min), 02-01 (3 min), 02-02 (2 min)
-- Trend: consistent ~2-3 min per plan
+- Last 5 plans: 01-02 (3 min), 01-03 (2 min), 02-01 (3 min), 02-02 (2 min), 02-03 (5 min)
+- Trend: consistent ~2-5 min per plan (human verify checkpoints add time)
 
 *Updated after each plan completion*
 
@@ -63,6 +63,9 @@ Recent decisions affecting current work:
 - [Phase 02-data-entry 02-02]: ItemRow syncs local state on item.id change only (not priceCents) — prevents overwriting user's in-progress price entry when store updates
 - [Phase 02-data-entry 02-02]: addItem('', 0, 1) for + button creates empty row for inline editing — no modal needed
 - [Phase 02-data-entry 02-02]: Label revert on empty blur — empty name input reverts to store value, avoiding empty-string labels in store
+- [Phase 02-data-entry 02-03]: Item-centric expand-to-assign layout — matches "who ate this item?" mental model at restaurant table
+- [Phase 02-data-entry 02-03]: Everyone toggle shows "Deselect All" when all assigned — single button serves both mass-assign and mass-deselect
+- [Phase 02-data-entry 02-03]: Amber "!" badge (not red) for unassigned items — visible but non-alarming in dim restaurant lighting
 
 ### Pending Todos
 
@@ -75,5 +78,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 02-02-PLAN.md — People panel, Items panel, 93 tests passing
+Stopped at: Completed 02-03-PLAN.md — Assignment panel, full data entry flow human-verified, 103 tests passing
 Resume file: None

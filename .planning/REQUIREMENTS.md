@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Assignment
 
-- [ ] **ASGN-01**: User can assign each item to one or more people
+- [x] **ASGN-01**: User can assign each item to one or more people
 - [x] **ASGN-02**: Shared items split equally among the people who shared them
 
 ### Tip & Tax
@@ -87,7 +87,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ITEM-03 | Phase 2 | Complete |
 | ITEM-04 | Phase 2 | Complete |
 | ITEM-05 | Phase 2 | Complete |
-| ASGN-01 | Phase 2 | Pending |
+| ASGN-01 | Phase 2 | Complete |
 | ASGN-02 | Phase 1 | Complete |
 | TPTX-01 | Phase 3 | Pending |
 | TPTX-02 | Phase 1 | Complete |

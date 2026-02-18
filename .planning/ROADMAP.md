@@ -13,7 +13,7 @@ Build a client-side restaurant bill splitter in four phases ordered by dependenc
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Math engine, TypeScript types, Zustand store, and Vitest test suite — no UI, all correctness
-- [ ] **Phase 2: Data Entry** - People, items, and assignment panels — fully working bill input on mobile
+- [x] **Phase 2: Data Entry** - People, items, and assignment panels — fully working bill input on mobile (completed 2026-02-18)
 - [ ] **Phase 3: Output** - Tip/tax configuration and per-person summary — the visible product
 - [ ] **Phase 4: Polish** - Copy-friendly output, quantity fields, keyboard navigation, UX refinements
 
@@ -90,6 +90,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-02-19 |
-| 2. Data Entry | 2/3 | In Progress | - |
+| 2. Data Entry | 3/3 | Complete   | 2026-02-18 |
 | 3. Output | 0/2 | Not started | - |
 | 4. Polish | 0/2 | Not started | - |
