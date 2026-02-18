@@ -17,6 +17,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createBillStore } from './billStore';
 import type { BillState } from './billStore';
 import type { StoreApi } from 'zustand/vanilla';
+import { cents } from '../engine/types';
 
 // Helper types
 type Store = StoreApi<BillState>;
@@ -186,7 +187,7 @@ describe('Store Actions', () => {
     const { items } = store.getState().config;
     const itemId = items[0].id;
 
-    store.getState().updateItem(itemId, { label: 'New Label', priceCents: 750 });
+    store.getState().updateItem(itemId, { label: 'New Label', priceCents: cents(750) });
 
     const updated = store.getState().config.items.find((i) => i.id === itemId);
     expect(updated?.label).toBe('New Label');
