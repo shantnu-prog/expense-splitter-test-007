@@ -80,29 +80,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PEOP-01 | — | Pending |
-| PEOP-02 | — | Pending |
-| ITEM-01 | — | Pending |
-| ITEM-02 | — | Pending |
-| ITEM-03 | — | Pending |
-| ITEM-04 | — | Pending |
-| ITEM-05 | — | Pending |
-| ASGN-01 | — | Pending |
-| ASGN-02 | — | Pending |
-| TPTX-01 | — | Pending |
-| TPTX-02 | — | Pending |
-| TPTX-03 | — | Pending |
-| TPTX-04 | — | Pending |
-| SUMM-01 | — | Pending |
-| SUMM-02 | — | Pending |
-| SUMM-03 | — | Pending |
-| UX-01 | — | Pending |
+| PEOP-01 | Phase 2 | Pending |
+| PEOP-02 | Phase 2 | Pending |
+| ITEM-01 | Phase 2 | Pending |
+| ITEM-02 | Phase 2 | Pending |
+| ITEM-03 | Phase 2 | Pending |
+| ITEM-04 | Phase 2 | Pending |
+| ITEM-05 | Phase 2 | Pending |
+| ASGN-01 | Phase 2 | Pending |
+| ASGN-02 | Phase 1 | Pending |
+| TPTX-01 | Phase 3 | Pending |
+| TPTX-02 | Phase 1 | Pending |
+| TPTX-03 | Phase 3 | Pending |
+| TPTX-04 | Phase 1 | Pending |
+| SUMM-01 | Phase 3 | Pending |
+| SUMM-02 | Phase 1 | Pending |
+| SUMM-03 | Phase 3 | Pending |
+| UX-01 | Phase 2 | Pending |
 
 **Coverage:**
 - v1 requirements: 17 total
-- Mapped to phases: 0
-- Unmapped: 17 ⚠️
+- Mapped to phases: 17
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-19*
-*Last updated: 2026-02-19 after initial definition*
+*Last updated: 2026-02-19 after roadmap creation — traceability complete*
