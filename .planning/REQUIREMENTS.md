@@ -9,15 +9,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### People Management
 
-- [ ] **PEOP-01**: User can add people to the bill by name
-- [ ] **PEOP-02**: User can remove a person from the bill
+- [x] **PEOP-01**: User can add people to the bill by name
+- [x] **PEOP-02**: User can remove a person from the bill
 
 ### Item Management
 
-- [ ] **ITEM-01**: User can add line items with a name and price
-- [ ] **ITEM-02**: User can edit an existing item's name or price
-- [ ] **ITEM-03**: User can remove an item from the bill
-- [ ] **ITEM-04**: User can set a quantity for each item
+- [x] **ITEM-01**: User can add line items with a name and price
+- [x] **ITEM-02**: User can edit an existing item's name or price
+- [x] **ITEM-03**: User can remove an item from the bill
+- [x] **ITEM-04**: User can set a quantity for each item
 - [x] **ITEM-05**: Running subtotal updates as items are added/edited/removed
 
 ### Assignment
@@ -80,12 +80,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PEOP-01 | Phase 2 | Pending |
-| PEOP-02 | Phase 2 | Pending |
-| ITEM-01 | Phase 2 | Pending |
-| ITEM-02 | Phase 2 | Pending |
-| ITEM-03 | Phase 2 | Pending |
-| ITEM-04 | Phase 2 | Pending |
+| PEOP-01 | Phase 2 | Complete |
+| PEOP-02 | Phase 2 | Complete |
+| ITEM-01 | Phase 2 | Complete |
+| ITEM-02 | Phase 2 | Complete |
+| ITEM-03 | Phase 2 | Complete |
+| ITEM-04 | Phase 2 | Complete |
 | ITEM-05 | Phase 2 | Complete |
 | ASGN-01 | Phase 2 | Pending |
 | ASGN-02 | Phase 1 | Complete |

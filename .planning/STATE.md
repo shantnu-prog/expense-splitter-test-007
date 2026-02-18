@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 2 of 4 (Data Entry)
-Plan: 1 of 3 in current phase — Plan 1 complete
-Status: Phase 2 in progress — Plan 02-01 complete, Plans 02-02 and 02-03 remain
-Last activity: 2026-02-19 — 02-01 complete: app shell, tabs, subtotal bar, currency utils (78 tests total)
+Plan: 2 of 3 in current phase — Plans 1 and 2 complete
+Status: Phase 2 in progress — Plans 02-01 and 02-02 complete, Plan 02-03 remains
+Last activity: 2026-02-19 — 02-02 complete: People panel (add/remove/validation), Items panel (inline edit, price, stepper) — 93 tests total
 
-Progress: [████░░░░░░] 33%
+Progress: [█████░░░░░] 42%
 
 ## Performance Metrics
 
@@ -28,11 +28,11 @@ Progress: [████░░░░░░] 33%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3 | 9 min | 3 min |
-| 02-data-entry | 1 | 3 min | 3 min |
+| 02-data-entry | 2 | 5 min | 2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min), 01-02 (3 min), 01-03 (2 min), 02-01 (3 min)
-- Trend: consistent ~3 min per plan
+- Last 5 plans: 01-01 (4 min), 01-02 (3 min), 01-03 (2 min), 02-01 (3 min), 02-02 (2 min)
+- Trend: consistent ~2-3 min per plan
 
 *Updated after each plan completion*
 
@@ -60,6 +60,9 @@ Recent decisions affecting current work:
 - [Phase 02-data-entry 02-01]: All panels mounted via CSS hidden class — preserves scroll position and input state on tab switch; unmount/remount would lose state
 - [Phase 02-data-entry 02-01]: Active tab in local useState, not Zustand — ephemeral UI navigation state, not domain data
 - [Phase 02-data-entry 02-01]: dollarsToCents checks for leading minus sign before stripping chars — "-5.00" must return null, not 500
+- [Phase 02-data-entry 02-02]: ItemRow syncs local state on item.id change only (not priceCents) — prevents overwriting user's in-progress price entry when store updates
+- [Phase 02-data-entry 02-02]: addItem('', 0, 1) for + button creates empty row for inline editing — no modal needed
+- [Phase 02-data-entry 02-02]: Label revert on empty blur — empty name input reverts to store value, avoiding empty-string labels in store
 
 ### Pending Todos
 
@@ -72,5 +75,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 02-01-PLAN.md — app shell, tabs, subtotal, currency utils complete
+Stopped at: Completed 02-02-PLAN.md — People panel, Items panel, 93 tests passing
 Resume file: None
