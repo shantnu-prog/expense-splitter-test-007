@@ -14,6 +14,7 @@ import { SubtotalBar } from './SubtotalBar';
 import { TabBar, type Tab } from './TabBar';
 import { useBillStore } from '../../store/billStore';
 import { PeoplePanel } from '../people/PeoplePanel';
+import { ItemsPanel } from '../items/ItemsPanel';
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<Tab>('people');
@@ -41,7 +42,7 @@ export function AppShell() {
           <PeoplePanel />
         </div>
         <div className={activeTab === 'items' ? '' : 'hidden'}>
-          <p className="p-4 text-gray-400">Items panel placeholder</p>
+          <ItemsPanel />
         </div>
         <div className={activeTab === 'assignments' ? '' : 'hidden'}>
           <p className="p-4 text-gray-400">Assign panel placeholder</p>
