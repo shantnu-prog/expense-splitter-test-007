@@ -46,12 +46,12 @@ Plans:
   3. User can assign each item to one specific person, to multiple specific people (shared subset), or to everyone at the table
   4. If an item has no one assigned, the app shows a visible error and blocks the summary calculation until the assignment is resolved
   5. The full data entry flow works on a phone screen with tap targets large enough to use without zooming, and price inputs trigger the numeric decimal keyboard on iOS and Android
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: People panel — add/remove people, name validation, mobile layout
-- [ ] 02-02: Items panel — add/edit/remove items with name, price, quantity, running subtotal
-- [ ] 02-03: Assignment panel — assign items to one or more people, shared-subset UI, zero-sharer validation
+- [ ] 02-01-PLAN.md — Test infrastructure, currency utilities, and app shell (dark theme, bottom tabs, sticky subtotal)
+- [ ] 02-02-PLAN.md — People panel (add/remove/validate) and Items panel (inline edit, price input, quantity stepper)
+- [ ] 02-03-PLAN.md — Assignment panel (item-centric checklists, Everyone button, unassigned warnings) and visual checkpoint
 
 ### Phase 3: Output
 **Goal**: Users can configure tip and tax (with split method) and see the final per-person breakdown showing exactly what each person owes — the complete, correct bill split
