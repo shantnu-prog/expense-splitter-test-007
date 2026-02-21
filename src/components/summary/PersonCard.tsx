@@ -4,7 +4,8 @@
  * Expandable person card showing name, rounded total, and food/tip/tax detail.
  *
  * Uses CSS grid-rows transition for smooth expand/collapse animation.
- * CopyButton calls e.stopPropagation() to prevent toggling expanded state.
+ * The card header is a div with role="button" so the CopyButton (a real <button>)
+ * can sit inside it without invalid HTML nesting (button-in-button is invalid).
  */
 
 import { useState } from 'react';
@@ -22,13 +23,30 @@ interface PersonCardProps {
 export function PersonCard({ person, result, onCopy }: PersonCardProps) {
   const [expanded, setExpanded] = useState(false);
 
+  function handleHeaderClick() {
+    setExpanded((prev) => !prev);
+  }
+
+  function handleHeaderKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setExpanded((prev) => !prev);
+    }
+  }
+
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl mb-3">
-      {/* Header row — tappable to expand/collapse */}
-      <button
-        className="w-full flex items-center justify-between px-4 py-3"
-        onClick={() => setExpanded((prev) => !prev)}
+      {/* Header row — tappable to expand/collapse.
+          Using a div with role="button" so the nested CopyButton (real <button>)
+          does not create an invalid button-in-button structure. */}
+      <div
+        role="button"
+        tabIndex={0}
         aria-expanded={expanded}
+        aria-label={`${person.name} card`}
+        className="w-full flex items-center justify-between px-4 py-3 cursor-pointer"
+        onClick={handleHeaderClick}
+        onKeyDown={handleHeaderKeyDown}
       >
         {/* Left: person name */}
         <span className="text-gray-100 font-medium">{person.name}</span>
@@ -59,7 +77,7 @@ export function PersonCard({ person, result, onCopy }: PersonCardProps) {
             <polyline points="4 6 8 10 12 6" />
           </svg>
         </div>
-      </button>
+      </div>
 
       {/* Detail drawer — CSS grid-rows transition for smooth animation */}
       <div

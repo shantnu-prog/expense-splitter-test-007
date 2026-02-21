@@ -17,6 +17,7 @@ import { PeoplePanel } from '../people/PeoplePanel';
 import { ItemsPanel } from '../items/ItemsPanel';
 import { AssignmentPanel } from '../assignments/AssignmentPanel';
 import { TipTaxPanel } from '../tip-tax/TipTaxPanel';
+import { SummaryPanel } from '../summary/SummaryPanel';
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<Tab>('people');
@@ -51,6 +52,7 @@ export function AppShell() {
         </div>
         <div className={activeTab === 'split' ? '' : 'hidden'}>
           <TipTaxPanel />
+          <SummaryPanel />
         </div>
       </main>
 
