@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** Phase 4 — Polish — COMPLETE
+**Current focus:** Phase 5 — Build Fix — COMPLETE
 
 ## Current Position
 
-Phase: 4 of 4 (Polish) — COMPLETE
-Plan: 2 of 2 in current phase — ALL PLANS COMPLETE
-Status: Phase 4 DONE — human verification approved 2026-02-22 (all 22 verification steps passed); all 4 phases complete, project production-ready
-Last activity: 2026-02-22 — 04-02 human verification approved: keyboard nav, onboarding, empty states, undo toast, mobile QA all passed
+Phase: 5 of 5 (Build Fix) — COMPLETE
+Plan: 1 of 1 in current phase — ALL PLANS COMPLETE
+Status: Phase 5 DONE — production build fixed 2026-02-22; npm run build exits 0, all 125 tests pass, v1.0 release unblocked
+Last activity: 2026-02-22 — 05-01 complete: TypeScript build errors fixed (test file exclusion, EngineResult narrowing, unused variables)
 
 Progress: [██████████] 100%
 
@@ -40,6 +40,7 @@ Progress: [██████████] 100%
 | Phase 04-polish P01 | 4 min | 2 tasks | 13 files |
 | Phase 04-polish P02 | 3 min | 2 tasks | 5 files |
 | Phase 04-polish P02 | 5 | 3 tasks | 5 files |
+| Phase 05-build-fix P01 | 1 min | 1 task | 4 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 04-polish 04-02]: useUndoDelete.handleUndo accepts snapshot as parameter to avoid stale closure — caller passes undo.snapshot at call time
 - [Phase 04-polish 04-02]: Second delete replaces first toast — timer cleared and snapshot replaced (first undo opportunity intentionally lost, per CONTEXT.md)
 - [Phase 04-polish 04-02]: restoreItem filters assignedIds to only include PersonIds still present in store — handles person deleted while toast was showing
+- [Phase 05-build-fix 05-01]: Use 'result as EngineSuccess' cast after early-return guard for closure safety — simpler than type predicate, TypeScript accepts post-guard narrowing
+- [Phase 05-build-fix 05-01]: tsconfig.app.json exclude globs for test files — standard Vite scaffold pattern; test files still compiled by Vitest via vitest.config.ts
 
 ### Pending Todos
 
@@ -99,5 +102,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 04-02-PLAN.md — Phase 4 DONE (human verified all 22 steps — keyboard nav, onboarding, empty states, undo toast, mobile QA); project complete
+Stopped at: Completed 05-01-PLAN.md — Phase 5 DONE (production build fixed, npm run build exits 0, all 125 tests pass); v1.0 release unblocked
 Resume file: None

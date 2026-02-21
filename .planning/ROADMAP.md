@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Data Entry** - People, items, and assignment panels — fully working bill input on mobile (completed 2026-02-18)
 - [x] **Phase 3: Output** - Tip/tax configuration and per-person summary — the visible product (completed 2026-02-21)
 - [x] **Phase 4: Polish** - Copy-friendly output, quantity fields, keyboard navigation, UX refinements (completed 2026-02-21)
-- [ ] **Phase 5: Build Fix** - Fix production build (tsconfig, type narrowing, unused variable) — gap closure from v1.0 audit
+- [x] **Phase 5: Build Fix** - Fix production build (tsconfig, type narrowing, unused variable) — gap closure from v1.0 audit (completed 2026-02-22)
 
 ## Phase Details
 
@@ -95,7 +95,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 05-01-PLAN.md — Exclude test files from tsconfig.app.json, fix EngineResult type narrowing in SummaryPanel.tsx, fix unused variable in billStore.ts
+- [x] 05-01-PLAN.md — Exclude test files from tsconfig.app.json, fix EngineResult type narrowing in SummaryPanel.tsx, fix unused variable in billStore.ts
 
 ## Progress
 
@@ -108,4 +108,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Data Entry | 3/3 | Complete   | 2026-02-18 |
 | 3. Output | 2/2 | Complete   | 2026-02-21 |
 | 4. Polish | 2/2 | Complete   | 2026-02-21 |
-| 5. Build Fix | 0/1 | Pending | — |
+| 5. Build Fix | 1/1 | Complete | 2026-02-22 |
