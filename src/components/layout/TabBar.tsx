@@ -26,7 +26,6 @@ const TABS: { id: Tab; label: string }[] = [
 
 export function TabBar({ activeTab, onTabChange, unassignedCount }: TabBarProps) {
   const tabRefs = useRef<Record<number, HTMLButtonElement | null>>({});
-  const activeIndex = TABS.findIndex((t) => t.id === activeTab);
 
   function focusTab(index: number) {
     tabRefs.current[index]?.focus();

@@ -14,7 +14,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useBillStore } from '../../store/billStore';
 import { centsToDollars } from '../../utils/currency';
 import { cents } from '../../engine/types';
-import type { PersonId } from '../../engine/types';
+import type { PersonId, EngineSuccess } from '../../engine/types';
 import { formatSummary, formatPersonSummary } from '../../utils/formatSummary';
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { PersonCard } from './PersonCard';
@@ -51,19 +51,22 @@ export function SummaryPanel() {
     );
   }
 
+  // Explicitly narrow to EngineSuccess for use inside closures
+  const successResult = result as EngineSuccess;
+
   // Compute bill total from rounded totals
-  const billTotalCents = result.results.reduce(
+  const billTotalCents = successResult.results.reduce(
     (sum, r) => sum + r.roundedTotalCents,
     0
   );
 
   function handleCopyAll() {
-    const text = formatSummary(result, people);
+    const text = formatSummary(successResult, people);
     copy(text, 'Summary copied!');
   }
 
   function handlePersonCopy(personId: PersonId) {
-    const personResult = result.results.find((r) => r.personId === personId);
+    const personResult = successResult.results.find((r) => r.personId === personId);
     const person = people.find((p) => p.id === personId);
     if (!personResult || !person) return;
 
@@ -91,7 +94,7 @@ export function SummaryPanel() {
 
         {/* Scrollable person cards area */}
         <div className="flex-1 px-4 pt-4">
-          {result.results.map((personResult) => {
+          {successResult.results.map((personResult) => {
             const person = people.find((p) => p.id === personResult.personId);
             if (!person) return null;
 
@@ -106,8 +109,8 @@ export function SummaryPanel() {
           })}
 
           {/* Rounding surplus footer — only shown when surplus > $0.00 */}
-          {result.totalSurplusCents > 0 && (
-            <RoundingFooter surplusCents={result.totalSurplusCents} />
+          {successResult.totalSurplusCents > 0 && (
+            <RoundingFooter surplusCents={successResult.totalSurplusCents} />
           )}
         </div>
 

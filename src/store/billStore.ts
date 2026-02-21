@@ -125,7 +125,7 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
       // Preserve original ID — critical for assignment matching (research pitfall #1)
       state.config.people.push(person);
       // Re-apply assignments for items that still exist
-      for (const [itemId, personIds] of Object.entries(assignments) as [ItemId, PersonId[]][]) {
+      for (const [itemId] of Object.entries(assignments) as [ItemId, PersonId[]][]) {
         if (state.config.assignments[itemId] !== undefined) {
           if (!state.config.assignments[itemId].includes(person.id)) {
             state.config.assignments[itemId] = [...state.config.assignments[itemId], person.id];
