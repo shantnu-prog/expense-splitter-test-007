@@ -15,6 +15,7 @@
 
 import { create } from 'zustand';
 import { createStore } from 'zustand/vanilla';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import { computeSplit } from '../engine/engine';
@@ -27,6 +28,9 @@ import type {
   PersonId,
 } from '../engine/types';
 import { cents, itemId, personId } from '../engine/types';
+import { safeLocalStorage } from '../storage/localStorageAdapter';
+import { deserializeBillConfig } from '../storage/deserializeBillConfig';
+import type { SavedSplitId } from './historyStore';
 
 // ---------------------------------------------------------------------------
 // State interface
@@ -34,6 +38,9 @@ import { cents, itemId, personId } from '../engine/types';
 
 export interface BillState {
   config: BillConfig;
+
+  /** null = new unsaved split, non-null = editing a saved split */
+  currentSplitId: SavedSplitId | null;
 
   // --- Actions ---
   addPerson: (name: string) => void;
@@ -51,6 +58,11 @@ export interface BillState {
   setTax: (amountCents: number, method: 'equal' | 'proportional', includeZeroFoodPeople: boolean) => void;
 
   reset: () => void;
+
+  /** Replaces entire config from a saved split */
+  loadConfig: (config: BillConfig) => void;
+  /** Set or clear the current split id (null = new unsaved split) */
+  setCurrentSplitId: (id: SavedSplitId | null) => void;
 
   // --- Derived (computed on read, never stored in state) ---
   getResult: () => EngineResult;
@@ -84,6 +96,8 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
     items: [],
     people: [],
   },
+
+  currentSplitId: null,
 
   // --- People actions ---
 
@@ -204,6 +218,21 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
         tip: { amountCents: cents(0), method: 'equal', includeZeroFoodPeople: false },
         tax: { amountCents: cents(0), method: 'equal', includeZeroFoodPeople: false },
       };
+      state.currentSplitId = null;
+    });
+  },
+
+  // --- Load / ID actions ---
+
+  loadConfig(config: BillConfig) {
+    set((state) => {
+      state.config = config;
+    });
+  },
+
+  setCurrentSplitId(id: SavedSplitId | null) {
+    set((state) => {
+      state.currentSplitId = id;
     });
   },
 
@@ -215,10 +244,38 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
 });
 
 // ---------------------------------------------------------------------------
-// React hook export (useBillStore)
+// React hook export (useBillStore) — with persist middleware
 // ---------------------------------------------------------------------------
 
-export const useBillStore = create<BillState>()(immer(stateCreator));
+export const useBillStore = create<BillState>()(
+  persist(
+    immer(stateCreator),
+    {
+      name: 'bill-splitter-active',
+      storage: createJSONStorage(() => safeLocalStorage),
+      version: 1,
+      // Only persist the active config — currentSplitId resets to null on refresh,
+      // and action functions are not serializable.
+      partialize: (state) => ({ config: state.config }),
+      merge: (persisted, currentState) => {
+        // persisted is the raw JSON.parse output from localStorage.
+        // Branded types (Cents, PersonId, ItemId) have lost their brands.
+        // Re-apply them through deserializeBillConfig before merging into store.
+        const p = persisted as { config?: unknown } | undefined;
+        if (p?.config) {
+          return {
+            ...currentState,
+            config: deserializeBillConfig(p.config),
+          };
+        }
+        return { ...currentState };
+      },
+      migrate(persisted: unknown, _fromVersion: number) {
+        return persisted as Pick<BillState, 'config'>;
+      },
+    }
+  )
+);
 
 // ---------------------------------------------------------------------------
 // Vanilla factory export (createBillStore) — for isolated test instances

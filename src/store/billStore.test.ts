@@ -18,6 +18,9 @@ import { createBillStore } from './billStore';
 import type { BillState } from './billStore';
 import type { StoreApi } from 'zustand/vanilla';
 import { cents } from '../engine/types';
+import { savedSplitId } from './historyStore';
+import type { BillConfig } from '../engine/types';
+import { personId, itemId } from '../engine/types';
 
 // Helper types
 type Store = StoreApi<BillState>;
@@ -474,5 +477,91 @@ describe('Store + Engine Integration', () => {
     expect(state.config).toHaveProperty('assignments');
     expect(state.config).toHaveProperty('tip');
     expect(state.config).toHaveProperty('tax');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// New Actions Tests: loadConfig, setCurrentSplitId, reset with currentSplitId
+// ---------------------------------------------------------------------------
+
+describe('New Store Actions (06-02)', () => {
+  let store: Store;
+
+  beforeEach(() => {
+    store = createBillStore();
+  });
+
+  it('22. loadConfig replaces entire config', () => {
+    // Start with some data in the store
+    store.getState().addPerson('Alice');
+    store.getState().addItem('Pizza', 1000);
+    const { people: originalPeople } = store.getState().config;
+    const aliceId = originalPeople[0].id;
+    const { items } = store.getState().config;
+    store.getState().assignItem(items[0].id, [aliceId]);
+
+    expect(store.getState().config.people).toHaveLength(1);
+
+    // Create a completely different config to load
+    const pid = personId('loaded-person-id');
+    const iid = itemId('loaded-item-id');
+    const loadedConfig: BillConfig = {
+      people: [{ id: pid, name: 'Loaded Person' }],
+      items: [{ id: iid, label: 'Loaded Item', priceCents: cents(2000), quantity: 2 }],
+      assignments: { [iid]: [pid] },
+      tip: { amountCents: cents(100), method: 'proportional', includeZeroFoodPeople: true },
+      tax: { amountCents: cents(50), method: 'equal', includeZeroFoodPeople: false },
+    };
+
+    store.getState().loadConfig(loadedConfig);
+
+    const { config } = store.getState();
+    expect(config.people).toHaveLength(1);
+    expect(config.people[0].name).toBe('Loaded Person');
+    expect(config.items).toHaveLength(1);
+    expect(config.items[0].label).toBe('Loaded Item');
+    expect(config.items[0].priceCents).toBe(2000);
+    expect(config.items[0].quantity).toBe(2);
+    expect(config.tip.amountCents).toBe(100);
+    expect(config.tip.method).toBe('proportional');
+    expect(config.tip.includeZeroFoodPeople).toBe(true);
+    expect(config.tax.amountCents).toBe(50);
+  });
+
+  it('23. setCurrentSplitId sets and clears id', () => {
+    // Initially null
+    expect(store.getState().currentSplitId).toBeNull();
+
+    // Set to a mock SavedSplitId
+    const mockId = savedSplitId('mock-split-id-123');
+    store.getState().setCurrentSplitId(mockId);
+
+    expect(store.getState().currentSplitId).toBe('mock-split-id-123');
+
+    // Clear it back to null
+    store.getState().setCurrentSplitId(null);
+
+    expect(store.getState().currentSplitId).toBeNull();
+  });
+
+  it('24. reset() clears currentSplitId and config', () => {
+    // Set up some state
+    store.getState().addPerson('Alice');
+    store.getState().addItem('Pizza', 1000);
+    const mockId = savedSplitId('split-to-clear');
+    store.getState().setCurrentSplitId(mockId);
+
+    expect(store.getState().currentSplitId).toBe('split-to-clear');
+    expect(store.getState().config.people).toHaveLength(1);
+
+    // Reset
+    store.getState().reset();
+
+    expect(store.getState().currentSplitId).toBeNull();
+    expect(store.getState().config.people).toHaveLength(0);
+    expect(store.getState().config.items).toHaveLength(0);
+    expect(Object.keys(store.getState().config.assignments)).toHaveLength(0);
+    expect(store.getState().config.tip.amountCents).toBe(0);
+    expect(store.getState().config.tax.amountCents).toBe(0);
   });
 });
