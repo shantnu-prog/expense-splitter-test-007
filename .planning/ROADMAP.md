@@ -62,11 +62,11 @@ Plans:
   2. User can enter tax as either a dollar amount or a percentage, and the entered tax is reflected in every person's total
   3. The per-person summary shows each person's name and the total they owe, rounded up to the nearest cent, with the rounding surplus displayed (so the math is transparent)
   4. User can copy a formatted text summary (e.g., "Alice owes $23.50 / Bob owes $18.00") to the clipboard with a single tap
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Tip/Tax panel — preset buttons, custom input, split method selectors (equal vs. proportional)
-- [ ] 03-02: Summary panel — per-person totals, rounding surplus display, copy-to-clipboard output
+- [ ] 03-01-PLAN.md — Tip/Tax panel: segmented control for tip presets (15/18/20/Custom), tax dollar/percentage input, independent split method toggles, 4th "Split" tab wiring
+- [ ] 03-02-PLAN.md — Summary panel: per-person cards with expandable detail (food/tip/tax), bill total header, rounding surplus footer, copy-to-clipboard (all + individual) with toast, human verification checkpoint
 
 ### Phase 4: Polish
 **Goal**: The app feels complete and professional — keyboard-friendly, forgiving of typos, and ready for users to share with friends
