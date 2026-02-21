@@ -16,7 +16,7 @@ export function PersonRow({ name, onRemove }: PersonRowProps) {
       <button
         onClick={onRemove}
         aria-label={`Remove ${name}`}
-        className="min-h-10 min-w-10 flex items-center justify-center text-gray-400 active:text-red-400"
+        className="min-h-11 min-w-11 flex items-center justify-center text-gray-400 active:text-red-400"
       >
         ×
       </button>

@@ -42,6 +42,13 @@ export function ItemsPanel() {
             onRemove={removeItem}
           />
         ))}
+
+        {items.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4">
+            <p className="text-gray-400 text-base">No items on the bill</p>
+            <p className="text-gray-500 text-sm">Tap + above to add your first item</p>
+          </div>
+        )}
       </div>
     </div>
   );

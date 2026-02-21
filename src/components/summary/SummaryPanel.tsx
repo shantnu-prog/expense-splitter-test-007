@@ -22,10 +22,12 @@ import { RoundingFooter } from './RoundingFooter';
 import { Toast } from './Toast';
 
 export function SummaryPanel() {
-  const { getResult, people } = useBillStore(
+  const { getResult, people, tipCents, taxCents } = useBillStore(
     useShallow((s) => ({
       getResult: s.getResult,
       people: s.config.people,
+      tipCents: s.config.tip.amountCents,
+      taxCents: s.config.tax.amountCents,
     }))
   );
 
@@ -72,6 +74,13 @@ export function SummaryPanel() {
   return (
     <>
       <div className="flex flex-col">
+        {/* Hint banner when tip and tax are both unconfigured */}
+        {tipCents === 0 && taxCents === 0 && (
+          <div className="mx-4 mt-4 px-4 py-3 bg-gray-800/50 rounded-lg text-center">
+            <p className="text-gray-400 text-sm">Configure tip and tax above to see the full split</p>
+          </div>
+        )}
+
         {/* Bill total header */}
         <div className="px-4 py-4 border-b border-gray-800 flex items-center justify-between">
           <span className="text-gray-400 text-sm font-medium">Bill total</span>

@@ -62,7 +62,7 @@ export function TaxInput({
           type="button"
           onClick={() => handleModeChange('dollar')}
           className={[
-            'px-3 py-2 text-sm font-medium transition-colors',
+            'px-3 py-2 text-sm font-medium transition-colors min-h-11',
             mode === 'dollar'
               ? 'bg-gray-700 text-gray-100'
               : 'text-gray-500 hover:text-gray-300',
@@ -74,7 +74,7 @@ export function TaxInput({
           type="button"
           onClick={() => handleModeChange('percent')}
           className={[
-            'px-3 py-2 text-sm font-medium transition-colors',
+            'px-3 py-2 text-sm font-medium transition-colors min-h-11',
             mode === 'percent'
               ? 'bg-gray-700 text-gray-100'
               : 'text-gray-500 hover:text-gray-300',
@@ -93,7 +93,7 @@ export function TaxInput({
         onBlur={onBlur}
         placeholder={mode === 'dollar' ? '0.00' : '0'}
         aria-label={mode === 'dollar' ? 'Tax amount in dollars' : 'Tax percentage'}
-        className="flex-1 min-h-12 px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
+        className="flex-1 min-h-12 px-3 py-2 text-base bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
       />
     </div>
   );

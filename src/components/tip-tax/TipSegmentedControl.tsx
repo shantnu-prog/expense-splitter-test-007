@@ -94,7 +94,7 @@ export function TipSegmentedControl({
             onBlur={handleCustomBlur}
             placeholder="0"
             aria-label="Custom tip percentage"
-            className="flex-1 min-h-12 px-3 py-2 text-sm bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
+            className="flex-1 min-h-12 px-3 py-2 text-base bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
           />
           <span className="text-sm text-gray-400">%</span>
         </div>
