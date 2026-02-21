@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 6 of 8 (Persistence Foundation)
-Plan: 1 of 2 complete in current phase
-Status: In progress
-Last activity: 2026-02-22 — 06-01 complete: safe localStorage adapter + deserializeBillConfig
+Plan: 2 of 2 complete in current phase
+Status: Phase complete
+Last activity: 2026-02-22 — 06-02 complete: useHistoryStore + billStore persist middleware with branded type rehydration
 
-Progress: [█░░░░░░░░░] 10% (v1.1)
+Progress: [██░░░░░░░░] 20% (v1.1)
 
 ## Performance Metrics
 
@@ -52,6 +52,13 @@ Full v1.0 decision log in PROJECT.md Key Decisions table and milestones/v1.0-ROA
 - safeLocalStorage.setItem logs console.warn on failure, never throws — app continues in memory-only mode on storage errors
 - Round-trip tests run in node environment — deserializeBillConfig is a pure function, no jsdom required
 
+**06-02 decisions:**
+- persist wraps immer (critical middleware order) — wrong order causes persist to silently capture only initial state
+- partialize on billStore selects config only — currentSplitId excluded (always null on refresh), actions excluded (not serializable)
+- deserializeBillConfig called inside persist merge — the rehydration boundary where branded types must be reconstructed
+- createHistoryStore() factory uses immer(creator) without persist — mirrors createBillStore() pattern for test isolation
+- restore() is idempotent: skip if id already present, re-sort by savedAt DESC
+
 ### Pending Todos
 
 None.
@@ -65,5 +72,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: Completed 06-01-PLAN.md — safe localStorage adapter + deserializeBillConfig
+Stopped at: Completed 06-02-PLAN.md — useHistoryStore + billStore persist middleware with branded type rehydration
 Resume file: None
