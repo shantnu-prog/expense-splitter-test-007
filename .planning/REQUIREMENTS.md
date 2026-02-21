@@ -59,22 +59,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PERS-01 | — | Pending |
-| PERS-02 | — | Pending |
-| PERS-03 | — | Pending |
-| HIST-01 | — | Pending |
-| HIST-02 | — | Pending |
-| HIST-03 | — | Pending |
-| HIST-04 | — | Pending |
-| PAY-01 | — | Pending |
-| PAY-02 | — | Pending |
-| PAY-03 | — | Pending |
+| PERS-01 | Phase 6 | Pending |
+| PERS-02 | Phase 6 | Pending |
+| PERS-03 | Phase 6 | Pending |
+| HIST-01 | Phase 7 | Pending |
+| HIST-02 | Phase 7 | Pending |
+| HIST-03 | Phase 7 | Pending |
+| HIST-04 | Phase 7 | Pending |
+| PAY-01 | Phase 8 | Pending |
+| PAY-02 | Phase 8 | Pending |
+| PAY-03 | Phase 8 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 10 total
-- Mapped to phases: 0
-- Unmapped: 10 (awaiting roadmap)
+- Mapped to phases: 10
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after initial definition*
+*Last updated: 2026-02-22 after roadmap creation (v1.1 phases 6-8)*
