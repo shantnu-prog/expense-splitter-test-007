@@ -32,14 +32,17 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 
 ### Active
 
-(None — next milestone requirements TBD via `/gsd:new-milestone`)
+- [ ] Save splits to localStorage with auto-save
+- [ ] History list on app open (date + people + total, auto-generated)
+- [ ] Re-open and edit saved splits
+- [ ] Delete saved splits with undo toast
+- [ ] Payment text: user picks payer, generates "Alice owes YOU $23.50" per-person text
 
 ### Out of Scope
 
 - Receipt photo upload / OCR — complexity too high, 60-80% accuracy on restaurant receipts
-- Venmo/payment deep links — v2 feature
-- Save and share splits — v2 feature
-- History of past splits — v2 feature
+- Venmo/payment deep links — deep links require platform-specific integration; plain text sufficient
+- Shareable URLs — deferred; payment text covers sharing need for now
 - User accounts / authentication — not needed; client-side only
 - Mobile native app — web app works on mobile browsers
 - Currency conversion — requires backend for exchange rate APIs
@@ -76,5 +79,15 @@ Integer-cent arithmetic throughout (Cents branded type) with largest-remainder d
 | Optimistic delete + undo toast | Gmail-style deletion — immediate feedback, recoverable within 5 seconds | Good |
 | No Enter-to-submit on People input | Forces explicit Add button click — prevents accidental submissions | Good |
 
+## Current Milestone: v1.1 Persistence + Sharing
+
+**Goal:** Save splits to localStorage with history, and generate payer-directed payment text for Venmo/Zelle
+
+**Target features:**
+- History list on app open (auto-generated from bill data)
+- Editable saved splits (re-open, modify, re-save)
+- Delete saved splits with undo toast
+- Payment text: pick who paid, generate "Alice owes YOU $23.50" per person
+
 ---
-*Last updated: 2026-02-22 after v1.0 milestone*
+*Last updated: 2026-02-22 after v1.1 milestone start*

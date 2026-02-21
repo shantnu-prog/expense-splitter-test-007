@@ -5,15 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.0 shipped — planning next milestone
+**Current focus:** v1.1 Persistence + Sharing — defining requirements
 
 ## Current Position
 
-Milestone: v1.0 MVP — SHIPPED 2026-02-22
-Status: All 5 phases complete, 11 plans executed, 125 tests passing, production build succeeds
-Last activity: 2026-02-22 — v1.0 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v1.1
+Last activity: 2026-02-22 — Milestone v1.1 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Accumulated Context
 
