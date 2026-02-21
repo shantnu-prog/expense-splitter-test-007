@@ -34,9 +34,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Summary
 
-- [ ] **SUMM-01**: Per-person summary shows each person's name and total owed
+- [x] **SUMM-01**: Per-person summary shows each person's name and total owed
 - [x] **SUMM-02**: Each person's total is rounded up to the nearest cent
-- [ ] **SUMM-03**: Copy-friendly formatted output for sharing (e.g. "Alice owes $23.50")
+- [x] **SUMM-03**: Copy-friendly formatted output for sharing (e.g. "Alice owes $23.50")
 
 ### UX
 
@@ -93,9 +93,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TPTX-02 | Phase 1 | Complete |
 | TPTX-03 | Phase 3 | Complete |
 | TPTX-04 | Phase 1 | Complete |
-| SUMM-01 | Phase 3 | Pending |
+| SUMM-01 | Phase 3 | Complete |
 | SUMM-02 | Phase 1 | Complete |
-| SUMM-03 | Phase 3 | Pending |
+| SUMM-03 | Phase 3 | Complete |
 | UX-01 | Phase 2 | Complete |
 
 **Coverage:**

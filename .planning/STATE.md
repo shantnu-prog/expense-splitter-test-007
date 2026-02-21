@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 ## Current Position
 
-Phase: 3 of 4 (Output) — IN PROGRESS
-Plan: 1 of 2 in current phase — Plan 1 complete
-Status: Phase 3 plan 1 complete — Tip/Tax input panel built and wired to store; ready for Plan 02 (results panel)
-Last activity: 2026-02-21 — 03-01 complete: Tip/Tax panel (segmented tip control, dollar/percent tax, split method toggles, Split tab) — 111 tests total
+Phase: 3 of 4 (Output) — COMPLETE
+Plan: 2 of 2 in current phase — All plans complete
+Status: Phase 3 complete — Full bill-splitting flow end-to-end functional; per-person summary panel with copy-to-clipboard built and human-verified on mobile viewport
+Last activity: 2026-02-21 — 03-02 complete: SummaryPanel with expandable PersonCards, rounding footer, copy-to-clipboard (Toast + useCopyToClipboard), 12 new tests — ~123 total
 
-Progress: [███████░░░] 65%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -35,7 +35,8 @@ Progress: [███████░░░] 65%
 - Trend: consistent ~2-5 min per plan (human verify checkpoints add time)
 
 *Updated after each plan completion*
-| Phase 03-output P01 | 3 | 2 tasks | 7 files |
+| Phase 03-output P01 | 3 min | 2 tasks | 7 files |
+| Phase 03-output P02 | 5 min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,10 @@ Recent decisions affecting current work:
 - [Phase 03-output]: TipSegmentedControl exposes onCustomBlur callback for deferred setTip on blur, not on every keystroke
 - [Phase 03-output]: TipTaxPanel stores tip as percentage locally (preset + customPct string), not as dollar amount, enabling subtotal recalculation via useEffect
 - [Phase 03-output]: TaxInput clears value on mode switch (dollar to percent) to prevent ambiguity between dollar amounts and percentage values
+- [Phase 03-output 03-02]: getResult() called once at SummaryPanel top, result passed to children — avoids N redundant computeSplit() calls (one per PersonCard)
+- [Phase 03-output 03-02]: Rounding surplus footer hidden entirely when surplusCents === 0 — no empty footer in the common case
+- [Phase 03-output 03-02]: navigator.clipboard.writeText called synchronously (no await before it) — Safari user-gesture clipboard permission model requires synchronous call
+- [Phase 03-output 03-02]: PersonCard uses CSS grid-rows transition (1fr/0fr) for expand/collapse — pure CSS, no JS height calculation needed
 
 ### Pending Todos
 
@@ -77,10 +82,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 3 planning]: Rounding surplus UX is not fully specified — the exact display format ("$0.67 extra goes to tip"? per-person or aggregate? shown always or only when > 0?) must be resolved before Phase 3 is planned. Flag during plan-phase for Phase 3.
+None.
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 03-01-PLAN.md — Tip/Tax panel with Split tab, 111 tests passing
+Stopped at: Completed 03-02-PLAN.md — SummaryPanel with expandable cards, copy-to-clipboard, human-verified; Phase 3 complete
 Resume file: None
