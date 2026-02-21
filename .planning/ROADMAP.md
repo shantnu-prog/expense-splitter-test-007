@@ -37,7 +37,10 @@
   2. User taps "Save Split" and the completed bill is added to persistent history that survives closing and reopening the browser
   3. App continues to load and display existing saved splits after a schema migration — no data is silently lost or corrupted
   4. App opens without crashing in Safari Private Browsing mode (localStorage quota errors are caught and surfaced as non-blocking toasts, not unhandled exceptions)
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Safe localStorage adapter and branded-type deserialization layer
+- [ ] 06-02-PLAN.md — History store and bill store persist middleware
 
 ### Phase 7: History List + Edit Mode
 **Goal**: Users can see their saved splits on app open, tap any entry to re-open and edit it, start a fresh split from the history screen, and delete entries with a 5-second undo window
@@ -71,6 +74,6 @@
 | 3. Output | v1.0 | 2/2 | Complete | 2026-02-21 |
 | 4. Polish | v1.0 | 2/2 | Complete | 2026-02-21 |
 | 5. Build Fix | v1.0 | 1/1 | Complete | 2026-02-22 |
-| 6. Persistence Foundation | v1.1 | 0/? | Not started | - |
+| 6. Persistence Foundation | v1.1 | 0/2 | Not started | - |
 | 7. History List + Edit Mode | v1.1 | 0/? | Not started | - |
 | 8. Payment Text | v1.1 | 0/? | Not started | - |
