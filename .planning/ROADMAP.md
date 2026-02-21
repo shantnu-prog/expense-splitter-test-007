@@ -16,6 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Data Entry** - People, items, and assignment panels — fully working bill input on mobile (completed 2026-02-18)
 - [x] **Phase 3: Output** - Tip/tax configuration and per-person summary — the visible product (completed 2026-02-21)
 - [x] **Phase 4: Polish** - Copy-friendly output, quantity fields, keyboard navigation, UX refinements (completed 2026-02-21)
+- [ ] **Phase 5: Build Fix** - Fix production build (tsconfig, type narrowing, unused variable) — gap closure from v1.0 audit
 
 ## Phase Details
 
@@ -82,10 +83,24 @@ Plans:
 - [ ] 04-01-PLAN.md — Keyboard navigation (roving tabindex), empty state guidance (all panels + onboarding), mobile QA polish (iOS font-size, touch targets, overscroll, transitions)
 - [ ] 04-02-PLAN.md — Undo toast deletion safety (store restore actions, useUndoDelete hook, UndoToast component, panel wiring) + human verification checkpoint
 
+### Phase 5: Build Fix
+**Goal**: Production build (`npm run build`) succeeds with zero TypeScript errors — closing the only gap blocking v1.0 release
+**Depends on**: Phase 4
+**Requirements**: (none — infrastructure fix, no new functional requirements)
+**Gap Closure**: Closes BUILD-01 from v1.0 milestone audit
+**Success Criteria** (what must be TRUE):
+  1. `npm run build` (which runs `tsc -b && vite build`) completes with zero errors
+  2. All 125 existing tests still pass with zero regressions
+  3. Test files are excluded from production TypeScript compilation
+**Plans**: 1 plan
+
+Plans:
+- [ ] 05-01-PLAN.md — Exclude test files from tsconfig.app.json, fix EngineResult type narrowing in SummaryPanel.tsx, fix unused variable in billStore.ts
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -93,3 +108,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Data Entry | 3/3 | Complete   | 2026-02-18 |
 | 3. Output | 2/2 | Complete   | 2026-02-21 |
 | 4. Polish | 2/2 | Complete   | 2026-02-21 |
+| 5. Build Fix | 0/1 | Pending | — |
