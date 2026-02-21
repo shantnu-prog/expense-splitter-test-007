@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Math engine, TypeScript types, Zustand store, and Vitest test suite — no UI, all correctness
 - [x] **Phase 2: Data Entry** - People, items, and assignment panels — fully working bill input on mobile (completed 2026-02-18)
 - [x] **Phase 3: Output** - Tip/tax configuration and per-person summary — the visible product (completed 2026-02-21)
-- [ ] **Phase 4: Polish** - Copy-friendly output, quantity fields, keyboard navigation, UX refinements
+- [x] **Phase 4: Polish** - Copy-friendly output, quantity fields, keyboard navigation, UX refinements (completed 2026-02-21)
 
 ## Phase Details
 
@@ -92,4 +92,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 3/3 | Complete | 2026-02-19 |
 | 2. Data Entry | 3/3 | Complete   | 2026-02-18 |
 | 3. Output | 2/2 | Complete   | 2026-02-21 |
-| 4. Polish | 0/2 | Not started | - |
+| 4. Polish | 2/2 | Complete   | 2026-02-21 |

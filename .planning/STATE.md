@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 ## Current Position
 
-Phase: 4 of 4 (Polish) — IN PROGRESS
-Plan: 1 of 2 in current phase — Plan 1 complete
-Status: Phase 4 plan 1 complete — Keyboard navigation, onboarding splash, empty state guidance, iOS mobile polish all implemented
-Last activity: 2026-02-21 — 04-01 complete: TabBar roving tabindex, OnboardingScreen, empty states in all panels, iOS font-size/touch target/overscroll fixes — 125 tests pass
+Phase: 4 of 4 (Polish) — IN PROGRESS (awaiting human verification checkpoint)
+Plan: 2 of 2 in current phase — Plan 2 automated tasks complete, checkpoint awaiting human verify
+Status: Phase 4 plan 2 automated tasks complete — Undo toast system built (restorePerson/restoreItem, useUndoDelete hook, UndoToast component, wired into PeoplePanel + ItemsPanel); awaiting human verification of complete polish
+Last activity: 2026-02-21 — 04-02 automated tasks complete: store restore actions, useUndoDelete hook, UndoToast component, PeoplePanel + ItemsPanel wired — 125 tests pass — checkpoint:human-verify pending
 
-Progress: [█████████░] 87%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
@@ -38,6 +38,7 @@ Progress: [█████████░] 87%
 | Phase 03-output P01 | 3 min | 2 tasks | 7 files |
 | Phase 03-output P02 | 5 min | 3 tasks | 10 files |
 | Phase 04-polish P01 | 4 min | 2 tasks | 13 files |
+| Phase 04-polish P02 | 3 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,11 @@ Recent decisions affecting current work:
 - [Phase 04-polish 04-01]: Enter-to-submit removed from PeoplePanel input (locked CONTEXT.md decision) — user must Tab to Add button
 - [Phase 04-polish 04-01]: useOnboarding uses localStorage first-visit detection (key absent = first visit) — no expiry, dismissal is permanent
 - [Phase 04-polish 04-01]: SummaryPanel shows hint banner (not blocking) when tip+tax both zero — full split still renders, avoids blocking working summary
+- [Phase 04-polish 04-02]: Snapshot captured BEFORE store mutation — people/assignments read from current store state, then removePerson called, preserving original data for undo
+- [Phase 04-polish 04-02]: restorePerson/restoreItem are idempotent guards — only restore if entity ID not already present (prevents double-restore)
+- [Phase 04-polish 04-02]: useUndoDelete.handleUndo accepts snapshot as parameter to avoid stale closure — caller passes undo.snapshot at call time
+- [Phase 04-polish 04-02]: Second delete replaces first toast — timer cleared and snapshot replaced (first undo opportunity intentionally lost, per CONTEXT.md)
+- [Phase 04-polish 04-02]: restoreItem filters assignedIds to only include PersonIds still present in store — handles person deleted while toast was showing
 
 ### Pending Todos
 
@@ -92,5 +98,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 04-01-PLAN.md — Keyboard nav, onboarding, empty states, mobile polish; Phase 4 plan 1 of 2 complete
+Stopped at: 04-02 checkpoint:human-verify (Task 3) — automated tasks 1 and 2 complete; awaiting human verification of complete Phase 4 polish
 Resume file: None
