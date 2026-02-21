@@ -27,9 +27,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Tip & Tax
 
-- [ ] **TPTX-01**: User can select tip percentage from presets (15%, 18%, 20%) or enter custom %
+- [x] **TPTX-01**: User can select tip percentage from presets (15%, 18%, 20%) or enter custom %
 - [x] **TPTX-02**: User can choose tip split method: equal across everyone or proportional to order
-- [ ] **TPTX-03**: User can enter tax as a dollar amount or percentage
+- [x] **TPTX-03**: User can enter tax as a dollar amount or percentage
 - [x] **TPTX-04**: User can choose tax split method: equal across everyone or proportional to order
 
 ### Summary
@@ -89,9 +89,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ITEM-05 | Phase 2 | Complete |
 | ASGN-01 | Phase 2 | Complete |
 | ASGN-02 | Phase 1 | Complete |
-| TPTX-01 | Phase 3 | Pending |
+| TPTX-01 | Phase 3 | Complete |
 | TPTX-02 | Phase 1 | Complete |
-| TPTX-03 | Phase 3 | Pending |
+| TPTX-03 | Phase 3 | Complete |
 | TPTX-04 | Phase 1 | Complete |
 | SUMM-01 | Phase 3 | Pending |
 | SUMM-02 | Phase 1 | Complete |

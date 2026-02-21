@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** Phase 2 — Data Entry
+**Current focus:** Phase 3 — Output
 
 ## Current Position
 
-Phase: 2 of 4 (Data Entry) — COMPLETE
-Plan: 3 of 3 in current phase — All plans complete
-Status: Phase 2 complete — all three panels built and human-verified; ready for Phase 3 planning
-Last activity: 2026-02-19 — 02-03 complete: Assignment panel (item-centric checklists, Everyone toggle, amber warnings) — 103 tests total
+Phase: 3 of 4 (Output) — IN PROGRESS
+Plan: 1 of 2 in current phase — Plan 1 complete
+Status: Phase 3 plan 1 complete — Tip/Tax input panel built and wired to store; ready for Plan 02 (results panel)
+Last activity: 2026-02-21 — 03-01 complete: Tip/Tax panel (segmented tip control, dollar/percent tax, split method toggles, Split tab) — 111 tests total
 
-Progress: [██████░░░░] 55%
+Progress: [███████░░░] 65%
 
 ## Performance Metrics
 
@@ -35,6 +35,7 @@ Progress: [██████░░░░] 55%
 - Trend: consistent ~2-5 min per plan (human verify checkpoints add time)
 
 *Updated after each plan completion*
+| Phase 03-output P01 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,9 @@ Recent decisions affecting current work:
 - [Phase 02-data-entry 02-03]: Item-centric expand-to-assign layout — matches "who ate this item?" mental model at restaurant table
 - [Phase 02-data-entry 02-03]: Everyone toggle shows "Deselect All" when all assigned — single button serves both mass-assign and mass-deselect
 - [Phase 02-data-entry 02-03]: Amber "!" badge (not red) for unassigned items — visible but non-alarming in dim restaurant lighting
+- [Phase 03-output]: TipSegmentedControl exposes onCustomBlur callback for deferred setTip on blur, not on every keystroke
+- [Phase 03-output]: TipTaxPanel stores tip as percentage locally (preset + customPct string), not as dollar amount, enabling subtotal recalculation via useEffect
+- [Phase 03-output]: TaxInput clears value on mode switch (dollar to percent) to prevent ambiguity between dollar amounts and percentage values
 
 ### Pending Todos
 
@@ -77,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed 02-03-PLAN.md — Assignment panel, full data entry flow human-verified, 103 tests passing
+Last session: 2026-02-21
+Stopped at: Completed 03-01-PLAN.md — Tip/Tax panel with Split tab, 111 tests passing
 Resume file: None
