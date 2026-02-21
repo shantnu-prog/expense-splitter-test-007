@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.1 Persistence + Sharing — Phase 6 ready to plan
+**Current focus:** v1.1 Persistence + Sharing — Phase 6 in progress
 
 ## Current Position
 
 Phase: 6 of 8 (Persistence Foundation)
-Plan: — of — in current phase
-Status: Ready to plan
-Last activity: 2026-02-22 — v1.1 roadmap created (Phases 6-8)
+Plan: 1 of 2 complete in current phase
+Status: In progress
+Last activity: 2026-02-22 — 06-01 complete: safe localStorage adapter + deserializeBillConfig
 
-Progress: [░░░░░░░░░░] 0% (v1.1)
+Progress: [█░░░░░░░░░] 10% (v1.1)
 
 ## Performance Metrics
 
@@ -47,6 +47,11 @@ Full v1.0 decision log in PROJECT.md Key Decisions table and milestones/v1.0-ROA
 - 50-entry history cap: single guard in `save()` to prevent localStorage quota errors
 - Payer state stays local (component `useState`): must NOT enter bill store or history
 
+**06-01 decisions:**
+- No validation in deserializeBillConfig — engine computeSplit handles invalid data; parse boundary only does type reconstruction
+- safeLocalStorage.setItem logs console.warn on failure, never throws — app continues in memory-only mode on storage errors
+- Round-trip tests run in node environment — deserializeBillConfig is a pure function, no jsdom required
+
 ### Pending Todos
 
 None.
@@ -54,11 +59,11 @@ None.
 ### Blockers/Concerns
 
 - [Phase 6]: Middleware ordering — `persist` must wrap `immer`, not the reverse; silent failure mode
-- [Phase 6]: Branded types (`Cents`, `PersonId`, `ItemId`) lose brand on JSON round-trip; `deserializeBillConfig()` required as single parse boundary
+- [RESOLVED 06-01]: Branded types (`Cents`, `PersonId`, `ItemId`) lose brand on JSON round-trip — deserializeBillConfig() implemented and tested
 - [Phase 7]: `useAppEntry` hook coordinates onboarding + history hydration; exact React 19 hook design left to Phase 7 planning
 
 ## Session Continuity
 
 Last session: 2026-02-22
-Stopped at: v1.1 roadmap created — Phases 6, 7, 8 defined with success criteria
+Stopped at: Completed 06-01-PLAN.md — safe localStorage adapter + deserializeBillConfig
 Resume file: None
