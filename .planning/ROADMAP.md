@@ -76,11 +76,11 @@ Plans:
   1. User can navigate the entire bill entry flow using only a keyboard (tab order is logical, no focus traps)
   2. Deleting an item or person prompts a confirmation or offers an immediate undo, preventing accidental data loss
   3. Empty states (no people added, no items added, nothing assigned) show clear guidance rather than blank panels or broken layouts
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: Keyboard navigation, empty states, and deletion safety (confirmation / undo)
-- [ ] 04-02: Final mobile QA pass and UX refinements
+- [ ] 04-01-PLAN.md — Keyboard navigation (roving tabindex), empty state guidance (all panels + onboarding), mobile QA polish (iOS font-size, touch targets, overscroll, transitions)
+- [ ] 04-02-PLAN.md — Undo toast deletion safety (store restore actions, useUndoDelete hook, UndoToast component, panel wiring) + human verification checkpoint
 
 ## Progress
 
