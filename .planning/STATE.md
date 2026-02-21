@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** Phase 3 — Output
+**Current focus:** Phase 4 — Polish
 
 ## Current Position
 
-Phase: 3 of 4 (Output) — COMPLETE
-Plan: 2 of 2 in current phase — All plans complete
-Status: Phase 3 complete — Full bill-splitting flow end-to-end functional; per-person summary panel with copy-to-clipboard built and human-verified on mobile viewport
-Last activity: 2026-02-21 — 03-02 complete: SummaryPanel with expandable PersonCards, rounding footer, copy-to-clipboard (Toast + useCopyToClipboard), 12 new tests — ~123 total
+Phase: 4 of 4 (Polish) — IN PROGRESS
+Plan: 1 of 2 in current phase — Plan 1 complete
+Status: Phase 4 plan 1 complete — Keyboard navigation, onboarding splash, empty state guidance, iOS mobile polish all implemented
+Last activity: 2026-02-21 — 04-01 complete: TabBar roving tabindex, OnboardingScreen, empty states in all panels, iOS font-size/touch target/overscroll fixes — 125 tests pass
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 87%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 3 min
-- Total execution time: 0.20 hours
+- Total plans completed: 5
+- Average duration: 3.4 min
+- Total execution time: ~0.29 hours
 
 **By Phase:**
 
@@ -37,6 +37,7 @@ Progress: [████████░░] 80%
 *Updated after each plan completion*
 | Phase 03-output P01 | 3 min | 2 tasks | 7 files |
 | Phase 03-output P02 | 5 min | 3 tasks | 10 files |
+| Phase 04-polish P01 | 4 min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,10 @@ Recent decisions affecting current work:
 - [Phase 03-output 03-02]: Rounding surplus footer hidden entirely when surplusCents === 0 — no empty footer in the common case
 - [Phase 03-output 03-02]: navigator.clipboard.writeText called synchronously (no await before it) — Safari user-gesture clipboard permission model requires synchronous call
 - [Phase 03-output 03-02]: PersonCard uses CSS grid-rows transition (1fr/0fr) for expand/collapse — pure CSS, no JS height calculation needed
+- [Phase 04-polish 04-01]: Roving tabindex with onFocus-follows-selection per WAI-ARIA APG — active tab tabIndex=0, all others -1, focus triggers tab switch
+- [Phase 04-polish 04-01]: Enter-to-submit removed from PeoplePanel input (locked CONTEXT.md decision) — user must Tab to Add button
+- [Phase 04-polish 04-01]: useOnboarding uses localStorage first-visit detection (key absent = first visit) — no expiry, dismissal is permanent
+- [Phase 04-polish 04-01]: SummaryPanel shows hint banner (not blocking) when tip+tax both zero — full split still renders, avoids blocking working summary
 
 ### Pending Todos
 
@@ -87,5 +92,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 03-02-PLAN.md — SummaryPanel with expandable cards, copy-to-clipboard, human-verified; Phase 3 complete
+Stopped at: Completed 04-01-PLAN.md — Keyboard nav, onboarding, empty states, mobile polish; Phase 4 plan 1 of 2 complete
 Resume file: None
