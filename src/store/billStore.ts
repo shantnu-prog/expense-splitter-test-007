@@ -39,11 +39,13 @@ export interface BillState {
   addPerson: (name: string) => void;
   removePerson: (id: PersonId) => void;
   updatePerson: (id: PersonId, updates: Partial<Pick<Person, 'name'>>) => void;
+  restorePerson: (person: Person, assignments: Record<ItemId, PersonId[]>) => void;
 
   addItem: (label: string, priceCents: number, quantity?: number) => void;
   removeItem: (id: ItemId) => void;
   updateItem: (id: ItemId, updates: Partial<Pick<Item, 'label' | 'priceCents' | 'quantity'>>) => void;
   assignItem: (id: ItemId, personIds: PersonId[]) => void;
+  restoreItem: (item: Item, assignedIds: PersonId[]) => void;
 
   setTip: (amountCents: number, method: 'equal' | 'proportional', includeZeroFoodPeople: boolean) => void;
   setTax: (amountCents: number, method: 'equal' | 'proportional', includeZeroFoodPeople: boolean) => void;
@@ -116,6 +118,23 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
     });
   },
 
+  restorePerson(person: Person, assignments: Record<ItemId, PersonId[]>) {
+    set((state) => {
+      // Guard: idempotent — only restore if person is NOT already present
+      if (state.config.people.some((p) => p.id === person.id)) return;
+      // Preserve original ID — critical for assignment matching (research pitfall #1)
+      state.config.people.push(person);
+      // Re-apply assignments for items that still exist
+      for (const [itemId, personIds] of Object.entries(assignments) as [ItemId, PersonId[]][]) {
+        if (state.config.assignments[itemId] !== undefined) {
+          if (!state.config.assignments[itemId].includes(person.id)) {
+            state.config.assignments[itemId] = [...state.config.assignments[itemId], person.id];
+          }
+        }
+      }
+    });
+  },
+
   // --- Item actions ---
 
   addItem(label: string, priceCents: number, quantity = 1) {
@@ -145,6 +164,18 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
   assignItem(id: ItemId, personIds: PersonId[]) {
     set((state) => {
       state.config.assignments[id] = personIds;
+    });
+  },
+
+  restoreItem(item: Item, assignedIds: PersonId[]) {
+    set((state) => {
+      // Guard: idempotent — only restore if item is NOT already present
+      if (state.config.items.some((i) => i.id === item.id)) return;
+      // Preserve original item (including original ID)
+      state.config.items.push(item);
+      // Restore assignments, filtered to only include people still present
+      const existingPersonIds = new Set(state.config.people.map((p) => p.id));
+      state.config.assignments[item.id] = assignedIds.filter((pid) => existingPersonIds.has(pid));
     });
   },
 
