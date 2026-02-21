@@ -1,100 +1,177 @@
 # Stack Research
 
-**Domain:** Client-side bill splitting / expense splitting web app
-**Researched:** 2026-02-19
-**Confidence:** MEDIUM — Context7, WebSearch, and WebFetch were unavailable in this environment. All findings sourced from training knowledge (cutoff August 2025). Versions marked LOW where they may have advanced since then.
+**Domain:** Client-side bill-splitting web app — v1.1 Persistence + Sharing additions
+**Researched:** 2026-02-22
+**Confidence:** HIGH
 
 ---
 
-## Research Constraints
+## Scope
 
-External tools (Context7, WebSearch, WebFetch) were denied in this session. All stack recommendations derive from training data through August 2025. Where version numbers may have incremented since then, this is flagged explicitly. The core technology choices are stable and high-confidence; specific patch versions are LOW confidence and should be verified against npm before first install.
+This document covers **only new stack additions for v1.1** features:
+- localStorage persistence with auto-save
+- History list (date + people + total)
+- Editable saved splits (re-open, modify, re-save)
+- Delete saved splits with undo toast
+- Payment text: payer-directed "Alice owes YOU $23.50" generation
+
+The existing stack (React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5.0.11 + immer 11, Vitest 4) is validated and not re-researched. All new capabilities are built on top of existing dependencies.
 
 ---
 
-## Recommended Stack
+## Recommended Stack — New Additions
 
 ### Core Technologies
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| React | 19.x | UI component framework | Dominant ecosystem for client-side SPAs. React 19 adds native `use()` hook, improved Suspense, and better ref handling. No framework overhead needed for a static client-side app. Massive ecosystem means any UI pattern has a solved library. |
-| TypeScript | 5.7+ | Type safety across all logic | Expense splitting involves floating-point arithmetic, rounding edge cases, and complex data relationships (items → people → shares). TypeScript catches off-by-one errors and incorrect data shapes at compile time — critical for money math. |
-| Vite | 6.x | Build tool and dev server | Fastest dev experience available. Near-instant HMR. For a client-side SPA, Vite produces optimized static files deployable to any CDN or static host with zero config. No Next.js needed — this is not an SSR app. |
-| Tailwind CSS | 4.x | Utility-first CSS | Mobile-first responsive design with minimal CSS payload. v4 uses CSS-native variables and no config file by default. Ideal for building dense, touch-friendly UIs quickly. Eliminates CSS naming decisions. |
-| Zustand | 5.x | Client state management | The bill state (people, items, tip config, tax config) is a single shared data model accessed by many components. Zustand provides that without Redux boilerplate. Minimal API surface, TypeScript-friendly, no context hell. |
+| `zustand/middleware` persist | built-in (zustand 5.0.11) | Auto-save active bill to localStorage; persist history list across page loads | Zero new install — persist ships inside the zustand package. Synchronous localStorage hydration means the store is fully populated before the first React render, so no loading-state guards needed in components. v5.0.10 fixed a state-inconsistency bug with persist; the project already runs 5.0.11. |
+| Native `localStorage` API | browser-native | Storage backend for persist middleware | No library needed. localStorage is limited to 5 MB per origin, which is far more than required: a bill with 20 people and 30 items serializes to under 10 KB; 200 saved history entries = ~2 MB. The synchronous API pairs cleanly with Zustand's synchronous hydration path. |
+| Native `crypto.randomUUID()` | browser-native | Generate stable IDs for history entries (`HistoryId`) | Already used in `billStore.ts` (lines 92, 142) for PersonId and ItemId. Extend the same pattern for history entries. Supported in Chrome 92+, Safari 15.4+, Firefox 95+ — all current mobile browsers. Zero new dependency. |
+| Native `Intl.RelativeTimeFormat` | browser-native | Format history timestamps as "today", "yesterday", "3 days ago" | Zero bundle cost. Full support across all target browsers since 2020. Sufficient for history list display. No date library is warranted for this use case. |
 
 ### Supporting Libraries
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| Immer | 10.x | Immutable state updates | Use inside Zustand store when updating nested state (e.g., toggling a person on/off an item). Makes mutations safe and readable without manual spread chains. |
-| clsx | 2.x | Conditional className merging | Eliminates string template noise when combining Tailwind classes conditionally (active states, disabled states). Trivial library, high utility. |
-| tailwind-merge (twMerge) | 3.x | Merge conflicting Tailwind classes | When building reusable components with override props, prevents conflicting Tailwind utilities. Pair with clsx via a `cn()` helper. |
-| Vitest | 3.x | Unit testing | Test the arithmetic core (split calculations, rounding, proportional tip logic) in isolation. Vite-native, so zero additional configuration. Critical: money math must be tested. |
-| @testing-library/react | 16.x | Component testing | Verify UI behavior (adding a person, assigning items) without coupling tests to implementation details. |
-
-### Development Tools
-
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| Vite (built-in) | Dev server, HMR, production build | Run `npm run dev` for local, `npm run build` for static output |
-| ESLint 9.x | Lint enforcement | Use flat config format (eslint.config.js). Include `eslint-plugin-react-hooks` for hooks rules. |
-| Prettier 3.x | Code formatting | Set `singleQuote: true`, `semi: false` or per team preference. Integrate with ESLint via `eslint-config-prettier`. |
-| TypeScript compiler (tsc) | Type checking | Run `tsc --noEmit` as a pre-build check. Vite transpiles TS but does not type-check — tsc is still needed for CI. |
+| None required | — | — | All v1.1 capabilities are covered by Zustand's built-in persist middleware and native browser APIs. Zero new `npm install` entries needed. |
 
 ---
 
-## Installation
+## Integration: Adding persist to the Existing immer Store
 
-```bash
-# Scaffold the project
-npm create vite@latest expense-splitter -- --template react-ts
-cd expense-splitter
+The existing store (line 221 of `billStore.ts`) is:
 
-# Core runtime dependencies
-npm install zustand immer clsx tailwind-merge
-
-# Tailwind CSS v4 (new install flow — no config file required)
-npm install tailwindcss @tailwindcss/vite
-
-# Testing
-npm install -D vitest @testing-library/react @testing-library/user-event @testing-library/jest-dom jsdom
-
-# Linting and formatting
-npm install -D eslint @eslint/js eslint-plugin-react-hooks eslint-plugin-react-refresh prettier eslint-config-prettier
-```
-
-**Tailwind v4 Vite integration** (add to `vite.config.ts`):
 ```typescript
-import tailwindcss from '@tailwindcss/vite'
-
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-})
+export const useBillStore = create<BillState>()(immer(stateCreator));
 ```
 
-**Tailwind v4 CSS import** (add to `src/index.css`):
-```css
-@import "tailwindcss";
+Adding persist requires wrapping immer from the outside. The correct middleware order is:
+
 ```
+devtools( persist( immer( stateCreator ) ) )
+```
+
+Rationale for this order:
+- `immer` must be **innermost** — it transforms `set` to accept draft-mutating functions; if placed outside persist, persist would serialize immer draft proxies rather than plain objects
+- `persist` sits **around immer** — it receives plain state values after immer has resolved drafts, and serializes them correctly
+- `devtools` goes **outermost** — it must see all `setState` calls from all inner middleware without having its `type` parameter stripped
+
+For this milestone (no devtools middleware in production):
+
+```typescript
+// src/store/billStore.ts — modified export
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+
+export const useBillStore = create<BillState>()(
+  persist(
+    immer(stateCreator),
+    {
+      name: 'bill-splitter-active',           // localStorage key
+      storage: createJSONStorage(() => localStorage),
+      version: 1,                             // enables future migration
+      partialize: (state) => ({ config: state.config }),  // exclude action functions
+    }
+  )
+);
+```
+
+Key implementation notes:
+- `partialize` is required — without it, Zustand would try to serialize action functions, which are not JSON-serializable
+- `createJSONStorage` is the official helper; do not pass `localStorage` directly — it wraps `getItem`/`setItem`/`removeItem` into Zustand's `StateStorage` interface and handles `null` returns and quota errors
+- `version: 1` enables future schema migrations via the optional `migrate` option without clearing stored data
+- With localStorage (synchronous), hydration completes during store creation — the store is fully populated before any React component renders, so no `hasHydrated` guard is needed
+
+### Separate History Store (New File)
+
+The history list should live in a **separate Zustand store** with its own localStorage key, not merged into `useBillStore`.
+
+Why separate:
+- History is a list of immutable snapshots. The active bill is a live-editing workspace. They have different lifecycle and reset semantics.
+- The "New Split" button resets the active bill — this must not clear history.
+- Loading a saved entry is an explicit "copy this snapshot into active store" action, not a store merge.
+- Each store has its own `version` counter and migration path independently.
+- Two separate localStorage keys (under 5 MB each) avoids the need for a single-key size budget calculation.
+
+```typescript
+// src/store/historyStore.ts  (new file)
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+import type { BillConfig } from '../engine/types';
+
+export interface HistoryEntry {
+  id: string;           // crypto.randomUUID() — stable identity
+  savedAt: number;      // Date.now() — epoch ms; cheap to sort and format
+  label: string;        // auto-generated: "Alice, Bob, Carol — $94.20"
+  totalCents: number;   // pre-computed for display; avoids re-running engine on load
+  config: BillConfig;   // full snapshot — enables re-open and edit
+}
+
+export interface HistoryState {
+  entries: HistoryEntry[];
+  saveEntry: (entry: HistoryEntry) => void;
+  deleteEntry: (id: string) => void;
+  restoreEntry: (entry: HistoryEntry) => void;  // for undo toast
+}
+
+export const useHistoryStore = create<HistoryState>()(
+  persist(
+    immer((set) => ({
+      entries: [],
+      saveEntry: (entry) => set((s) => {
+        s.entries.unshift(entry);
+        if (s.entries.length > 50) s.entries = s.entries.slice(0, 50); // cap at 50
+      }),
+      deleteEntry: (id) => set((s) => {
+        s.entries = s.entries.filter(e => e.id !== id);
+      }),
+      restoreEntry: (entry) => set((s) => {
+        if (!s.entries.find(e => e.id === entry.id)) s.entries.unshift(entry);
+      }),
+    })),
+    {
+      name: 'bill-splitter-history',
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
+    }
+  )
+);
+```
+
+### Payment Text Generation (No Library)
+
+Payment text ("Alice owes YOU $23.50") is pure string computation. The pattern already established in `src/utils/formatSummary.ts` is the right model: a pure function, no side effects, colocated Vitest test file.
+
+```typescript
+// src/utils/formatPaymentText.ts  (new file)
+import type { EngineResult } from '../engine/types';
+import type { PersonId } from '../engine/types';
+import { formatCents } from './currency';
+
+export function formatPaymentText(result: EngineResult, payerId: PersonId): string[] {
+  return result.perPerson
+    .filter(p => p.personId !== payerId)
+    .map(p => `${p.name} owes YOU ${formatCents(p.totalCents)}`);
+}
+```
+
+The function receives `EngineResult` (already produced by `computeSplit()`, which is already called by `getResult()`). No new computation needed — reuse what exists.
 
 ---
 
 ## Alternatives Considered
 
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| React 19 | Svelte 5 / SvelteKit | If team strongly prefers Svelte's compiled approach and smaller bundle. Svelte has less ecosystem depth for component libraries. Fine choice but requires re-evaluating supporting libs. |
-| React 19 | Vue 3 | If team already has Vue expertise. Vue 3 + Vite is an excellent combo. For a greenfield app with no team preference, React's ecosystem edge wins. |
-| Vite | Create React App (CRA) | **Never.** CRA is officially deprecated. Webpack-based, slow, unmaintained. |
-| Vite | Next.js | Only if SSR, RSC, or file-based routing are needed. For a pure client-side SPA this adds meaningless complexity and a Node.js server requirement. |
-| Tailwind CSS | CSS Modules | If team dislikes utility classes. CSS Modules work well with Vite. Tailwind is faster for building novel UIs without a design system. |
-| Tailwind CSS | styled-components / emotion | CSS-in-JS adds runtime overhead with no benefit for a static client-side app. Tailwind v4 has better mobile ergonomics. |
-| Zustand | React Context + useReducer | Viable for this app size. Zustand is recommended because the bill state graph (items with multiple people, tip, tax, computed totals) gets messy in plain context with many cross-component reads. Zustand selectors avoid unnecessary re-renders. |
-| Zustand | Jotai | Jotai is atom-based and better for orthogonal pieces of state. Bill splitting data is tightly coupled (changing who's on an item recalculates everyone's total) — Zustand's single-store model fits better. |
-| Zustand | Redux Toolkit | RTK is designed for large apps with complex async logic and developer tooling needs. Overkill for a client-side calculator app with no API calls. |
-| Vitest | Jest | Vitest is Vite-native and requires no transpilation config. Jest with Vite requires additional bridging. Use Vitest. |
+| Recommended | Alternative | Why Not |
+|-------------|-------------|---------|
+| `zustand/middleware` persist (built-in) | `idb-keyval` + IndexedDB | IndexedDB is asynchronous — Zustand's async hydration path means the store starts with default (empty) state and hydrates in a microtask. Every component that reads history must handle a "loading" state and cannot render on the first pass. For <1 MB of bill history, the synchronous localStorage path is far simpler and equally capable. |
+| `zustand/middleware` persist (built-in) | `persist-and-sync` npm package | Adds a dependency for cross-tab sync, which is explicitly out of scope ("No real-time sync across devices" in PROJECT.md). |
+| `zustand/middleware` persist (built-in) | Manual `localStorage.getItem/setItem` in `useEffect` | Error-prone: misses hydration timing, storage quota errors, JSON parse failures, and SSR guards. Zustand's persist middleware handles all these edge cases, is well-tested, and is zero-cost since zustand is already installed. |
+| `crypto.randomUUID()` (native) | `nanoid` npm package | nanoid (130 bytes) is negligible in size, but `crypto.randomUUID()` is already used in `billStore.ts` for PersonId and ItemId. Adding nanoid for history entry IDs would introduce an inconsistency in the same codebase. Native wins on consistency. |
+| `Intl.RelativeTimeFormat` (native) | `date-fns` npm package | date-fns v4 costs ~13 KB min+gzip for the subset of functions needed here ("X days ago"). The native Intl API covers "today / yesterday / N days ago" with zero bundle cost and full support across all target browsers. Bring in date-fns if i18n or complex formatting requirements emerge later. |
+| Separate `historyStore` with its own persist | Merged into `billStore` with `partialize` to select history array | Merging works technically but creates coupling. The "reset" action in billStore (New Split button) must not clear history. Managing this distinction within a single store requires explicit guards in the reset action. Two stores with separate localStorage keys is architecturally cleaner and easier to reason about. |
+| `version: 1` + `migrate` option (built-in) | Key-name versioning (`'bill-splitter-active-v1'`) | Key-name versioning leaves stale keys orphaned in localStorage (old key never gets cleaned up). Zustand's built-in `version` + `migrate` option handles schema changes cleanly: old data is read, migrated to the new shape, and re-saved under the same key. |
 
 ---
 
@@ -102,91 +179,125 @@ export default defineConfig({
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| Create React App (CRA) | Officially deprecated by React team, Webpack-based, extremely slow dev experience, unmaintained since 2023 | Vite |
-| Next.js | Server rendering, file-based routing, Node.js server — all unnecessary for a client-side-only calculator | Vite + React |
-| Remix | Full-stack framework with loader/action model, requires a server. Wrong tool for no-backend constraint | Vite + React |
-| styled-components / emotion | Runtime CSS-in-JS adds unnecessary overhead; no SSR to benefit from static extraction | Tailwind CSS |
-| Redux Toolkit | Massive boilerplate overhead for a single-page calculator with no async server state | Zustand |
-| MobX | Mutable observable model is harder to serialize to localStorage later (v2 feature); TypeScript integration less predictable than Zustand | Zustand |
-| Floating-point arithmetic for money | `0.1 + 0.2 !== 0.3` in JavaScript. Using raw floats for bill math causes wrong totals | Integer arithmetic (store cents as integers) or multiply/divide carefully — see Stack Patterns below |
-| Lodash | Adds 70KB+ for utilities not needed in a focused app. Use native Array/Object methods or targeted micro-libs | Native JS or individual lodash-es functions if truly needed |
+| `redux-persist` | Requires Redux ecosystem (redux, react-redux). The project uses Zustand. | `zustand/middleware` persist |
+| `localforage` | Wraps IndexedDB/WebSQL/localStorage with async API. The async hydration creates "empty on first render" states that need loading guards throughout the component tree. Not justified by the storage volume (<1 MB). | Native `localStorage` via `createJSONStorage` |
+| IndexedDB directly | Verbose transactional API; async hydration. Not justified for a few hundred KB of bill history. | `localStorage` via persist middleware |
+| `sessionStorage` | Data is lost on tab close — defeats the purpose of persisting history. | `localStorage` |
+| `zustand/middleware` `skipHydration` | Only needed for SSR (Next.js, Remix) where the server does not have access to localStorage. This is a Vite SPA — synchronous hydration during store creation is correct and simpler. | Default hydration (synchronous for localStorage) |
+| Third-party payment text libraries | "Alice owes YOU $23.50" is a single-function string format; no library is warranted. | Pure function in `src/utils/formatPaymentText.ts` |
+| Backend / server sync | Explicitly out of scope in PROJECT.md for v1. | `localStorage` |
+
+---
+
+## localStorage Schema Design
+
+Two keys, each owned by its own Zustand store:
+
+| Key | Store | Content | Estimated size |
+|-----|-------|---------|----------------|
+| `bill-splitter-active` | `useBillStore` | Single `BillConfig` (active editing session) | 2–10 KB |
+| `bill-splitter-history` | `useHistoryStore` | `HistoryEntry[]`, each containing a full `BillConfig` snapshot + metadata | ~50 KB for 50 entries |
+
+**Capping history at 50 entries** prevents localStorage quota errors on mobile Safari. iOS 16 has a known issue where localStorage is cleared after writing more than ~2.5 MB; capping entries keeps both keys well under 1 MB combined.
+
+**Version migration pattern (future use):**
+
+```typescript
+// If BillConfig shape changes in v1.2, increment version to 2 and provide migrate:
+{
+  name: 'bill-splitter-history',
+  storage: createJSONStorage(() => localStorage),
+  version: 2,
+  migrate: (persistedState: unknown, fromVersion: number) => {
+    if (fromVersion === 1) {
+      // e.g., add a new field with default value
+      const state = persistedState as HistoryState;
+      return {
+        ...state,
+        entries: state.entries.map(e => ({ ...e, newField: defaultValue })),
+      };
+    }
+    return persistedState as HistoryState;
+  },
+}
+```
 
 ---
 
 ## Stack Patterns by Variant
 
-**For money arithmetic (critical):**
-- Store all monetary values as integers in cents (e.g., $12.50 → `1250`)
-- All calculations operate on integer cents
-- Convert to display format only at render time: `(cents / 100).toFixed(2)`
-- For rounding up to nearest cent: `Math.ceil(cents)` on integer cents is safe
-- Because: floating-point addition accumulates errors that cause per-person totals to be off by a penny
+**If history grows beyond 2 MB (unlikely with 50-entry cap):**
+- Lower the cap further in `saveEntry`
+- No library change required; the cap is a single integer constant
 
-**For proportional tip/tax splitting:**
-- Calculate each person's subtotal as integer cents
-- Compute their proportion: `personSubtotal / billSubtotal`
-- Apply proportion to tip/tax: `Math.round(proportion * tipCents)`
-- Reconcile rounding remainder: assign leftover cents to the last person rather than losing them
-- Because: proportional splits never divide evenly; reconciliation prevents total drift
+**If "Today / Yesterday / 3 days ago" relative date format is insufficient:**
+- Add `date-fns` at that point (`npm install date-fns`)
+- The `savedAt: number` epoch timestamp stored in `HistoryEntry` is compatible with all date libraries; no schema migration needed
 
-**For shared items:**
-- Model a shared item as: `{ price: number, sharedBy: PersonId[] }`
-- Each person's share: `Math.floor(itemPrice / sharedBy.length)` with remainder cents distributed to the first N people
-- Because: equal division may not divide evenly; remainder must go somewhere deterministic
+**If cross-tab sync is required in a future milestone:**
+- Replace `createJSONStorage(() => localStorage)` with a `BroadcastChannel`-based custom storage adapter
+- Or migrate history to `idb-keyval` (IndexedDB) and switch to Zustand's async storage path
+- The `HistoryEntry` shape is compatible with either approach; no schema migration needed
 
-**For mobile UX:**
-- Use Tailwind's `touch-action-manipulation` and `min-h-12` for touch targets
-- Use `inputmode="decimal"` on number inputs for mobile numeric keyboard
-- Use `type="text"` not `type="number"` for price inputs (avoids browser formatting conflicts)
-- Because: primary use case is phone browser at a restaurant table
-
-**If deploying to GitHub Pages / Netlify / Vercel:**
-- Use `vite build` output (`dist/`) directly — zero server required
-- Set `base` in `vite.config.ts` if deploying to a subdirectory path
-- No special configuration needed; the build output is pure static HTML/JS/CSS
+**If a backend is added in a future milestone:**
+- The `HistoryEntry` shape (id, savedAt, config) maps cleanly to a database record
+- The separation of active bill vs history stores means only `historyStore` needs a sync adapter
+- `useBillStore` persist can be disabled once the server becomes the source of truth
 
 ---
 
 ## Version Compatibility
 
-| Package | Compatible With | Notes |
-|---------|-----------------|-------|
-| React 19 | react-dom@19 | Must match exactly. `react` and `react-dom` versions must be identical. |
-| Tailwind CSS 4.x | `@tailwindcss/vite` | v4 uses the Vite plugin (not PostCSS) for installation. The PostCSS approach from v3 still works but is non-default. |
-| Zustand 5.x | React 18+ | Zustand 5 dropped the deprecated `immer` middleware path; use `immer` directly from the `produce` import for mutative updates. |
-| Vitest 3.x | Vite 6.x | Vitest is Vite-adjacent; major versions track Vite major versions. Use matching majors. |
-| ESLint 9.x | Flat config format | ESLint 9 uses `eslint.config.js` (flat config), not `.eslintrc.*`. Templates from `npm create vite` may still generate v8-style configs — upgrade manually if needed. |
+| Package | Version in use | Notes |
+|---------|----------------|-------|
+| `zustand` | 5.0.11 | persist middleware is built-in; v5.0.10 fixed a state-inconsistency bug with persist — already resolved at 5.0.11 |
+| `immer` | 11.1.4 | Compatible with `zustand/middleware/immer` at this version |
+| `zustand/middleware/immer` | (part of zustand 5.0.11) | immer peer dependency satisfied by immer ^11 |
+| `typescript` | 5.9.3 | In Zustand v5, `partialize` type changed from `Partial<T>` to `T` — no workarounds needed, inference works correctly |
 
 ---
 
-## Confidence Assessment
+## Installation
 
-| Decision | Confidence | Basis |
-|----------|------------|-------|
-| React as framework | HIGH | Dominant ecosystem choice; stable for years |
-| TypeScript | HIGH | Industry standard; no serious alternative for type safety |
-| Vite as build tool | HIGH | Official React recommendation; CRA deprecated |
-| Tailwind CSS | HIGH | Standard for rapid mobile UI development |
-| Zustand for state | MEDIUM | Strong community adoption; verified in training data through Aug 2025 |
-| React version 19.x | MEDIUM | React 19 released Dec 2024; may have 19.x patch increments by Feb 2026 |
-| Vite version 6.x | MEDIUM | Vite 6 released Nov 2024; may have incremented since |
-| Tailwind version 4.x | MEDIUM | Tailwind v4 released Jan 2025; install flow verified from training |
-| Zustand version 5.x | MEDIUM | Zustand 5 released Oct 2024; may have patch increments |
-| Specific patch versions | LOW | Training cutoff Aug 2025; run `npm info <package> version` to confirm latest |
-| Integer-cents money pattern | HIGH | Well-established JavaScript money math pattern; not version-dependent |
+**No new packages.** All v1.1 capabilities are built into existing dependencies:
+
+```bash
+# Nothing to install.
+# persist is part of zustand (already installed at 5.0.11)
+# crypto.randomUUID() is browser-native (already used in billStore.ts)
+# Intl.RelativeTimeFormat is browser-native
+```
+
+**New files to create:**
+
+| File | Purpose |
+|------|---------|
+| `src/store/historyStore.ts` | History Zustand store with persist middleware |
+| `src/utils/formatPaymentText.ts` | Pure function for payer-directed payment text |
+| `src/utils/formatPaymentText.test.ts` | Vitest tests for payment text formatting |
+
+**Existing files to modify:**
+
+| File | Change |
+|------|--------|
+| `src/store/billStore.ts` | Wrap existing `immer(stateCreator)` with `persist(immer(stateCreator), { ... })` for active bill auto-save |
 
 ---
 
 ## Sources
 
-- Training data (React, TypeScript, Vite, Tailwind, Zustand documentation knowledge) — through August 2025
-- React 19 release blog (training knowledge) — Dec 2024
-- Vite 6 release notes (training knowledge) — Nov 2024
-- Tailwind CSS v4 release (training knowledge) — Jan 2025
-- Zustand v5 release (training knowledge) — Oct 2024
-- NOTE: Context7, WebSearch, and WebFetch were unavailable in this session. Versions flagged MEDIUM/LOW should be verified with `npm info <package> version` before project initialization.
+- [Zustand persist middleware docs](https://zustand.docs.pmnd.rs/middlewares/persist) — partialize, version, migrate, createJSONStorage API (HIGH confidence)
+- [Zustand persisting store data guide](https://zustand.docs.pmnd.rs/integrations/persisting-store-data) — hydration behavior, localStorage vs async storage tradeoffs (HIGH confidence)
+- [Zustand immer middleware docs](https://zustand.docs.pmnd.rs/integrations/immer-middleware) — middleware combination (HIGH confidence)
+- [Zustand middleware priority discussion](https://github.com/pmndrs/zustand/discussions/2389) — devtools outermost, immer innermost confirmed (MEDIUM confidence, community-verified)
+- [Zustand v5.0.10 persist bug fix](https://github.com/pmndrs/zustand) — state-inconsistency fix in persist middleware (HIGH confidence, WebSearch)
+- [nanoid npm page](https://www.npmjs.com/package/nanoid) — v5.1.6, 130 bytes (HIGH confidence)
+- [MDN: crypto.randomUUID()](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID) — browser support baseline (HIGH confidence)
+- [MDN: Storage quotas and eviction criteria](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) — localStorage 5 MB limit, Safari eviction behavior (HIGH confidence)
+- [WebKit: Updates to Storage Policy](https://webkit.org/blog/14403/updates-to-storage-policy/) — iOS Safari 7-day script-writable storage cap (MEDIUM confidence)
+- [zustand partialize TypeScript discussion](https://github.com/pmndrs/zustand/discussions/1317) — type changed from Partial<T> to T in v5 (MEDIUM confidence)
 
 ---
 
-*Stack research for: client-side expense splitting web app*
-*Researched: 2026-02-19*
+*Stack research for: Expense Splitter v1.1 — localStorage persistence, history management, payment text*
+*Researched: 2026-02-22*

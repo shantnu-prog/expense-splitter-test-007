@@ -1,17 +1,17 @@
 # Project Research Summary
 
-**Project:** Restaurant Bill Splitter — expense splitting web app
-**Domain:** Client-side, single-session, restaurant bill splitting
-**Researched:** 2026-02-19
-**Confidence:** MEDIUM (all four research agents were blocked from live external sources; findings are from training knowledge through August 2025, which is reliable for this stable domain)
+**Project:** Expense Splitter — v1.1 Persistence + Sharing
+**Domain:** Client-side restaurant bill-splitting web app (React SPA, no backend)
+**Researched:** 2026-02-22
+**Confidence:** HIGH
 
 ## Executive Summary
 
-A restaurant bill splitter is a mature, well-understood product category. The core challenge is not technical novelty — it is correctness. Every dollar of floating-point arithmetic error, every missed edge case in shared-item allocation, and every stale derived-state bug is immediately visible to users who are literally checking the math against a receipt in front of them. The recommended approach is to build a fully client-side React SPA with a strictly separated calculation engine: pure TypeScript functions that work in integer cents, testable in isolation before any UI exists. This architecture is stable, proven in competitors like Splitwise, and well-documented in community resources.
+This is a v1.1 milestone adding persistence, history management, and payment text sharing to an already-shipped v1.0 bill-splitting SPA (React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5.0.11 + immer 11, Vitest 4). The milestone is deliberately scoped to client-side localStorage — no backend, no accounts, no sync. All five new features (auto-save, history list, re-open/edit, delete with undo, and payment text) are achievable with zero new npm dependencies: Zustand's built-in `persist` middleware, `crypto.randomUUID()`, and `Intl.RelativeTimeFormat` cover everything.
 
-The key competitive opportunity is zero friction. Every major competitor (Splitwise, Tab) requires an account and network access. A no-login, offline-capable web app that loads instantly on a phone browser and lets a group split a bill in under two minutes is a genuine differentiator — not a missing feature, but a deliberate positioning choice. This means v1 must aggressively avoid backend complexity, auth, OCR, and payment integrations. The full v1 feature set is achievable in a focused build because all the hard work is arithmetic correctness, not system integration.
+The recommended approach is a two-store architecture: a new `useHistoryStore` (persist-wrapped, separate localStorage key `bs-history`) alongside the existing ephemeral `useBillStore`. The critical design decision is that saves are **explicit user actions** (a "Save Split" button), not auto-save-to-history on every keystroke. This preserves the distinction between a work-in-progress and a committed record, avoids overwriting saved splits on incidental edits, and keeps the history list semantically clean. The active bill store remains ephemeral — users open to a clean state or the history list, not a half-finished draft.
 
-The primary risk is math correctness: floating-point arithmetic without integer-cent handling, rounding applied at the wrong stage, and proportional distribution without the largest-remainder reconciliation algorithm will produce penny-level errors that destroy user trust. These pitfalls must be addressed in the foundation phase before any UI is built. The secondary risk is scope creep — receipt OCR, user accounts, and real-time sync all sound compelling but each would add backend complexity that breaks the client-side constraint and delays the core value.
+The key risks are: (1) TypeScript branded types (`Cents`, `PersonId`, `ItemId`) survive serialization by value but lose their brand on deserialization — a dedicated `deserializeBillConfig()` function must be the single parse boundary; (2) no schema version on day one makes future changes a breaking migration; (3) middleware ordering (`persist` must wrap `immer`, not the reverse) is a silent failure mode; and (4) the app's existing onboarding splash must be coordinated with history hydration to avoid race conditions on first render. All four are preventable in the persistence phase with the right setup decisions made upfront.
 
 ---
 
@@ -19,153 +19,160 @@ The primary risk is math correctness: floating-point arithmetic without integer-
 
 ### Recommended Stack
 
-The stack is a standard modern React SPA: React 19 + TypeScript 5.7 + Vite 6 + Tailwind CSS 4 + Zustand 5. This combination represents the current industry consensus for mobile-first client-side SPAs. No framework beyond React is needed — Next.js, Remix, and SvelteKit all add server-side complexity with no benefit for a no-backend app. Tailwind v4 requires a new Vite plugin install flow (not PostCSS as in v3). Zustand is preferred over React Context because the bill state graph (items with multiple people, tip, tax, and computed totals) has too many cross-component reads to avoid re-render problems with plain context.
+All v1.1 capabilities are built on existing dependencies — no new `npm install` entries are needed. Zustand 5.0.11 ships `persist` middleware built-in, and the project already uses `crypto.randomUUID()` for `PersonId` / `ItemId` generation. The two new files are `src/store/historyStore.ts` (persist-wrapped Zustand store) and `src/utils/formatPaymentText.ts` (pure function). One existing file is modified: `src/store/billStore.ts` gets `currentSplitId`, `setCurrentSplitId`, and `loadConfig` actions added, plus `reset()` is updated to clear `currentSplitId`.
 
-One pattern is non-negotiable across the entire stack: store all monetary values as integer cents, not floats. Every npm package choice is reversible; the decision to work in cents must be made before the first line of calculation code is written.
+**Core technologies (new usage of existing deps):**
+- `zustand/middleware persist` (built-in, zustand 5.0.11): Auto-hydration of history on page load — synchronous with localStorage, so no loading-state guards needed in components. Middleware order is `persist(immer(stateCreator))` — reversing it causes persist to silently capture only initial state.
+- `crypto.randomUUID()` (browser-native): Stable `SavedSplitId` for history entries — already used for `PersonId` / `ItemId`, maintaining codebase consistency.
+- `Intl.RelativeTimeFormat` (browser-native): "Today / Yesterday / 3 days ago" display in history list — zero bundle cost, full browser support since 2020.
+- Native `localStorage` via `createJSONStorage`: Storage backend; synchronous API pairs cleanly with Zustand's synchronous hydration path.
 
-**Core technologies:**
-- React 19: UI framework — dominant SPA ecosystem, native Suspense improvements, no server needed
-- TypeScript 5.7: type safety — catches money-math shape errors and off-by-one bugs at compile time
-- Vite 6: build tool — instant HMR, static output for CDN/GitHub Pages, CRA is deprecated and must not be used
-- Tailwind CSS 4: styling — mobile-first, utility classes, no runtime overhead, v4 Vite plugin (not PostCSS)
-- Zustand 5: state management — single-store model fits tightly coupled bill state; avoids context re-render problems
-- Vitest 3: testing — Vite-native, no transpilation config; unit testing the math engine is mandatory
+**localStorage schema:**
+- `bs-history` key: owns `SavedSplit[]` array (all history entries); capped at 50 entries.
+- No separate key for active bill — bill store stays ephemeral.
+- `version: 1` set from day one with `migrate` stub in persist options.
 
-**See:** `.planning/research/STACK.md` for full alternatives considered and version compatibility table.
+**New files to create:**
+
+| File | Purpose |
+|------|---------|
+| `src/store/historyStore.ts` | History Zustand store with persist middleware |
+| `src/utils/formatPaymentText.ts` | Pure function for payer-directed payment text |
+| `src/utils/formatPaymentText.test.ts` | Vitest tests for all edge cases |
+| `src/components/history/HistoryPanel.tsx` | History list UI |
+| `src/components/history/HistoryRow.tsx` | Single saved split row |
+| `src/components/summary/PaymentTextSection.tsx` | Payer picker + formatted text + copy button |
+
+**See:** `.planning/research/STACK.md` for full implementation details, code examples, and alternatives considered.
 
 ### Expected Features
 
-The feature set is narrow and precise. The MVP is table stakes for the category — anything missing makes the product feel broken. The differentiators are specific choices that competitors handle poorly: offering both equal and proportional tip/tax split, supporting shared-item assignment to subsets (not just all-or-one), and being zero-friction (no login). Anti-features to resist: OCR, accounts, real-time sync, currency conversion, and payment APIs are all scope traps that break the client-side constraint.
+All five v1.1 features are P1 — they are the milestone. The dependency order within the milestone matters: the persistence layer must come first because history list, re-open, and delete all depend on it. Every major competitor gates history behind user accounts; localStorage history is genuinely differentiated for the "at the table, no signup" use case.
 
-**Must have (table stakes) — v1:**
-- Add/remove people by name — summary is meaningless without names
-- Add/edit/remove line items with name and price — core data entry
-- Assign items to one or more people, including shared subsets — equal-split-only tools feel broken for real restaurant bills
-- Running subtotal visible as items are added — user needs to verify against the physical receipt
-- Tip calculation: 15/18/20% presets + custom percent input — presets cover 90% of use cases
-- Tax calculation: enter amount or percentage — on every US restaurant receipt
-- Tip split method: equal or proportional — low complexity, high fairness value
-- Tax split method: equal or proportional — mirrors tip method; inconsistency here is a competitor weakness
-- Per-person summary with itemized breakdown and rounded-up total — the product's entire purpose
-- Mobile-responsive layout with large tap targets — primary use context is a phone at the table
-- Edit/delete items and people — typos and re-reads are constant
+**Must have (table stakes) — v1.1:**
+- Auto-save active bill session — users expect zero data loss without pressing Save; Zustand `persist` handles this natively on the active bill config.
+- Human-readable history entry labels — auto-derived from date + people names + total; no user input required.
+- Tap to re-open any saved split — full input state (people, items, assignments, tip, tax) restored into the editor; read-only restores are not acceptable.
+- Delete with undo toast — 5-second undo toast already exists in v1.0 for item deletion; history delete reuses the same `useUndoDelete` hook with no new component work.
+- Payer selection + payment text — payer-directed "Alice owes YOU $23.50" per non-payer person; copy to clipboard (already wired in v1.0).
 
-**Should have (competitive) — v1.x after validation:**
-- Custom tip dollar amount — add when users report needing it
-- Per-item quantity field — eliminates duplicate rows for multiple drinks
-- Copy-friendly formatted output ("Alice owes $23.50") — bridges gap from calculation to payment
-- Keyboard-friendly tab order — power-user data entry
+**Differentiators (vs Splitwise, Tab, Tricount):**
+- Zero-friction, no-account history — every major competitor requires accounts; localStorage is the only approach that works offline and instantly.
+- Full input restoration for editing — competitors store outputs; this app stores the full `BillConfig`, enabling complete re-editing after save.
+- Ready-to-send payment text — plain copy-paste text immediately usable in any payment app without requiring Venmo/Zelle API integration.
 
-**Defer (v2+):**
-- Save to localStorage — useful but not needed at the table
-- URL-encoded shareable link — valuable but requires URL state encoding work
-- Receipt OCR — high complexity, validate demand before building
-- Payment app integration (Venmo/Zelle) — restricted APIs, compliance overhead
+**Defer to v2+:**
+- Named saves / custom titles — auto-labels are sufficient; add only if user feedback demands.
+- Payment deep links (Venmo/Zelle) — Venmo API is restricted to approved partners; Zelle has no public deep-link spec.
+- Cloud sync / cross-device history — requires backend; explicitly out of scope per PROJECT.md.
+- Export to CSV / PDF — rare use case; per-person clipboard already covers 95% of needs.
 
-**See:** `.planning/research/FEATURES.md` for full prioritization matrix and competitor comparison.
+**See:** `.planning/research/FEATURES.md` for full prioritization matrix, feature dependency graph, and competitor comparison table.
 
 ### Architecture Approach
 
-The architecture is three strict layers: (1) a pure TypeScript calculation engine with no React imports, (2) a Zustand state store holding only inputs (never derived totals), and (3) React UI panels that read from the store and render engine output via a single `useBillSummary` hook. The engine is the highest-risk piece and must be built and tested first. Components are purely presentational — they dispatch actions to the store and render what the hook returns. No math lives in JSX.
+The v1.1 architecture adds a second Zustand store (`useHistoryStore`) alongside the existing `useBillStore`, connected by explicit imperative calls rather than subscriptions. History entries store only the full `BillConfig` input (no derived totals); display metadata (people names, total) is derived fresh at render time via `computeSplit()`. The calculation engine and all existing data-entry panels are untouched. The persistence layer is a single localStorage key (`bs-history`) holding the entire `SavedSplit[]` array, managed atomically by Zustand's persist middleware.
 
 **Major components:**
-1. Calculation Engine (`src/engine/`) — pure functions: allocate item costs, compute tip/tax shares, reconcile rounding; no React, fully unit-tested
-2. App State Store (`src/store/`) — Zustand store holding only input data: `people[]`, `items[]`, `assignments{}`, `tip`, `tax`; no stored totals
-3. UI Panels (`src/components/`) — People, Items, Assignment, Tip/Tax, Summary panels; read from store, render engine output; no math
-4. `useBillSummary` hook (`src/hooks/`) — single bridge: reads store state, calls engine, returns display-ready per-person totals with memoization
+1. `useHistoryStore` (new) — persist-wrapped store holding `SavedSplit[]`; actions: `save`, `update`, `load`, `remove`, `restore`; enforces 50-entry cap in `save()`.
+2. `useBillStore` (modified) — adds `currentSplitId: SavedSplitId | null`, `setCurrentSplitId`, `loadConfig`; updates `reset()` to clear `currentSplitId`.
+3. `HistoryPanel` + `HistoryRow` (new) — history list UI; reuses `useUndoDelete` for delete/undo; `HistoryRow` derives total via `computeSplit(split.config)`.
+4. `PaymentTextSection` (new) — local `useState<PersonId | null>` for payer; calls `formatPaymentText(result, people, payerId)`; reuses existing `useCopyToClipboard`. Payer state stays local — it must NOT enter the bill store or history.
+5. `SummaryPanel` (modified) — adds "Save Split" / "Update Split" button based on `currentSplitId`; renders `<PaymentTextSection>` below person cards.
+6. `formatPaymentText.ts` (new) — pure utility; sibling to existing `formatSummary.ts`; handles payer exclusion, zero-amount guard, and single-person edge case.
+7. `AppShell.tsx` + `TabBar.tsx` (modified) — add `'history'` tab; initial-tab logic: show history if splits exist, else people.
 
-**Build order forced by dependencies:** Types → Engine → Store → Hook → Panels (People → Items → Assignment → Tip/Tax → Summary).
+**Key patterns to follow:**
+- Unidirectional data flow — user actions trigger explicit store calls; no subscriptions between stores.
+- Inputs-only storage — `BillConfig` (engine inputs) stored, never derived outputs; engine re-computes on demand.
+- Integer cents throughout — `centsToDollars()` used in `formatPaymentText` and `HistoryRow`; no floating-point display arithmetic.
+- Explicit edit mode — `currentSplitId` in `useBillStore` is the single source of truth for "are we editing a saved split"; shown as "Editing saved split" indicator in UI.
 
-**See:** `.planning/research/ARCHITECTURE.md` for full data flow, state shape, anti-patterns, and code examples.
+**Build order (dependency-ordered):**
+`historyStore` → `billStore` changes → `formatPaymentText` utility → History UI → Tab changes → AppShell → `PaymentTextSection` → `SummaryPanel` modifications.
+
+**See:** `.planning/research/ARCHITECTURE.md` for full data flow diagrams, anti-patterns, code examples, and scaling considerations.
 
 ### Critical Pitfalls
 
-Six critical pitfalls were identified, all concentrated in the math engine and state architecture. Four of the six must be addressed in Phase 1 before any UI is built. The other two are Phase 2 UI concerns.
+Eight pitfalls were identified; the top five are critical and must be addressed before any UI is built on top of the persistence layer.
 
-1. **Floating-point arithmetic for money** — Use integer cents throughout all calculations; convert to dollars only at display. `0.1 + 0.2 !== 0.3`. With party sizes of 3 or 7, float errors are nearly guaranteed to produce off-by-a-penny totals that users notice immediately.
+1. **Branded types lose brand on JSON round-trip** — `Cents`, `PersonId`, `ItemId` are plain `number`/`string` at runtime; `JSON.parse` strips the TypeScript brand silently. Fix: write a `deserializeBillConfig()` function that re-applies `cents()`, `personId()`, `itemId()` constructors at the single localStorage parse boundary. Unit-test the round-trip.
 
-2. **Rounding applied at multiple stages** — Maintain one `owedCents` accumulator per person; add item shares, tip share, and tax share in cents before any rounding. Rounding is not associative — round-then-add differs from add-then-round.
+2. **No schema version = breaking migration on first field change** — omitting `version: 1` means the first schema change has no upgrade path for existing users. Fix: set `version: 1` and include a `migrate` stub in persist options from day one. Cost: five lines of code. Recovery cost without this: HIGH.
 
-3. **Proportional distribution without largest-remainder reconciliation** — When tip or tax is distributed proportionally, naive float multiplication causes the sum of individual shares to diverge from the tip total by 1-2 cents. Apply the largest-remainder method: take floor of each person's share in cents, distribute remaining cents to those with the largest fractional parts. This is an algorithm, not a formula — implement and test it explicitly.
+3. **`localStorage.setItem` throws synchronously in Private Browsing and on quota** — `QuotaExceededError` and `SecurityError` (Safari Private mode) are synchronous throws. An uncaught throw crashes the entire app. Fix: centralize all localStorage access in `src/storage/localStorageAdapter.ts` with `safeSetItem`/`safeGetItem` wrappers; surface a non-blocking toast on failure.
 
-4. **Items with zero sharers** — Division by zero produces NaN that propagates silently through all derived totals. Validate that every item has at least one sharer before running any calculation. Enforce this in the UI: block calculation and show an error when any item has no one assigned.
+4. **Middleware ordering: `persist` must wrap `immer`** — `immer(persist(...))` causes persist to silently capture only initial state. Fix: always `create<T>()(persist(immer(stateCreator), options))`. Verify immediately in DevTools Application tab after wiring.
 
-5. **Derived totals stored in state** — Storing `person.total` or `bill.totalWithTip` in state creates stale values when any input changes. Treat all totals as pure derived values computed fresh on every render via `useMemo`. Never store computed values — only store inputs.
+5. **Onboarding + history timing race on first render** — the existing `useOnboarding` hook reads localStorage synchronously; history may hydrate asynchronously via `useEffect`. Fix: implement a single `useAppEntry` hook that reads both localStorage values synchronously before any rendering decision. Define the explicit entry state machine: new user → splash → empty history; returning user with history → history list directly.
 
-6. **"Round up each person" semantics undefined** — `Math.ceil` per person produces a surplus over the actual bill. Define explicitly: the surplus is displayed as "extra tip" and shown inline next to each person's total. This is a display post-processing step, not a change to the math engine.
+6. **Editing a loaded split silently overwrites the saved original** — if auto-save were wired to a history-loaded bill without explicit edit mode, any mutation would overwrite the saved entry irreversibly. Fix: use `currentSplitId !== null` in `useBillStore` as the edit-mode signal; show "Editing saved split" indicator; provide explicit "Save changes" action.
 
-**See:** `.planning/research/PITFALLS.md` for full pitfall list, warning signs, recovery strategies, and "looks done but isn't" checklist.
+7. **Payment text edge cases produce confusing output** — payer shown in their own output, zero-amount persons shown as owing $0.00, single-person bill producing empty string. Fix: `formatPaymentText` must filter `personId === payerPersonId`, filter `roundedTotalCents <= 0`, and return `"Everyone is settled up."` when no lines remain.
+
+8. **Auto-save writes on every keystroke (performance trap)** — Zustand persist fires on every store mutation; price inputs mutate on every keypress. Fix: keep price/tip/tax inputs as local component state; commit to store on `onBlur` only. This is already the v1.0 pattern — verify it is maintained.
+
+**See:** `.planning/research/PITFALLS.md` for full pitfall details, warning signs, recovery strategies, and the "looks done but isn't" checklist.
 
 ---
 
 ## Implications for Roadmap
 
-Based on combined research, the dependencies and risks strongly suggest a four-phase structure: foundation first (math engine and state architecture), then data entry UI, then the core output (summary and assignment), then polish.
+Based on the feature dependency graph and pitfall-to-phase mapping, this milestone has three natural phases within v1.1:
 
-### Phase 1: Foundation — Types, Engine, and State Architecture
+### Phase 1: Persistence Foundation
 
-**Rationale:** The calculation engine is the highest-risk piece of the entire app. Four of the six critical pitfalls live here. Building any UI before the engine is verified correct means building on a broken foundation. Architecture research explicitly recommends engine-first with tests before any React. This phase produces no visible UI but eliminates the primary failure mode.
+**Rationale:** All other v1.1 features depend on a working, correct localStorage layer. The pitfalls that cause the most severe and hardest-to-recover failures (branded type deserialization, schema versioning, storage error handling, middleware ordering) all belong here. This is the riskiest phase technically and must be locked down before any UI is built on top of it. The 50-entry history cap also belongs here — it is a single-line guard in the `save()` action that prevents quota errors from the start.
 
-**Delivers:** Working, fully-tested calculation engine; Zustand store with correct state shape; TypeScript types for all data; Vitest test suite verifying per-person totals sum correctly for party sizes 1–10.
+**Delivers:** `useHistoryStore` with persist middleware (version: 1, migrate stub, 50-entry cap); `deserializeBillConfig()` with unit tests verifying round-trip; `localStorageAdapter.ts` with `safeSetItem`/`safeGetItem` error handling; `useBillStore` updated with `currentSplitId`, `loadConfig`, `setCurrentSplitId`, updated `reset()`.
 
-**Addresses (from FEATURES.md):** Arithmetic correctness underpinning all P1 features; tip split methods (equal and proportional); tax split methods; rounding.
+**Addresses:** Auto-save current bill session (table stakes); schema versioning for returning users; storage quota safety.
 
-**Avoids (from PITFALLS.md):** Float arithmetic errors (Pitfall 1), inconsistent rounding (Pitfall 2), proportional distribution cent gap (Pitfall 5), stale derived state (Pitfall 6), zero-sharer validation (Pitfall 4).
+**Avoids:** Branded type deserialization bug (Pitfall 1), no schema version (Pitfall 2), unhandled localStorage throws (Pitfall 3), middleware ordering error (Pitfall 4).
 
-**Research flag:** Standard patterns. The math algorithms (integer cents, largest-remainder) are well-documented. No additional research needed — implement and test.
+**Must verify:** DevTools Application tab shows `bs-history` key updating on save/delete; `BillConfig` round-trip unit test passes; app works (no crash) in Safari Private Window.
 
-### Phase 2: Data Entry UI — People, Items, and Assignment
+### Phase 2: History List + Edit Mode
 
-**Rationale:** Once the engine is correct, the next dependency chain is people → items → assignments. These three panels must exist before the summary can show anything meaningful. Assignment panel (shared items) is where FEATURES.md identified the key differentiator over naive splitters. The mobile UX constraint applies most acutely to data entry.
+**Rationale:** With the persistence layer working, the history UI can be built. This phase introduces the app's new entry point (history list vs. new split), which requires coordinating with the existing onboarding flow. The edit-mode concept (`currentSplitId`) must be explicit from the start of this phase — retrofitting it after save/load is wired is the primary source of the silent-overwrite pitfall. History delete reuses the existing `useUndoDelete` hook with no new component.
 
-**Delivers:** Working data entry flow — add/edit/remove people and items, assign items to individuals or shared subsets, running subtotal visible. No summary panel yet, but the store state is fully populated.
+**Delivers:** `HistoryPanel` + `HistoryRow`, history tab in `TabBar` + `AppShell`, re-open/edit flow with explicit "Editing saved split" indicator, "Save Split" / "Update Split" button in `SummaryPanel`, delete with undo toast, `useAppEntry` hook coordinating onboarding + history state, empty state with "New Split" CTA, initial-tab logic (history if splits exist, else people).
 
-**Addresses (from FEATURES.md):** Add people by name, add/edit/remove line items, assign items to person(s) including shared subsets, running subtotal, edit/delete, mobile-responsive layout (P1 table stakes).
+**Addresses:** History list (P1), re-open and edit saved splits (P1), delete with undo (P1), Save Split button (P1).
 
-**Avoids (from PITFALLS.md):** Zero-sharer validation surfaced in UI (Pitfall 4), React list keys using stable IDs not array indices (performance trap), mobile numeric keyboard (`inputmode="decimal"` on price inputs).
+**Avoids:** Onboarding/history timing race (Pitfall 5), silent overwrite of saved splits on edit (Pitfall 6).
 
-**Research flag:** Standard patterns. React form handling, Zustand mutations with Immer, Tailwind mobile layout are all well-documented. No additional research needed.
+**Must verify:** Entry state machine tested manually — new user flow and returning user flow both correct; loading a history entry and mutating shows "Update Split" button, not silent overwrite; undo toast restores entry with all data intact; all localStorage keys (`bill-splitter-active`, `bs-history`, onboarding key) are distinct and do not collide.
 
-### Phase 3: Output — Tip/Tax Config and Per-Person Summary
+### Phase 3: Payment Text + Polish
 
-**Rationale:** Tip/Tax configuration depends on items existing (needs a subtotal) — it can't be meaningfully tested until Phase 2 is complete. The Summary panel depends on everything: people, items, assignments, tip, and tax. This is the visible product — what users see when the bill is split.
+**Rationale:** Payment text has no dependencies on the history layer — it reads from the existing `EngineResult` and `people` already computed in `SummaryPanel`. It is isolated enough to be built last and independently verified. Start with the pure `formatPaymentText` function and its tests before building any UI. This phase also applies storage quota warning toast and any UX polish items.
 
-**Delivers:** Tip presets (15/18/20%) + custom input; tax entry (amount or %); equal vs. proportional split method selectors; per-person summary panel with itemized breakdown and rounded-up total; rounding surplus displayed as extra tip (Pitfall 3 resolution).
+**Delivers:** `formatPaymentText.ts` pure utility with full edge-case handling (payer exclusion, zero-amount guard, single-person fallback) and unit tests; `PaymentTextSection` component with payer dropdown + readonly textarea + copy button; integration into `SummaryPanel`; storage quota error toast (P2).
 
-**Addresses (from FEATURES.md):** Tip calculation with presets, tax calculation, tip split method, tax split method, per-person summary with rounding, all P1 table stakes complete.
+**Addresses:** Payer selection (P1), payment text generation per person (P1), copy individual payment text (P1), copy all payment text (P2), storage quota error handling (P2).
 
-**Avoids (from PITFALLS.md):** "Round up each person" surplus defined and displayed (Pitfall 3); tip/tax UI terminology made human-readable with examples ("everyone pays the same tip" vs. "tip matches your food share").
+**Avoids:** Payment text edge cases — payer self-exclusion, zero-amount persons, single-person bill (Pitfall 7); payer selection reset when new split is loaded.
 
-**Research flag:** Standard patterns for tip/tax UI. The rounding surplus display (Pitfall 3) should be defined in requirements before implementation — what exactly is shown, where, and in what format.
-
-### Phase 4: Polish and v1.x Features
-
-**Rationale:** After core functionality is verified correct, add the competitive differentiators that make the product feel professional: copy-friendly output, keyboard navigation, quantity fields, and any UX improvements surfaced by testing. These are additive, low-risk changes that do not touch the engine.
-
-**Delivers:** Copy-friendly formatted summary text ("Venmo @alice $23.50"), per-item quantity field, keyboard tab-order optimization, undo on item deletion (or confirmation dialog), summary optimized for screenshotting, zero-error empty states.
-
-**Addresses (from FEATURES.md):** P2 features — custom tip dollar amount, per-item quantity, copy-friendly output, keyboard navigation.
-
-**Avoids (from PITFALLS.md):** No summary/receipt view UX pitfall, no undo on deletion UX pitfall, clipboard API using `navigator.clipboard.writeText()` (not deprecated `execCommand`).
-
-**Research flag:** Standard patterns. No additional research needed.
+**Must verify:** All five `formatPaymentText` unit tests pass; payer selection resets when a different split is loaded or `reset()` is called; "Everyone is settled up." shown for single-person bill; auto-save write frequency — DevTools shows writes only on blur, not on every keypress.
 
 ### Phase Ordering Rationale
 
-- **Engine before UI:** Four of six critical pitfalls are in the math engine. Building UI on unverified math means debugging math through the UI, which is slow and error-prone. The test suite verifying the engine is the risk mitigation for the entire project.
-- **Data entry before output:** The summary panel has a hard dependency on people, items, and assignments being in the store. There is no shortcut around this ordering — it is a data dependency.
-- **Tip/Tax with Summary, not with Items:** Tip and tax percentages are meaningless without a subtotal. Grouping Tip/Tax config with the Summary panel (both require items to exist) is more cohesive than splitting it across phases.
-- **Polish last:** v1.x features (quantity, copy output, keyboard nav) are additive and do not affect correctness. Deferring them keeps each phase focused and allows early validation of the core value.
+- Phase 1 must come first because history list, re-open, delete, and save are all built on top of it. Building UI before the persistence layer is correct is the single most common cause of hard-to-debug data integrity issues in localStorage-backed apps.
+- Phase 2 groups history UI and edit mode together because the edit-mode concept (`currentSplitId`) must be designed before any history row interaction is wired — you cannot add it cleanly afterward without auditing every save/load call site.
+- Phase 3 is last because payment text is independent and additive — it does not change any existing component's contract, it only extends `SummaryPanel` with a new section. Phases 1 and 2 can be validated in isolation without payment text complexity.
+- The 50-entry cap belongs in Phase 1 to prevent quota errors from the very first save.
+- The `useAppEntry` hook belongs in Phase 2 because it is meaningless until the history tab exists as an entry point.
 
 ### Research Flags
 
-Phases needing additional research during planning:
-- **Phase 3 (Rounding surplus UI):** The exact UX for displaying the rounding surplus ("$0.67 extra goes to tip") is not specified. This should be defined in requirements before building — what does the surplus line look like, is it per-person or aggregate, does it appear only when round-up mode is active?
+Phases with well-documented patterns (skip research-phase — implementation path is clear):
+- **Phase 1:** Zustand `persist` + `immer` integration is fully documented in official Zustand docs with exact middleware ordering and all options. The `deserializeBillConfig` pattern follows directly from the existing `BillConfig` type definition. No additional research needed.
+- **Phase 3:** `formatPaymentText` is a pure function with a known interface. `PaymentTextSection` reuses existing `useCopyToClipboard`. No additional research needed.
 
-Phases with standard patterns (no additional research needed):
-- **Phase 1:** Integer-cent arithmetic and largest-remainder method are well-documented algorithms. Implement and unit-test.
-- **Phase 2:** React form handling, Zustand mutations, Tailwind mobile layout — all well-documented.
-- **Phase 4:** Clipboard API, keyboard navigation — MDN documentation is authoritative.
+Phase that may benefit from a brief planning review:
+- **Phase 2:** The `useAppEntry` hook that coordinates onboarding + history is a custom pattern. The exact React hook implementation (synchronous localStorage reads vs. `useSyncExternalStore`) may warrant a quick review during Phase 2 planning, particularly given React 19's new primitives. This is LOW risk — the synchronous read approach is well-understood — but worth a one-time check before implementation.
 
 ---
 
@@ -173,44 +180,46 @@ Phases with standard patterns (no additional research needed):
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | MEDIUM | Core technology choices are HIGH confidence and stable. Specific major versions (React 19, Vite 6, Tailwind 4, Zustand 5) are MEDIUM — all released before August 2025 training cutoff but may have patch increments. Verify with `npm info <package> version` before first install. |
-| Features | MEDIUM | Bill splitting is a mature category; UX conventions are stable. Competitor feature claims (Splitwise, Tab) are from training knowledge, not live verification. Core feature decisions (what to include/exclude) are HIGH confidence. |
-| Architecture | MEDIUM | Patterns (unidirectional data flow, pure engine, no derived state in store) are well-established React community guidance from multiple sources, stable since 2020. MEDIUM rather than HIGH because external sources were unavailable during research. |
-| Pitfalls | HIGH | Floating-point arithmetic pitfalls are computer science fundamentals (IEEE 754), not opinion. Largest-remainder method is a well-known algorithm. Stale derived state patterns are established React community guidance. UX pitfalls are MEDIUM (inferred from known competitors). |
+| Stack | HIGH | Zustand persist middleware docs are comprehensive and authoritative. All recommendations use zero new dependencies — the existing versions are confirmed correct (zustand 5.0.10 fixed a persist state-inconsistency bug; project is at 5.0.11). Middleware ordering verified against official docs and community discussion. |
+| Features | MEDIUM-HIGH | Table stakes and differentiators are well-grounded in competitor analysis and user behavior patterns. Payment text format conventions are MEDIUM confidence — derived from community patterns and Splitwise/Venmo conventions, not an official specification. The recommended format is correct but exact wording is an opinionated choice. |
+| Architecture | HIGH | v1.0 codebase was directly inspected; all existing patterns (stores, hooks, utils) are known quantities. The two-store split and explicit save approach are recommended by Zustand docs and community guidance. Data flow diagrams are based on real codebase file structure. |
+| Pitfalls | HIGH | Branded type and localStorage pitfalls are directly derived from the existing codebase types (`src/engine/types.ts`) and MDN. Middleware ordering pitfall is confirmed by community discussion and official docs. Onboarding/history coordination pitfall is reasoned from the existing `useOnboarding` hook behavior. Payment text edge cases are derived from `computeSplit` engine output guarantees. |
 
-**Overall confidence: MEDIUM**
-
-The research is reliable for making build decisions. The primary uncertainty is version-specific npm details, not architectural or feature decisions. All architectural recommendations are based on stable, multi-year community consensus.
+**Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **Package version verification:** Run `npm info react version`, `npm info vite version`, `npm info tailwindcss version`, `npm info zustand version` before project initialization to confirm current latest versions.
-- **Tailwind v4 install flow:** Tailwind v4 changed from PostCSS to a Vite plugin. Verify the exact install steps against the official Tailwind v4 migration guide before scaffolding.
-- **Rounding surplus UX specification:** The PITFALLS research identifies that "round up each person" needs an explicit surplus-display rule. This must be resolved in requirements (Phase 3 planning) before implementation begins.
-- **Mobile device testing:** The PITFALLS research flags that `inputmode="decimal"` behavior on iOS Safari vs. Android Chrome must be verified on real devices — desktop dev tools simulate but do not replicate all behaviors.
+- **Payment text format is opinionated, not standardized:** The exact wording "Alice owes YOU $23.50" vs. "Hey Alice, your share is $23.50. Send to Bob!" is not defined by any spec. Research examined Splitwise and Venmo conventions and recommends a simple direct format. If user testing suggests different phrasing, the pure function is trivially modified with no architectural impact.
+
+- **50-entry history cap is a conservative estimate:** The cap prevents localStorage quota errors on iOS Safari (known ~2.5 MB eviction threshold). If real user data shows bills are much larger than modeled (e.g., large group corporate meals with 30 items and 20 people), the cap may need to be lowered. It is a single integer constant in `save()` — adjusting it requires no architectural change.
+
+- **`useAppEntry` hook design is not fully prescribed:** The research identifies the problem (onboarding + history timing race) and the solution shape (synchronous reads, explicit state machine) but leaves the exact React hook implementation to Phase 2 planning. This is a small design decision, not an architectural gap.
+
+- **Performance at edge of scale:** `computeSplit` called per `HistoryRow` is flagged as a potential issue at 200+ entries. At the 50-entry cap this is not a practical concern, but `useMemo` keyed on `split.id` should be applied from the start to avoid a visible regression if the cap is raised later.
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- IEEE 754 double-precision specification — floating-point arithmetic pitfalls (Pitfall 1, 2, 5)
-- Largest-remainder method — proportional cent distribution algorithm (Pitfall 5)
-- React documentation, unidirectional data flow — architecture patterns
-- Dan Abramov / React core team writing on derived state — stale state pitfalls (Pitfall 6)
-- ECMAScript specification, `Math.round` / `Math.ceil` / integer arithmetic — rounding patterns
+- [Zustand persist middleware — official docs](https://zustand.docs.pmnd.rs/middlewares/persist) — persist options, partialize, version, migrate, createJSONStorage API
+- [Zustand persisting store data — official docs](https://zustand.docs.pmnd.rs/integrations/persisting-store-data) — hydration behavior, localStorage vs async storage tradeoffs
+- [Zustand immer middleware — official docs](https://zustand.docs.pmnd.rs/integrations/immer-middleware) — middleware combination ordering
+- [MDN: Crypto.randomUUID()](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID) — browser support baseline (Chrome 92+, Safari 15.4+, Firefox 95+)
+- [MDN: Storage quotas and eviction criteria](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) — localStorage 5 MB limit, quota error behavior, Safari eviction
+- Existing v1.0 codebase inspection — `billStore.ts`, `engine/types.ts`, `AppShell.tsx`, `SummaryPanel.tsx`, `useUndoDelete.ts`, `formatSummary.ts` (direct file inspection of all integration points)
 
 ### Secondary (MEDIUM confidence)
-- Training knowledge: React 19, Vite 6, Tailwind CSS 4, Zustand 5 release notes (training cutoff August 2025)
-- Training knowledge: Splitwise, Tab, Settle Up, Dine & Split feature sets — competitor analysis
-- MDN documentation: `inputmode="decimal"`, `navigator.clipboard.writeText()` — integration gotchas
-- Zustand, Immer, Vitest documentation — stack pattern verification
+- [Zustand middleware priority discussion, pmndrs/zustand Discussion #2389](https://github.com/pmndrs/zustand/discussions/2389) — devtools outermost, immer innermost, community-verified
+- [Zustand immer + persist ordering, pmndrs/zustand Discussion #1143](https://github.com/pmndrs/zustand/discussions/1143) — middleware ordering failure mode documented
+- [Zustand function serialization bug, pmndrs/zustand Discussion #2556](https://github.com/pmndrs/zustand/discussions/2556) — persist without partialize keeps stale function references
+- [WebKit: Updates to Storage Policy](https://webkit.org/blog/14403/updates-to-storage-policy/) — iOS Safari 7-day script-writable storage cap
+- [Splitwise community feedback](https://feedback.splitwise.com/) — confirmed no draft-save behavior; settlement message format examples
+- [Venmo payment request format](https://help.venmo.com/cs/articles/payments-requests-faq-vhel149) — confirms note field and amount format conventions
 
 ### Tertiary (LOW confidence)
-- Specific patch versions for all packages — verify with `npm info <package> version` before install; training cutoff means these may have incremented
-- Competitor feature sets in live apps — not verified via live web access; use for directional decisions only, not marketing claims
+- Tricount offline/history behavior — based on marketing page, not implementation docs; used only for competitor feature matrix
 
 ---
-
-*Research completed: 2026-02-19*
+*Research completed: 2026-02-22*
 *Ready for roadmap: yes*
