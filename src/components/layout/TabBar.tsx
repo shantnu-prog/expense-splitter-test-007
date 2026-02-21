@@ -5,7 +5,7 @@
  * Fixed to bottom of screen, mobile-friendly with min-h-12 touch targets.
  */
 
-export type Tab = 'people' | 'items' | 'assignments';
+export type Tab = 'people' | 'items' | 'assignments' | 'split';
 
 interface TabBarProps {
   activeTab: Tab;
@@ -17,6 +17,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'people', label: 'People' },
   { id: 'items', label: 'Items' },
   { id: 'assignments', label: 'Assign' },
+  { id: 'split', label: 'Split' },
 ];
 
 export function TabBar({ activeTab, onTabChange, unassignedCount }: TabBarProps) {

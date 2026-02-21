@@ -16,6 +16,7 @@ import { useBillStore } from '../../store/billStore';
 import { PeoplePanel } from '../people/PeoplePanel';
 import { ItemsPanel } from '../items/ItemsPanel';
 import { AssignmentPanel } from '../assignments/AssignmentPanel';
+import { TipTaxPanel } from '../tip-tax/TipTaxPanel';
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<Tab>('people');
@@ -47,6 +48,9 @@ export function AppShell() {
         </div>
         <div className={activeTab === 'assignments' ? '' : 'hidden'}>
           <AssignmentPanel />
+        </div>
+        <div className={activeTab === 'split' ? '' : 'hidden'}>
+          <TipTaxPanel />
         </div>
       </main>
 
