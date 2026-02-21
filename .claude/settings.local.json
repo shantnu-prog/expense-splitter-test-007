@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npx vitest run:*)",
+      "Bash([ -f \"/Users/shantnupatil/Desktop/Personal/gsd-module-test/src/components/assignments/AssignmentRow.tsx\" ])",
+      "Bash([ -f \"/Users/shantnupatil/Desktop/Personal/gsd-module-test/src/components/assignments/AssignmentPanel.tsx\" ])",
+      "Bash([ -f \"/Users/shantnupatil/Desktop/Personal/gsd-module-test/src/components/assignments/AssignmentPanel.test.tsx\" ])",
+      "Bash([ -f \"/Users/shantnupatil/Desktop/Personal/gsd-module-test/.planning/phases/02-data-entry/02-03-SUMMARY.md\" ])",
+      "Bash(git -C /Users/shantnupatil/Desktop/Personal/gsd-module-test log --oneline --all)",
+      "Bash(node:*)",
+      "Bash(git -C /Users/shantnupatil/Desktop/Personal/gsd-module-test status --short)",
+      "Bash(git -C /Users/shantnupatil/Desktop/Personal/gsd-module-test add .planning/phases/02-data-entry/02-03-SUMMARY.md .planning/STATE.md .planning/ROADMAP.md .planning/REQUIREMENTS.md)",
+      "Bash(git -C:*)",
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite build:*)",
+      "Bash(pkill:*)"
+    ]
+  }
+}

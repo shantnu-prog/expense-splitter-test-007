@@ -20,14 +20,17 @@ describe('PeoplePanel', () => {
     expect(screen.getByText('Alice')).toBeInTheDocument();
   });
 
-  it('adds a person on Enter key', async () => {
+  it('does NOT add a person on Enter key (user must Tab to Add button)', async () => {
     const user = userEvent.setup();
     render(<PeoplePanel />);
 
     await user.type(screen.getByPlaceholderText('Person name'), 'Bob');
     await user.keyboard('{Enter}');
 
-    expect(screen.getByText('Bob')).toBeInTheDocument();
+    // Per locked design decision: Enter in text inputs does NOT submit.
+    // "Bob" should not have been added — only the empty-state prompt is visible.
+    expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+    expect(screen.getByText('No people added yet')).toBeInTheDocument();
   });
 
   it('shows error for empty name', async () => {
