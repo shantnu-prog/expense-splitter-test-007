@@ -23,9 +23,14 @@ import { PersonCard } from './PersonCard';
 import { RoundingFooter } from './RoundingFooter';
 import { Toast } from './Toast';
 import { PaymentSection } from './PaymentSection';
+import type { Tab } from '../layout/TabBar';
 
-export function SummaryPanel() {
-  const { getResult, people, tipCents, taxCents, config, currentSplitId, setCurrentSplitId } = useBillStore(
+interface SummaryPanelProps {
+  onTabChange: (tab: Tab) => void;
+}
+
+export function SummaryPanel({ onTabChange }: SummaryPanelProps) {
+  const { getResult, people, tipCents, taxCents, config, currentSplitId, setCurrentSplitId, payerId } = useBillStore(
     useShallow((s) => ({
       getResult: s.getResult,
       people: s.config.people,
@@ -34,8 +39,11 @@ export function SummaryPanel() {
       config: s.config,
       currentSplitId: s.currentSplitId,
       setCurrentSplitId: s.setCurrentSplitId,
+      payerId: s.payerId,
     }))
   );
+
+  const payerName = payerId ? people.find((p) => p.id === payerId)?.name : undefined;
 
   // Call getResult() ONCE per render (not in children — avoids multiple computeSplit() calls)
   const result = getResult();
@@ -133,6 +141,8 @@ export function SummaryPanel() {
                 person={person}
                 result={personResult}
                 onCopy={handlePersonCopy}
+                payerName={payerName}
+                isPayer={person.id === payerId}
               />
             );
           })}
@@ -144,7 +154,7 @@ export function SummaryPanel() {
         </div>
 
         {/* UPI Payment section */}
-        <PaymentSection people={people} results={successResult.results} />
+        <PaymentSection people={people} results={successResult.results} onTabChange={onTabChange} />
 
         {/* Copy all button — bottom of panel */}
         <div className="px-4 pt-4 pb-4 border-t border-gray-800 mt-4">

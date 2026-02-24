@@ -119,7 +119,7 @@ export function AppShell() {
         </div>
         <div className={activeTab === 'split' ? '' : 'hidden'}>
           <TipTaxPanel />
-          <SummaryPanel />
+          <SummaryPanel onTabChange={setActiveTab} />
         </div>
       </main>
 

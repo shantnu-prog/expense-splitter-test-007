@@ -18,9 +18,11 @@ interface PersonCardProps {
   person: Person;
   result: PersonResult;
   onCopy: (personId: PersonId) => void;
+  payerName?: string;
+  isPayer?: boolean;
 }
 
-export function PersonCard({ person, result, onCopy }: PersonCardProps) {
+export function PersonCard({ person, result, onCopy, payerName, isPayer }: PersonCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   function handleHeaderClick() {
@@ -48,8 +50,15 @@ export function PersonCard({ person, result, onCopy }: PersonCardProps) {
         onClick={handleHeaderClick}
         onKeyDown={handleHeaderKeyDown}
       >
-        {/* Left: person name */}
-        <span className="text-gray-100 font-medium">{person.name}</span>
+        {/* Left: person name + settlement direction */}
+        <div className="flex flex-col">
+          <span className="text-gray-100 font-medium">{person.name}</span>
+          {payerName && (
+            <span className="text-xs text-gray-400">
+              {isPayer ? 'Paid' : `owes ${payerName}`}
+            </span>
+          )}
+        </div>
 
         {/* Right: amount + copy icon + chevron */}
         <div className="flex items-center gap-2">

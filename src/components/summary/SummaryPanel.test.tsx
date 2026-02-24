@@ -46,6 +46,8 @@ function setupValidBill() {
   store.setTax(500, 'equal', false);
 }
 
+const mockOnTabChange = vi.fn();
+
 // ---------------------------------------------------------------------------
 // Setup
 // ---------------------------------------------------------------------------
@@ -61,7 +63,7 @@ beforeEach(() => {
 describe('SummaryPanel', () => {
   it('renders bill total at the top', () => {
     setupValidBill();
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     // Bill total label should appear
     expect(screen.getByText('Bill total')).toBeInTheDocument();
@@ -69,7 +71,7 @@ describe('SummaryPanel', () => {
 
   it('renders a card for each person', () => {
     setupValidBill();
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     // Names appear in both PersonCard and the payer select dropdown
     expect(screen.getAllByText('Alice').length).toBeGreaterThanOrEqual(1);
@@ -78,7 +80,7 @@ describe('SummaryPanel', () => {
 
   it('person card shows rounded total', () => {
     setupValidBill();
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     // Both Alice and Bob should have dollar amounts displayed
     // Alice: $19.00 food + $3.15 tip (half of 630) + $2.50 tax (half of 500) = $24.65
@@ -91,7 +93,7 @@ describe('SummaryPanel', () => {
   it('tapping card expands to show Food, Tip, Tax detail', async () => {
     const user = userEvent.setup();
     setupValidBill();
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     // Click Alice's card header (role="button" div with aria-label "Alice card")
     const aliceCard = screen.getByRole('button', { name: /Alice card/i });
@@ -106,7 +108,7 @@ describe('SummaryPanel', () => {
 
   it('rounding footer hidden when surplus is zero', () => {
     setupValidBill();
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     // With equal splits and round numbers, surplus should be zero
     // Verify no "rounding surplus" text appears
@@ -134,7 +136,7 @@ describe('SummaryPanel', () => {
     // This triggers rounding surplus
     store.setTip(100, 'equal', false);
 
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     // With rounding, surplus text should appear IF surplus > 0
     // Check the engine result to see if there's a surplus
@@ -152,14 +154,14 @@ describe('SummaryPanel', () => {
     store.addPerson('Alice');
     store.addItem('Burger', cents(1500), 1); // Not assigned to anyone
 
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     expect(screen.getByText(/need assignment before splitting/i)).toBeInTheDocument();
   });
 
   it('copy all button renders', () => {
     setupValidBill();
-    render(<SummaryPanel />);
+    render(<SummaryPanel onTabChange={mockOnTabChange} />);
 
     expect(screen.getByRole('button', { name: /copy summary/i })).toBeInTheDocument();
   });

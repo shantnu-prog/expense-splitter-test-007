@@ -5,19 +5,22 @@
  * Shown in the Split tab after person cards when the bill is computed.
  */
 
-import { useState } from 'react';
+import { useBillStore } from '../../store/billStore';
 import { buildUpiLink } from '../../utils/buildUpiLink';
 import { centsToDollars } from '../../utils/currency';
 import { cents } from '../../engine/types';
 import type { Person, PersonId, PersonResult } from '../../engine/types';
+import type { Tab } from '../layout/TabBar';
 
 interface PaymentSectionProps {
   people: Person[];
   results: PersonResult[];
+  onTabChange: (tab: Tab) => void;
 }
 
-export function PaymentSection({ people, results }: PaymentSectionProps) {
-  const [payerId, setPayerId] = useState<PersonId | ''>('');
+export function PaymentSection({ people, results, onTabChange }: PaymentSectionProps) {
+  const payerId = useBillStore((s) => s.payerId);
+  const setPayerId = useBillStore((s) => s.setPayerId);
 
   // Find the payer's Person object (for VPA and name)
   const payer = people.find((p) => p.id === payerId) ?? null;
@@ -45,8 +48,8 @@ export function PaymentSection({ people, results }: PaymentSectionProps) {
       <label className="block mb-4">
         <span className="text-gray-500 text-xs mb-1 block">Who paid the bill?</span>
         <select
-          value={payerId}
-          onChange={(e) => setPayerId(e.target.value as PersonId)}
+          value={payerId ?? ''}
+          onChange={(e) => setPayerId(e.target.value ? (e.target.value as PersonId) : null)}
           className="w-full min-h-12 px-4 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none text-base appearance-none"
         >
           <option value="">Select payer...</option>
@@ -94,7 +97,12 @@ export function PaymentSection({ people, results }: PaymentSectionProps) {
                     Request via UPI
                   </button>
                 ) : (
-                  <span className="ml-3 text-gray-500 text-xs shrink-0">No UPI ID</span>
+                  <button
+                    onClick={() => onTabChange('people')}
+                    className="ml-3 text-blue-400 text-xs shrink-0 underline"
+                  >
+                    Add UPI ID
+                  </button>
                 )}
               </div>
             );

@@ -42,6 +42,9 @@ export interface BillState {
   /** null = new unsaved split, non-null = editing a saved split */
   currentSplitId: SavedSplitId | null;
 
+  /** Who paid the bill — persisted for payer selection across tabs/refresh */
+  payerId: PersonId | null;
+
   // --- Actions ---
   addPerson: (name: string, contact?: { mobile?: string; upiVpa?: string }) => void;
   removePerson: (id: PersonId) => void;
@@ -63,6 +66,7 @@ export interface BillState {
   loadConfig: (config: BillConfig) => void;
   /** Set or clear the current split id (null = new unsaved split) */
   setCurrentSplitId: (id: SavedSplitId | null) => void;
+  setPayerId: (id: PersonId | null) => void;
 
   // --- Derived (computed on read, never stored in state) ---
   getResult: () => EngineResult;
@@ -98,6 +102,8 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
   },
 
   currentSplitId: null,
+
+  payerId: null,
 
   // --- People actions ---
 
@@ -222,6 +228,7 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
         tax: { amountCents: cents(0), method: 'equal', includeZeroFoodPeople: false },
       };
       state.currentSplitId = null;
+      state.payerId = null;
     });
   },
 
@@ -236,6 +243,12 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
   setCurrentSplitId(id: SavedSplitId | null) {
     set((state) => {
       state.currentSplitId = id;
+    });
+  },
+
+  setPayerId(id: PersonId | null) {
+    set((state) => {
+      state.payerId = id;
     });
   },
 
@@ -259,16 +272,17 @@ export const useBillStore = create<BillState>()(
       version: 2,
       // Only persist the active config — currentSplitId resets to null on refresh,
       // and action functions are not serializable.
-      partialize: (state) => ({ config: state.config }),
+      partialize: (state) => ({ config: state.config, payerId: state.payerId }),
       merge: (persisted, currentState) => {
         // persisted is the raw JSON.parse output from localStorage.
         // Branded types (Cents, PersonId, ItemId) have lost their brands.
         // Re-apply them through deserializeBillConfig before merging into store.
-        const p = persisted as { config?: unknown } | undefined;
+        const p = persisted as { config?: unknown; payerId?: unknown } | undefined;
         if (p?.config) {
           return {
             ...currentState,
             config: deserializeBillConfig(p.config),
+            payerId: (p.payerId as PersonId) ?? null,
           };
         }
         return { ...currentState };
