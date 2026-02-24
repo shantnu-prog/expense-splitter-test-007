@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 11 next (planned)
+**Current focus:** v1.2 Polish + PWA — Phase 11 in progress
 
 ## Current Position
 
-Phase: 11 of 12 (Summary & Payment UX) — planned, awaiting execution
-Plan: 2 plans (11-01, 11-02)
-Status: Phase planned — ready to execute
-Last activity: 2026-02-24 — Phase 11 planned (2 plans, 5 tasks)
+Phase: 11 of 12 (Summary & Payment UX) — in progress
+Plan: 11-02 complete (2 of 2 plans in phase)
+Status: Phase 11 plan 02 complete — custom tip live dollar preview
+Last activity: 2026-02-24 — Completed 11-02 (custom tip live dollar preview, 97s)
 
-Progress: [######░░░░] 60% (v1.2) — 3 of 7 plans complete
+Progress: [#######░░░] 71% (v1.2) — 5 of 7 plans complete
 
 ## Performance Metrics
 
@@ -54,6 +54,8 @@ Full decision logs archived in:
 - touch-action: pan-y via style prop for compositor-level scroll/swipe conflict handling
 - preventScrollOnSwipe: false — CSS handles scroll conflicts more reliably than JS
 - 50px delta, 500ms swipeDuration for conservative swipe thresholds
+- Inline IIFE for conditional preview rendering in TipSegmentedControl
+- pl-1 left padding on tip preview for visual alignment with input
 
 ### Pending Todos
 
@@ -70,8 +72,14 @@ None.
 - No error boundary — DEBT-03
 - UPI window.location.href is a no-op on desktop — DEBT-04
 
+## Performance Metrics (v1.2 plans)
+
+| Plan | Duration | Tasks | Key Files |
+|------|----------|-------|-----------|
+| 11-02 | 97s | 2/2 | TipSegmentedControl.tsx, TipTaxPanel.tsx |
+
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Phase 11 planned — 2 plans, 5 tasks, ready to execute
+Stopped at: Completed 11-02-PLAN.md (custom tip live dollar preview)
 Resume file: None
