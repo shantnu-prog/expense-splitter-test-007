@@ -6,7 +6,8 @@
  * When "Custom" is selected, reveals a percentage text input below the segments.
  */
 
-import { filterPriceInput } from '../../utils/currency';
+import { filterPriceInput, centsToDollars } from '../../utils/currency';
+import { cents } from '../../engine/types';
 
 type TipPreset = '15' | '18' | '20' | 'custom';
 
@@ -16,6 +17,7 @@ interface TipSegmentedControlProps {
   onPresetChange: (preset: TipPreset) => void;
   onCustomChange: (value: string) => void;
   onCustomBlur?: () => void;
+  subtotalCents?: number;
 }
 
 const PRESETS: { id: TipPreset; label: string }[] = [
@@ -31,6 +33,7 @@ export function TipSegmentedControl({
   onPresetChange,
   onCustomChange,
   onCustomBlur,
+  subtotalCents,
 }: TipSegmentedControlProps) {
   function handleCustomInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     // Allow digits and single decimal point only (no dollar sign)
@@ -85,18 +88,32 @@ export function TipSegmentedControl({
       </div>
 
       {selected === 'custom' && (
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            inputMode="decimal"
-            value={customValue}
-            onChange={handleCustomInputChange}
-            onBlur={handleCustomBlur}
-            placeholder="0"
-            aria-label="Custom tip percentage"
-            className="flex-1 min-h-12 px-3 py-2 text-base bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
-          />
-          <span className="text-sm text-gray-400">%</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              inputMode="decimal"
+              value={customValue}
+              onChange={handleCustomInputChange}
+              onBlur={handleCustomBlur}
+              placeholder="0"
+              aria-label="Custom tip percentage"
+              className="flex-1 min-h-12 px-3 py-2 text-base bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
+            />
+            <span className="text-sm text-gray-400">%</span>
+          </div>
+          {(() => {
+            const pct = parseFloat(customValue);
+            if (!isNaN(pct) && pct > 0 && subtotalCents && subtotalCents > 0) {
+              const tipCentsVal = Math.round((pct / 100) * subtotalCents);
+              return (
+                <p className="text-xs text-gray-500 pl-1">
+                  {customValue}% = ${centsToDollars(cents(tipCentsVal))}
+                </p>
+              );
+            }
+            return null;
+          })()}
         </div>
       )}
     </div>

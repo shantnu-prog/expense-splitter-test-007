@@ -129,6 +129,7 @@ export function TipTaxPanel() {
           onPresetChange={handlePresetChange}
           onCustomChange={handleCustomTipChange}
           onCustomBlur={handleCustomTipBlur}
+          subtotalCents={subtotal}
         />
 
         <SplitMethodToggle
