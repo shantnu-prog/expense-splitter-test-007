@@ -22,6 +22,7 @@ import { formatSummary, formatPersonSummary } from '../../utils/formatSummary';
 import { PersonCard } from './PersonCard';
 import { RoundingFooter } from './RoundingFooter';
 import { Toast } from './Toast';
+import { PaymentSection } from './PaymentSection';
 
 export function SummaryPanel() {
   const { getResult, people, tipCents, taxCents, config, currentSplitId, setCurrentSplitId } = useBillStore(
@@ -141,6 +142,9 @@ export function SummaryPanel() {
             <RoundingFooter surplusCents={successResult.totalSurplusCents} />
           )}
         </div>
+
+        {/* UPI Payment section */}
+        <PaymentSection people={people} results={successResult.results} />
 
         {/* Copy all button — bottom of panel */}
         <div className="px-4 pt-4 pb-4 border-t border-gray-800 mt-4">

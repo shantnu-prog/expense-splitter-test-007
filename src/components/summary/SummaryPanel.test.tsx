@@ -71,8 +71,9 @@ describe('SummaryPanel', () => {
     setupValidBill();
     render(<SummaryPanel />);
 
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByText('Bob')).toBeInTheDocument();
+    // Names appear in both PersonCard and the payer select dropdown
+    expect(screen.getAllByText('Alice').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Bob').length).toBeGreaterThanOrEqual(1);
   });
 
   it('person card shows rounded total', () => {
