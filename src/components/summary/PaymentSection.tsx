@@ -5,6 +5,7 @@
  * Shown in the Split tab after person cards when the bill is computed.
  */
 
+import { useState } from 'react';
 import { useBillStore } from '../../store/billStore';
 import { buildUpiLink } from '../../utils/buildUpiLink';
 import { centsToDollars } from '../../utils/currency';
@@ -21,6 +22,7 @@ interface PaymentSectionProps {
 export function PaymentSection({ people, results, onTabChange }: PaymentSectionProps) {
   const payerId = useBillStore((s) => s.payerId);
   const setPayerId = useBillStore((s) => s.setPayerId);
+  const [desktopUpiMsg, setDesktopUpiMsg] = useState(false);
 
   // Find the payer's Person object (for VPA and name)
   const payer = people.find((p) => p.id === payerId) ?? null;
@@ -35,7 +37,12 @@ export function PaymentSection({ people, results, onTabChange }: PaymentSectionP
     .filter((d) => d.person != null);
 
   function handleUpiClick(upiUrl: string) {
-    // Try to open the UPI link directly (works on mobile)
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobile) {
+      setDesktopUpiMsg(true);
+      setTimeout(() => setDesktopUpiMsg(false), 3000);
+      return;
+    }
     window.location.href = upiUrl;
   }
 
@@ -112,6 +119,13 @@ export function PaymentSection({ people, results, onTabChange }: PaymentSectionP
           {!payer.upiVpa?.trim() && debtors.length > 0 && (
             <p className="text-amber-400/80 text-xs text-center mt-1">
               Add your UPI ID in the People tab to enable payment requests
+            </p>
+          )}
+
+          {/* Desktop UPI message — shown for 3s when clicking UPI on non-mobile */}
+          {desktopUpiMsg && (
+            <p className="text-amber-400/80 text-xs text-center mt-2">
+              Open on your mobile device to use UPI payments
             </p>
           )}
         </div>
