@@ -43,9 +43,9 @@ export interface BillState {
   currentSplitId: SavedSplitId | null;
 
   // --- Actions ---
-  addPerson: (name: string) => void;
+  addPerson: (name: string, contact?: { mobile?: string; upiVpa?: string }) => void;
   removePerson: (id: PersonId) => void;
-  updatePerson: (id: PersonId, updates: Partial<Pick<Person, 'name'>>) => void;
+  updatePerson: (id: PersonId, updates: Partial<Pick<Person, 'name' | 'mobile' | 'upiVpa'>>) => void;
   restorePerson: (person: Person, assignments: Record<ItemId, PersonId[]>) => void;
 
   addItem: (label: string, priceCents: number, quantity?: number) => void;
@@ -101,10 +101,13 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
 
   // --- People actions ---
 
-  addPerson(name: string) {
+  addPerson(name: string, contact?: { mobile?: string; upiVpa?: string }) {
     set((state) => {
       const id = personId(crypto.randomUUID());
-      state.config.people.push({ id, name });
+      const person: Person = { id, name };
+      if (contact?.mobile) person.mobile = contact.mobile;
+      if (contact?.upiVpa) person.upiVpa = contact.upiVpa;
+      state.config.people.push(person);
     });
   },
 
@@ -123,7 +126,7 @@ const stateCreator = (set: SetFn, get: GetFn): BillState => ({
     });
   },
 
-  updatePerson(id: PersonId, updates: Partial<Pick<Person, 'name'>>) {
+  updatePerson(id: PersonId, updates: Partial<Pick<Person, 'name' | 'mobile' | 'upiVpa'>>) {
     set((state) => {
       const person = state.config.people.find((p) => p.id === id);
       if (person) {
@@ -253,7 +256,7 @@ export const useBillStore = create<BillState>()(
     {
       name: 'bill-splitter-active',
       storage: createJSONStorage(() => safeLocalStorage),
-      version: 1,
+      version: 2,
       // Only persist the active config — currentSplitId resets to null on refresh,
       // and action functions are not serializable.
       partialize: (state) => ({ config: state.config }),
@@ -270,7 +273,13 @@ export const useBillStore = create<BillState>()(
         }
         return { ...currentState };
       },
-      migrate(persisted: unknown, _fromVersion: number) {
+      migrate(persisted: unknown, fromVersion: number) {
+        if (fromVersion === 1) {
+          // v1 → v2: Person gains optional mobile and upiVpa fields
+          // No actual data transform needed — fields are optional (undefined by default)
+          // deserializeBillConfig handles missing fields gracefully
+          return persisted as Pick<BillState, 'config'>;
+        }
         return persisted as Pick<BillState, 'config'>;
       },
     }
