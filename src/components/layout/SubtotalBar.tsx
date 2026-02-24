@@ -12,9 +12,9 @@ export function SubtotalBar() {
   const subtotal = useSubtotal();
 
   return (
-    <div className="sticky top-0 z-10 bg-gray-900 border-b border-gray-700 px-4 py-2 flex items-center justify-between">
+    <div className="sticky top-0 z-10 glass-surface px-4 py-2 flex items-center justify-between">
       <span className="text-gray-400 text-sm">Subtotal</span>
-      <span className="text-white font-semibold text-lg tabular-nums">
+      <span className="text-white font-semibold text-lg tabular-nums tracking-tight">
         ${centsToDollars(subtotal)}
       </span>
     </div>

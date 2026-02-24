@@ -37,7 +37,7 @@ export function PersonCard({ person, result, onCopy, payerName, isPayer }: Perso
   }
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl mb-3">
+    <div className="glass-card rounded-xl mb-3">
       {/* Header row — tappable to expand/collapse.
           Using a div with role="button" so the nested CopyButton (real <button>)
           does not create an invalid button-in-button structure. */}
@@ -94,7 +94,7 @@ export function PersonCard({ person, result, onCopy, payerName, isPayer }: Perso
         style={{ gridTemplateRows: expanded ? '1fr' : '0fr' }}
       >
         <div className="overflow-hidden">
-          <div className="px-4 pb-3 pt-1 space-y-1">
+          <div className="px-4 pb-3 pt-2 space-y-1 border-t border-white/5">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Food</span>
               <span className="text-gray-200 tabular-nums">
