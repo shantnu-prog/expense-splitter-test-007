@@ -17,7 +17,7 @@ interface TabBarProps {
   unassignedCount: number;
 }
 
-const TABS: { id: Tab; label: string }[] = [
+export const TABS: { id: Tab; label: string }[] = [
   { id: 'history', label: 'History' },
   { id: 'people', label: 'People' },
   { id: 'items', label: 'Items' },
@@ -86,8 +86,10 @@ export function TabBar({ activeTab, onTabChange, unassignedCount }: TabBarProps)
               {showBadge && (
                 <span
                   aria-label={`${unassignedCount} unassigned`}
-                  className="absolute top-2 right-1/3 w-2 h-2 bg-amber-400 rounded-full"
-                />
+                  className="absolute -top-0.5 left-1/2 ml-1 min-w-5 h-5 flex items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white"
+                >
+                  {unassignedCount}
+                </span>
               )}
             </button>
           );

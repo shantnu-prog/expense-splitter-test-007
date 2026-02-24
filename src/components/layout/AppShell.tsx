@@ -11,9 +11,10 @@
  */
 
 import { useState } from 'react';
+import { useSwipeable } from 'react-swipeable';
 import { useShallow } from 'zustand/react/shallow';
 import { SubtotalBar } from './SubtotalBar';
-import { TabBar, type Tab } from './TabBar';
+import { TabBar, TABS, type Tab } from './TabBar';
 import { OnboardingScreen } from './OnboardingScreen';
 import { useBillStore } from '../../store/billStore';
 import { useHistoryStore } from '../../store/historyStore';
@@ -54,6 +55,27 @@ export function AppShell() {
     ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(new Date(editingSplit.savedAt))
     : '';
 
+  // Swipe left/right to navigate between tabs (mobile touch gestures)
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: (eventData) => {
+      const tag = (eventData.event.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const idx = TABS.findIndex((t) => t.id === activeTab);
+      if (idx < TABS.length - 1) setActiveTab(TABS[idx + 1].id);
+    },
+    onSwipedRight: (eventData) => {
+      const tag = (eventData.event.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const idx = TABS.findIndex((t) => t.id === activeTab);
+      if (idx > 0) setActiveTab(TABS[idx - 1].id);
+    },
+    delta: 50,
+    swipeDuration: 500,
+    preventScrollOnSwipe: false,
+    trackTouch: true,
+    trackMouse: false,
+  });
+
   // Gate first-time users with onboarding splash
   if (showOnboarding) return <OnboardingScreen onDismiss={dismissOnboarding} />;
 
@@ -77,7 +99,11 @@ export function AppShell() {
       )}
 
       {/* Main content area — padding-bottom for the fixed tab bar */}
-      <main className="flex-1 overflow-y-auto pb-16 overscroll-contain">
+      <main
+        {...swipeHandlers}
+        className="flex-1 overflow-y-auto pb-16 overscroll-contain"
+        style={{ touchAction: 'pan-y' }}
+      >
         {/* All panels kept mounted; CSS hidden class preserves scroll/input state */}
         <div className={activeTab === 'history' ? '' : 'hidden'}>
           <HistoryPanel onTabChange={setActiveTab} />
