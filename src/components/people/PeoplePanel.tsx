@@ -157,6 +157,8 @@ export function PeoplePanel() {
             <PersonRow
               key={person.id}
               name={person.name}
+              mobile={person.mobile}
+              upiVpa={person.upiVpa}
               onRemove={() => handleRemove(person.id)}
             />
           ))}
