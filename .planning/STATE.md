@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 10 next
+**Current focus:** v1.2 Polish + PWA — Phase 11 next
 
 ## Current Position
 
-Phase: 10 of 12 (Swipe Navigation & Tab UX) — planned, awaiting execution
-Plan: 1 plan (10-01)
-Status: Phase planned — ready to execute
-Last activity: 2026-02-24 — Phase 10 planned (1 plan, 3 tasks)
+Phase: 10 of 12 (Swipe Navigation & Tab UX) — complete
+Plan: 1/1 complete (10-01)
+Status: Phase 10 complete — ready for Phase 11
+Last activity: 2026-02-24 — Phase 10 executed (1 plan, 3 tasks, 89s)
 
-Progress: [####░░░░░░] 33% (v1.2) — 2 of 5 plans complete
+Progress: [######░░░░] 60% (v1.2) — 3 of 5 plans complete
 
 ## Performance Metrics
 
@@ -51,6 +51,9 @@ Full decision logs archived in:
 - includeAssets: ['**/*'] for complete offline precaching
 - Named export ReloadPrompt with bottom-20 positioning above TabBar
 - gray-800 toast on gray-950 background for dark theme visual contrast
+- touch-action: pan-y via style prop for compositor-level scroll/swipe conflict handling
+- preventScrollOnSwipe: false — CSS handles scroll conflicts more reliably than JS
+- 50px delta, 500ms swipeDuration for conservative swipe thresholds
 
 ### Pending Todos
 
@@ -70,5 +73,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Phase 10 planned — 1 plan, 3 tasks, ready to execute
+Stopped at: Completed 10-01-PLAN.md — Phase 10 done, ready for Phase 11
 Resume file: None

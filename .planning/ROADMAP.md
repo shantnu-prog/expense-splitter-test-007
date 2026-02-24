@@ -33,7 +33,7 @@
 **Milestone Goal:** Make the app feel like a native mobile app — installable, offline-capable, with swipe gestures, polished summary UX, and visual consistency
 
 - [x] **Phase 9: PWA & Offline** — Service worker, manifest, icons, install prompt, update prompt (2 plans)
-- [ ] **Phase 10: Swipe Navigation & Tab UX** — Horizontal swipe gestures between tabs, unassigned items badge (1 plan)
+- [x] **Phase 10: Swipe Navigation & Tab UX** — Horizontal swipe gestures between tabs, unassigned items badge (1 plan)
 - [ ] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence
 - [ ] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes
 
@@ -66,7 +66,7 @@ Plans:
   5. When items exist but some are unassigned, the Assign tab shows a red/amber count badge (e.g., "3") in the tab bar
 **Plans**: 1 plan
 Plans:
-- [ ] 10-01-PLAN.md — Swipe navigation and unassigned count badge
+- [x] 10-01-PLAN.md — Swipe navigation and unassigned count badge
 
 ### Phase 11: Summary & Payment UX
 **Goal**: The Split tab clearly shows who owes whom, makes UPI links more discoverable, gives live feedback on custom tip, and preserves payer selection across tab switches
@@ -105,6 +105,6 @@ Plans:
 | 7. History List + Edit Mode | v1.1 | 2/2 | Complete | 2026-02-24 |
 | 8. UPI Payments | v1.1 | 2/2 | Complete | 2026-02-24 |
 | 9. PWA & Offline | v1.2 | 2/2 | Complete | 2026-02-24 |
-| 10. Swipe Navigation & Tab UX | v1.2 | 0/1 | Planned | - |
+| 10. Swipe Navigation & Tab UX | v1.2 | 1/1 | Complete | 2026-02-24 |
 | 11. Summary & Payment UX | v1.2 | - | Pending | - |
 | 12. Visual Polish & Tech Debt | v1.2 | - | Pending | - |

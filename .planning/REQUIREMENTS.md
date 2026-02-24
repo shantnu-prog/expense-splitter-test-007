@@ -16,10 +16,10 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 
 ### Mobile UX
 
-- [ ] **UX-01**: User can swipe left/right to navigate between tabs (instant switch, no animation)
-- [ ] **UX-02**: Swiping on input fields, textareas, or selects does NOT trigger tab changes
-- [ ] **UX-03**: Swiping does not interfere with vertical scrolling inside panels
-- [ ] **UX-04**: Unassigned items count is visible as a badge on the Assign tab in the tab bar
+- [x] **UX-01**: User can swipe left/right to navigate between tabs (instant switch, no animation)
+- [x] **UX-02**: Swiping on input fields, textareas, or selects does NOT trigger tab changes
+- [x] **UX-03**: Swiping does not interfere with vertical scrolling inside panels
+- [x] **UX-04**: Unassigned items count is visible as a badge on the Assign tab in the tab bar
 
 ### Summary & Payment UX
 
@@ -62,10 +62,10 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 | PWA-02 | Phase 9 | Complete (09-01 + 09-02) |
 | PWA-03 | Phase 9 | Complete (09-02) |
 | PWA-04 | Phase 9 | Complete (09-01) |
-| UX-01 | Phase 10 | Pending |
-| UX-02 | Phase 10 | Pending |
-| UX-03 | Phase 10 | Pending |
-| UX-04 | Phase 10 | Pending |
+| UX-01 | Phase 10 | Complete (10-01) |
+| UX-02 | Phase 10 | Complete (10-01) |
+| UX-03 | Phase 10 | Complete (10-01) |
+| UX-04 | Phase 10 | Complete (10-01) |
 | SUM-01 | Phase 11 | Pending |
 | SUM-02 | Phase 11 | Pending |
 | SUM-03 | Phase 11 | Pending |
