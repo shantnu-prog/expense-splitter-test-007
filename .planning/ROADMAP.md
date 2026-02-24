@@ -32,7 +32,7 @@
 
 **Milestone Goal:** Make the app feel like a native mobile app — installable, offline-capable, with swipe gestures, polished summary UX, and visual consistency
 
-- [ ] **Phase 9: PWA & Offline** — Service worker, manifest, icons, install prompt, update prompt (2 plans)
+- [x] **Phase 9: PWA & Offline** — Service worker, manifest, icons, install prompt, update prompt (2 plans)
 - [ ] **Phase 10: Swipe Navigation & Tab UX** — Horizontal swipe gestures between tabs, unassigned items badge
 - [ ] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence
 - [ ] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes
@@ -52,7 +52,7 @@
 **Plans**: 2 plans
 Plans:
 - [x] 09-01-PLAN.md — PWA plugin setup, manifest, and icons (Wave 1)
-- [ ] 09-02-PLAN.md — ReloadPrompt component and App integration (Wave 2)
+- [x] 09-02-PLAN.md — ReloadPrompt component and App integration (Wave 2)
 
 ### Phase 10: Swipe Navigation & Tab UX
 **Goal**: Users can swipe left/right to navigate between tabs on mobile, and see an unassigned items count badge on the Assign tab
@@ -101,7 +101,7 @@ Plans:
 | 6. Persistence Foundation | v1.1 | 2/2 | Complete | 2026-02-21 |
 | 7. History List + Edit Mode | v1.1 | 2/2 | Complete | 2026-02-24 |
 | 8. UPI Payments | v1.1 | 2/2 | Complete | 2026-02-24 |
-| 9. PWA & Offline | v1.2 | 1/2 | In Progress | - |
+| 9. PWA & Offline | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 10. Swipe Navigation & Tab UX | v1.2 | - | Pending | - |
 | 11. Summary & Payment UX | v1.2 | - | Pending | - |
 | 12. Visual Polish & Tech Debt | v1.2 | - | Pending | - |
