@@ -164,6 +164,14 @@ export function PeoplePanel() {
 
           {people.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400" aria-hidden="true">
+                  <circle cx="9" cy="7" r="3" />
+                  <path d="M2 20c0-3.3 3.1-6 7-6s7 2.7 7 6" />
+                  <circle cx="17" cy="8" r="2.5" />
+                  <path d="M17.5 14.5c2.3.4 4.5 2.2 4.5 5" />
+                </svg>
+              </div>
               <p className="text-gray-400 text-base">No people added yet</p>
               <p className="text-gray-500 text-sm">Add everyone splitting this bill</p>
               <button

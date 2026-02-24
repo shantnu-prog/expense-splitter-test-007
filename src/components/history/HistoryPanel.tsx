@@ -48,6 +48,12 @@ export function HistoryPanel({ onTabChange }: HistoryPanelProps) {
     return (
       <>
         <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+          <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-green-400" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
           <p className="text-gray-400 text-base mb-2">No saved splits yet</p>
           <p className="text-gray-500 text-sm mb-6">
             Split a bill and save it to see it here
