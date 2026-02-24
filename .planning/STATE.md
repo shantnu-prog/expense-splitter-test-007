@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 12 next (planned)
+**Current focus:** v1.2 Polish + PWA — Phase 12 in progress
 
 ## Current Position
 
-Phase: 12 of 12 (Visual Polish & Tech Debt) — planned, awaiting execution
-Plan: 2 plans (12-01, 12-02)
-Status: Phase planned — ready to execute
-Last activity: 2026-02-24 — Phase 12 planned (2 plans, 6 tasks)
+Phase: 12 of 12 (Visual Polish & Tech Debt) — in progress
+Plan: 12-01 complete, 12-02 remaining
+Status: Executing — 12-01 done, 12-02 next
+Last activity: 2026-02-24 — 12-01 complete (2 tasks: tap targets, copy feedback)
 
-Progress: [########░░] 86% (v1.2) — 7 of 9 plans complete
+Progress: [#########░] 89% (v1.2) — 8 of 9 plans complete
 
 ## Performance Metrics
 
@@ -44,6 +44,11 @@ Full decision logs archived in:
 - touch-action: pan-y on main element to prevent scroll/swipe conflicts
 - 50px delta threshold for swipe detection (conservative, avoids accidental triggers)
 - Payer state to move from component useState to billStore for persistence across tab switches
+
+**v1.2 decisions (from 12-01 execution):**
+- min-h-10 (40px) standard for secondary/icon buttons; min-h-12 (48px) for primary actions
+- 1500ms transient copied state for CopyButton feedback — long enough to notice, short enough to not block repeated copies
+- Dynamic className (not conditional full-button rendering) for copied state — stable DOM, no layout shift
 
 **v1.2 decisions (from execution):**
 - registerType: 'prompt' to prevent unexpected SW reloads mid-bill-split
@@ -81,9 +86,10 @@ None.
 |------|----------|-------|-----------|
 | 11-01 | 167s | 3/3 | billStore.ts, PaymentSection.tsx, PersonCard.tsx, SummaryPanel.tsx |
 | 11-02 | 97s | 2/2 | TipSegmentedControl.tsx, TipTaxPanel.tsx |
+| 12-01 | 5min | 2/2 | CopyButton.tsx, PeoplePanel.tsx, AppShell.tsx |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Phase 12 planned — 2 plans, 6 tasks, ready to execute
+Stopped at: Completed 12-01-PLAN.md — tap targets and CopyButton feedback done, 12-02 next
 Resume file: None

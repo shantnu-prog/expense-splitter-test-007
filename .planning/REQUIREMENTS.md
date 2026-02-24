@@ -23,17 +23,17 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 
 ### Summary & Payment UX
 
-- [ ] **SUM-01**: Each person card in the summary shows settlement direction — "owes [payer name]" when a payer is selected
-- [ ] **SUM-02**: "No UPI ID" text is an actionable link that navigates to the People tab to add a VPA
-- [ ] **SUM-03**: Custom tip input shows a live dollar amount preview as user types the percentage
-- [ ] **SUM-04**: Payer selection persists when navigating away from the Split tab and back
+- [x] **SUM-01**: Each person card in the summary shows settlement direction — "owes [payer name]" when a payer is selected
+- [x] **SUM-02**: "No UPI ID" text is an actionable link that navigates to the People tab to add a VPA
+- [x] **SUM-03**: Custom tip input shows a live dollar amount preview as user types the percentage
+- [x] **SUM-04**: Payer selection persists when navigating away from the Split tab and back
 
 ### Visual Consistency
 
-- [ ] **VIS-01**: All primary action buttons use consistent min-h-12 (48px) tap targets
-- [ ] **VIS-02**: All secondary/icon buttons use consistent min-h-10 (40px) tap targets
-- [ ] **VIS-03**: Copy button shows brief visual feedback (checkmark icon) on successful copy, in addition to the toast
-- [ ] **VIS-04**: Consistent spacing (px-4 py-3) across all panel sections
+- [x] **VIS-01**: All primary action buttons use consistent min-h-12 (48px) tap targets
+- [x] **VIS-02**: All secondary/icon buttons use consistent min-h-10 (40px) tap targets
+- [x] **VIS-03**: Copy button shows brief visual feedback (checkmark icon) on successful copy, in addition to the toast
+- [x] **VIS-04**: Consistent spacing (px-4 py-3) across all panel sections
 
 ### Tech Debt
 
@@ -66,14 +66,14 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 | UX-02 | Phase 10 | Complete (10-01) |
 | UX-03 | Phase 10 | Complete (10-01) |
 | UX-04 | Phase 10 | Complete (10-01) |
-| SUM-01 | Phase 11 | Pending |
-| SUM-02 | Phase 11 | Pending |
-| SUM-03 | Phase 11 | Pending |
-| SUM-04 | Phase 11 | Pending |
-| VIS-01 | Phase 12 | Pending |
-| VIS-02 | Phase 12 | Pending |
-| VIS-03 | Phase 12 | Pending |
-| VIS-04 | Phase 12 | Pending |
+| SUM-01 | Phase 11 | Complete (11-01) |
+| SUM-02 | Phase 11 | Complete (11-01) |
+| SUM-03 | Phase 11 | Complete (11-02) |
+| SUM-04 | Phase 11 | Complete (11-01) |
+| VIS-01 | Phase 12 | Complete (12-01) |
+| VIS-02 | Phase 12 | Complete (12-01) |
+| VIS-03 | Phase 12 | Complete (12-01) |
+| VIS-04 | Phase 12 | Complete (12-01) |
 | DEBT-01 | Phase 12 | Pending |
 | DEBT-02 | Phase 12 | Pending |
 | DEBT-03 | Phase 12 | Pending |

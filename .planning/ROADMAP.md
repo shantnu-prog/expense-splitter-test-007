@@ -34,7 +34,7 @@
 
 - [x] **Phase 9: PWA & Offline** — Service worker, manifest, icons, install prompt, update prompt (2 plans)
 - [x] **Phase 10: Swipe Navigation & Tab UX** — Horizontal swipe gestures between tabs, unassigned items badge (1 plan)
-- [ ] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence (2 plans)
+- [x] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence (2 plans)
 - [ ] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes (2 plans)
 
 ## Phase Details
@@ -79,8 +79,8 @@ Plans:
   4. User selects a payer, switches to Items tab, switches back to Split tab — payer selection is still there
 **Plans**: 2 plans
 Plans:
-- [ ] 11-01-PLAN.md — Payer store, settlement direction, and UPI navigation (SUM-01, SUM-02, SUM-04)
-- [ ] 11-02-PLAN.md — Custom tip live dollar preview (SUM-03)
+- [x] 11-01-PLAN.md — Payer store, settlement direction, and UPI navigation (SUM-01, SUM-02, SUM-04)
+- [x] 11-02-PLAN.md — Custom tip live dollar preview (SUM-03)
 
 ### Phase 12: Visual Polish & Tech Debt
 **Goal**: Consistent button sizes, spacing, and interactive feedback across the app; all known tech debt resolved; error boundary prevents white-screen crashes
@@ -97,7 +97,7 @@ Plans:
   8. Tapping "Request via UPI" on desktop shows a message like "Open on mobile to use UPI" instead of silently failing
 **Plans**: 2 plans
 Plans:
-- [ ] 12-01-PLAN.md — Button tap targets, copy feedback, and spacing verification (VIS-01, VIS-02, VIS-03, VIS-04)
+- [x] 12-01-PLAN.md — Button tap targets, copy feedback, and spacing verification (VIS-01, VIS-02, VIS-03, VIS-04)
 - [ ] 12-02-PLAN.md — Tech debt cleanup (DEBT-01, DEBT-02, DEBT-03, DEBT-04)
 
 ## Progress
@@ -114,5 +114,5 @@ Plans:
 | 8. UPI Payments | v1.1 | 2/2 | Complete | 2026-02-24 |
 | 9. PWA & Offline | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 10. Swipe Navigation & Tab UX | v1.2 | 1/1 | Complete | 2026-02-24 |
-| 11. Summary & Payment UX | v1.2 | 0/2 | Planned | - |
-| 12. Visual Polish & Tech Debt | v1.2 | 0/2 | Planned | - |
+| 11. Summary & Payment UX | v1.2 | 2/2 | Complete | 2026-02-24 |
+| 12. Visual Polish & Tech Debt | v1.2 | 1/2 | In Progress | - |
