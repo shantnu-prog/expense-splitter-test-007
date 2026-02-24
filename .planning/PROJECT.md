@@ -62,7 +62,19 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 
 ### Active
 
-(None — planning next milestone)
+#### v1.3 UI Redesign
+- [ ] Enhanced dark theme with glassmorphism (glass cards, glass surfaces)
+- [ ] Inter font from Google Fonts CDN
+- [ ] Gradient primary buttons (blue-600 → violet-600)
+- [ ] SVG icons in TabBar above labels
+- [ ] Press-scale micro-interactions on interactive elements
+- [ ] Input focus glow effects
+- [ ] Fade-in animations
+- [ ] Redesigned OnboardingScreen with gradient hero
+- [ ] Redesigned ErrorBoundary with gradient hero
+- [ ] Enhanced empty states with decorative icons
+- [ ] Glass toast/undo notifications
+- [ ] Polished summary panel with larger bill total
 
 ### Out of Scope
 
@@ -104,5 +116,18 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 | ReloadPrompt outside ErrorBoundary | PWA updates still work even if main app crashes | Good |
 | prevSubtotalRef pattern for useEffect | Skips mount fire without eslint-disable comments | Good |
 
+## Current Milestone: v1.3 UI Redesign
+
+**Goal:** Transform the visually plain app into a polished, consumer-grade dark-themed PWA with glassmorphism, gradients, micro-interactions, and Inter font — inspired by Apple's design principles.
+
+**Target changes:**
+- Design system: Inter font, glass-card/glass-surface utilities, gradient-primary, press-scale, animate-fade-in
+- Layout: SVG tab icons, glass TabBar/SubtotalBar, taller tab bar
+- Cards: Glass card treatment for all row components (PersonRow, ItemRow, HistoryRow, AssignmentRow, PersonCard)
+- Inputs: bg-white/5 with focus:ring glow, gradient tip/tax toggles
+- Buttons: Gradient primary, glass secondary, press-scale micro-interactions
+- Screens: Redesigned OnboardingScreen, ErrorBoundary, and empty states with gradient heroes
+- Polish: Glass toasts, slide-up animations, larger bill total, tracking-tight amounts
+
 ---
-*Last updated: 2026-02-24 after v1.2 milestone*
+*Last updated: 2026-02-24 after v1.3 milestone started*
