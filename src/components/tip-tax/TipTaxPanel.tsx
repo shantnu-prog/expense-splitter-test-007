@@ -8,7 +8,7 @@
  * - Auto-recalculates tip when subtotal changes (percentage recalculation)
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useBillStore } from '../../store/billStore';
 import { useSubtotal } from '../../hooks/useSubtotal';
@@ -22,6 +22,7 @@ type TaxMode = 'dollar' | 'percent';
 
 export function TipTaxPanel() {
   const subtotal = useSubtotal();
+  const prevSubtotalRef = useRef(subtotal);
 
   const { setTip, setTax, tipConfig, taxConfig } = useBillStore(
     useShallow((s) => ({
@@ -107,14 +108,12 @@ export function TipTaxPanel() {
   // after items are added/removed.
 
   useEffect(() => {
-    if (tipPreset === 'custom') {
-      const tipCents = computeTipCents('custom', customTipPct);
-      setTip(tipCents, tipConfig.method, false);
-    } else {
-      const tipCents = computeTipCents(tipPreset, customTipPct);
-      setTip(tipCents, tipConfig.method, false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Skip initial mount — only recalculate when subtotal actually changes
+    if (prevSubtotalRef.current === subtotal) return;
+    prevSubtotalRef.current = subtotal;
+
+    const tipCents = computeTipCents(tipPreset, customTipPct);
+    setTip(tipCents, tipConfig.method, false);
   }, [subtotal]);
 
   return (
