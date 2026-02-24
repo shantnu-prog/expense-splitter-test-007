@@ -24,7 +24,7 @@
 
 - [x] **Phase 6: Persistence Foundation** - Build the localStorage layer that all v1.1 features depend on (completed 2026-02-21)
 - [x] **Phase 7: History List + Edit Mode** - History UI, re-open/edit flow, and coordinated app entry (completed 2026-02-24)
-- [ ] **Phase 8: UPI Payments** - Contact details on people, payer selector, UPI deep links for payment requests (1/2 plans complete)
+- [x] **Phase 8: UPI Payments** - Contact details on people, payer selector, UPI deep links for payment requests (completed 2026-02-24)
 
 ## Phase Details
 
@@ -70,7 +70,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 08-01-PLAN.md — Person contact details (mobile + UPI VPA), schema migration v1→v2 (Wave 1) — completed 2026-02-24
-- [ ] 08-02-PLAN.md — Payer selector, UPI deep link utility, PaymentSection component (Wave 2)
+- [x] 08-02-PLAN.md — Payer selector, UPI deep link utility, PaymentSection component (Wave 2) — completed 2026-02-24
 
 ## Progress
 
@@ -83,4 +83,4 @@ Plans:
 | 5. Build Fix | v1.0 | 1/1 | Complete | 2026-02-22 |
 | 6. Persistence Foundation | 2/2 | Complete   | 2026-02-21 | - |
 | 7. History List + Edit Mode | v1.1 | 2/2 | Complete | 2026-02-24 |
-| 8. UPI Payments | v1.1 | 1/2 | In Progress | - |
+| 8. UPI Payments | v1.1 | 2/2 | Complete | 2026-02-24 |

@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 ## Current Position
 
 Phase: 8 of 8 (UPI Payments)
-Plan: 1 of 2 — 08-01 complete, 08-02 next
-Status: Phase in progress — 1 of 2 plans complete
-Last activity: 2026-02-24 — 08-01 complete: Person type extended with mobile/upiVpa, PeoplePanel contact inputs, PersonRow display, schema v2 migration
+Plan: 2 of 2 — 08-01 complete, 08-02 complete
+Status: Phase complete — all plans done, v1.1 milestone complete
+Last activity: 2026-02-24 — 08-02 complete: buildUpiLink utility, PaymentSection payer selector + UPI deep link buttons, SummaryPanel updated
 
-Progress: [███░░░░░░░] 30% (v1.1)
+Progress: [██████████] 100% (v1.1)
 
 ## Performance Metrics
 
@@ -65,6 +65,12 @@ Full v1.0 decision log in PROJECT.md Key Decisions table and milestones/v1.0-ROA
 - Persist version 2 migration is a no-op — optional fields default to undefined, deserializeBillConfig handles absent fields gracefully
 - Contact fields toggle resets to hidden on successful addPerson — clean UX for next person entry
 
+**08-02 decisions:**
+- Payer state stays local (component `useState`): must NOT enter bill store or history — display preference only
+- buildUpiLink returns null (not throws) for invalid inputs — callers use null check to conditionally render UPI button or fallback
+- window.location.href for UPI deep link — standard mobile approach; no-op on desktop (no broken behavior)
+- Green button color for 'Request via UPI' to distinguish from blue action buttons
+
 ### Pending Todos
 
 None.
@@ -78,5 +84,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 08-01-PLAN.md — Person model with contact fields, billStore v2, PeoplePanel contact inputs, PersonRow display
+Stopped at: Completed 08-02-PLAN.md — buildUpiLink utility, PaymentSection component, SummaryPanel updated — v1.1 complete
 Resume file: None
