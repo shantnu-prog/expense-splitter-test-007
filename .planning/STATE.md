@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.3 UI Redesign — Phase 14: Layout + Glass System
+**Current focus:** v1.3 UI Redesign — Phase 15: Component Redesign
 
 ## Current Position
 
-Phase: 14 — Layout + Glass System
-Plan: 02
-Status: Phase 14 complete (2/2 plans complete)
-Last activity: 2026-02-24 — Plan 02 complete (SubtotalBar Glass + PersonCard Glass)
+Phase: 15 — Component Redesign
+Plan: —
+Status: Phase 14 complete, ready to plan Phase 15
+Last activity: 2026-02-24 — Phase 14 executed (2 plans, 5 tasks)
 
 ```
 v1.3 Progress: [██████████░░░░░░░░░░] 2/4 phases
@@ -80,5 +80,5 @@ None — all known tech debt resolved in v1.2 Phase 12.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 14-02-PLAN.md (SubtotalBar Glass + PersonCard Glass)
-Resume with: Plan Phase 15 (Component Redesign)
+Stopped at: Phase 14 complete — ready to plan Phase 15
+Resume with: `/gsd:plan-phase 15`
