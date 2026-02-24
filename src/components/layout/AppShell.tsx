@@ -58,7 +58,7 @@ export function AppShell() {
   if (showOnboarding) return <OnboardingScreen onDismiss={dismissOnboarding} />;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-screen">
       {activeTab !== 'history' && <SubtotalBar />}
 
       {/* Editing indicator — visible on editor tabs when editing a saved split */}

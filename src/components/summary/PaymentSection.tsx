@@ -65,9 +65,9 @@ export function PaymentSection({ people, results }: PaymentSectionProps) {
 
           {debtors.map(({ person, result }) => {
             const amount = centsToDollars(cents(result.roundedTotalCents));
-            const upiUrl = payer.upiVpa
+            const upiUrl = payer.upiVpa?.trim()
               ? buildUpiLink({
-                  payeeVpa: payer.upiVpa,
+                  payeeVpa: payer.upiVpa.trim(),
                   payeeName: payer.name,
                   amountCents: result.roundedTotalCents,
                   note: 'Bill split via SplitCheck',
@@ -99,7 +99,7 @@ export function PaymentSection({ people, results }: PaymentSectionProps) {
           })}
 
           {/* Hint when payer has no VPA */}
-          {!payer.upiVpa && debtors.length > 0 && (
+          {!payer.upiVpa?.trim() && debtors.length > 0 && (
             <p className="text-amber-400/80 text-xs text-center mt-1">
               Add your UPI ID in the People tab to enable payment requests
             </p>
