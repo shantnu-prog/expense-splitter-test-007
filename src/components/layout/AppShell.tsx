@@ -33,10 +33,11 @@ export function AppShell() {
   const { showOnboarding, dismissOnboarding } = useOnboarding();
 
   // Count unassigned items for the badge on Assign tab
-  const { items, assignments } = useBillStore(
+  const { items, assignments, currentSplitId } = useBillStore(
     useShallow((s) => ({
       items: s.config.items,
       assignments: s.config.assignments,
+      currentSplitId: s.currentSplitId,
     }))
   );
 
@@ -44,12 +45,36 @@ export function AppShell() {
     (item) => !assignments[item.id] || assignments[item.id].length === 0
   ).length;
 
+  // Editing indicator: find the matching saved split for date display
+  const editingSplit = useHistoryStore((s) =>
+    currentSplitId ? s.splits.find((sp) => sp.id === currentSplitId) : undefined
+  );
+
+  const editingDate = editingSplit
+    ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(new Date(editingSplit.savedAt))
+    : '';
+
   // Gate first-time users with onboarding splash
   if (showOnboarding) return <OnboardingScreen onDismiss={dismissOnboarding} />;
 
   return (
     <div className="flex flex-col min-h-screen">
       {activeTab !== 'history' && <SubtotalBar />}
+
+      {/* Editing indicator — visible on editor tabs when editing a saved split */}
+      {currentSplitId && activeTab !== 'history' && (
+        <div className="px-4 py-2 bg-blue-950/50 border-b border-blue-900/50 flex items-center justify-between">
+          <span className="text-blue-300 text-xs font-medium">
+            Editing saved split{editingDate ? ` from ${editingDate}` : ''}
+          </span>
+          <button
+            onClick={() => setActiveTab('history')}
+            className="text-blue-400 text-xs font-medium min-h-8 px-2"
+          >
+            Back to History
+          </button>
+        </div>
+      )}
 
       {/* Main content area — padding-bottom for the fixed tab bar */}
       <main className="flex-1 overflow-y-auto pb-16 overscroll-contain">

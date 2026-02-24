@@ -42,7 +42,7 @@ export function SummaryPanel() {
   // Unified toast state — only one toast at a time (covers both copy and save)
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
-  const toastTimer = useRef<ReturnType<typeof setTimeout>>();
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   function showToast(message: string) {
     if (toastTimer.current) clearTimeout(toastTimer.current);
