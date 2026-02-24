@@ -38,16 +38,16 @@ Requirements for v1.3 UI Redesign. Each maps to roadmap phases.
 
 ### Inputs
 
-- [ ] **INPT-01**: All text inputs use bg-white/5 border-white/10 with focus:ring-2 focus:ring-blue-500/30
-- [ ] **INPT-02**: TipSegmentedControl uses glass container with gradient-primary active segment
-- [ ] **INPT-03**: TaxInput uses glass toggle container
-- [ ] **INPT-04**: SplitMethodToggle uses glass toggle container
+- [x] **INPT-01**: All text inputs use bg-white/5 border-white/10 with focus:ring-2 focus:ring-blue-500/30
+- [x] **INPT-02**: TipSegmentedControl uses glass container with gradient-primary active segment
+- [x] **INPT-03**: TaxInput uses glass toggle container
+- [x] **INPT-04**: SplitMethodToggle uses glass toggle container
 
 ### Buttons
 
-- [ ] **BTTN-01**: All primary buttons use gradient-primary with press-scale and shadow
-- [ ] **BTTN-02**: All secondary buttons use bg-white/5 border-white/10 with press-scale
-- [ ] **BTTN-03**: CopyButton uses press-scale animation
+- [x] **BTTN-01**: All primary buttons use gradient-primary with press-scale and shadow
+- [x] **BTTN-02**: All secondary buttons use bg-white/5 border-white/10 with press-scale
+- [x] **BTTN-03**: CopyButton uses press-scale animation
 
 ### Screens
 
@@ -103,13 +103,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CARD-05 | Phase 14 | Complete |
 | CARD-06 | Phase 15 | Complete |
 | CARD-07 | Phase 15 | Complete |
-| INPT-01 | Phase 15 | Pending |
-| INPT-02 | Phase 15 | Pending |
-| INPT-03 | Phase 15 | Pending |
-| INPT-04 | Phase 15 | Pending |
-| BTTN-01 | Phase 15 | Pending |
-| BTTN-02 | Phase 15 | Pending |
-| BTTN-03 | Phase 15 | Pending |
+| INPT-01 | Phase 15 | Complete |
+| INPT-02 | Phase 15 | Complete |
+| INPT-03 | Phase 15 | Complete |
+| INPT-04 | Phase 15 | Complete |
+| BTTN-01 | Phase 15 | Complete |
+| BTTN-02 | Phase 15 | Complete |
+| BTTN-03 | Phase 15 | Complete |
 | SCRN-01 | Phase 16 | Pending |
 | SCRN-02 | Phase 16 | Pending |
 | SCRN-03 | Phase 16 | Pending |

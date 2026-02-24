@@ -43,7 +43,7 @@
 
 - [x] **Phase 13: Design System Foundation** — Inter font, design tokens, utility classes, motion reset, AppShell tint (2/2 plans) — completed 2026-02-24
 - [x] **Phase 14: Layout + Glass System** — TabBar SVG icons, glass TabBar/SubtotalBar, PersonCard glass prototype (2/2 plans) -- completed 2026-02-24
-- [ ] **Phase 15: Component Redesign** — All row cards, all inputs, all buttons with glass/gradient/press-scale (2 plans)
+- [x] **Phase 15: Component Redesign** — All row cards, all inputs, all buttons with glass/gradient/press-scale (2/2 plans) -- completed 2026-02-24
 - [ ] **Phase 16: Screens + Polish** — Onboarding, ErrorBoundary, empty states, toasts, animations, SummaryPanel
 
 ## Phase Details
@@ -118,5 +118,5 @@
 | 12. Visual Polish & Tech Debt | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 13. Design System Foundation | v1.3 | 2/2 | Complete | 2026-02-24 |
 | 14. Layout + Glass System | v1.3 | 2/2 | Complete | 2026-02-24 |
-| 15. Component Redesign | v1.3 | 1/2 | In Progress | — |
+| 15. Component Redesign | v1.3 | 2/2 | Complete | 2026-02-24 |
 | 16. Screens + Polish | v1.3 | 0/? | Not started | — |
