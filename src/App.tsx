@@ -1,10 +1,13 @@
 import { AppShell } from './components/layout/AppShell';
 import { ReloadPrompt } from './components/ReloadPrompt';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 function App() {
   return (
     <>
-      <AppShell />
+      <ErrorBoundary>
+        <AppShell />
+      </ErrorBoundary>
       <ReloadPrompt />
     </>
   );
