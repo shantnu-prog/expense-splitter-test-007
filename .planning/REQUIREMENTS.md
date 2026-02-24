@@ -20,8 +20,8 @@ Requirements for v1.3 UI Redesign. Each maps to roadmap phases.
 
 ### Layout
 
-- [ ] **LYOT-01**: TabBar displays SVG icons above labels for all 5 tabs
-- [ ] **LYOT-02**: TabBar uses glass-surface styling with increased min-h-14
+- [x] **LYOT-01**: TabBar displays SVG icons above labels for all 5 tabs
+- [x] **LYOT-02**: TabBar uses glass-surface styling with increased min-h-14
 - [ ] **LYOT-03**: SubtotalBar uses glass-surface styling with tracking-tight amount
 - [ ] **LYOT-04**: AppShell has subtle background gradient tint for glass blur effect
 - [ ] **LYOT-05**: AppShell bottom padding accommodates taller tab bar (pb-20)
@@ -91,8 +91,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DSYS-06 | Phase 13 | Pending |
 | DSYS-07 | Phase 13 | Pending |
 | DSYS-08 | Phase 13 | Pending |
-| LYOT-01 | Phase 14 | Pending |
-| LYOT-02 | Phase 14 | Pending |
+| LYOT-01 | Phase 14 | Complete |
+| LYOT-02 | Phase 14 | Complete |
 | LYOT-03 | Phase 14 | Pending |
 | LYOT-04 | Phase 13 | Pending |
 | LYOT-05 | Phase 13 | Pending |

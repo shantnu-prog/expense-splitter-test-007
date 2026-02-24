@@ -42,7 +42,7 @@
 ### v1.3 UI Redesign (Phases 13-16)
 
 - [x] **Phase 13: Design System Foundation** — Inter font, design tokens, utility classes, motion reset, AppShell tint (2/2 plans) — completed 2026-02-24
-- [ ] **Phase 14: Layout + Glass System** — TabBar SVG icons, glass TabBar/SubtotalBar, PersonCard glass prototype
+- [ ] **Phase 14: Layout + Glass System** — TabBar SVG icons, glass TabBar/SubtotalBar, PersonCard glass prototype (2 plans)
 - [ ] **Phase 15: Component Redesign** — All row cards, all inputs, all buttons with glass/gradient/press-scale
 - [ ] **Phase 16: Screens + Polish** — Onboarding, ErrorBoundary, empty states, toasts, animations, SummaryPanel
 
@@ -71,7 +71,9 @@
   2. TabBar and SubtotalBar have a frosted-glass appearance (visible blur and translucency) that persists while scrolling content behind them
   3. PersonCard (summary panel) renders as a glass card with rounded corners, no flat background — the blur effect is visible against content scrolling behind it
   4. On Chrome DevTools 4x CPU throttle, scrolling through a populated summary list maintains at least 50 FPS — no visible jank from the blur budget
-**Plans**: TBD
+**Plans**:
+  - Plan 01: TabBar SVG Icons + Glass Styling (2 tasks: inline SVG icons for 5 tabs, glass-surface + min-h-14)
+  - Plan 02: SubtotalBar Glass + PersonCard Glass (3 tasks: SubtotalBar glass-surface + tracking-tight, PersonCard glass-card + drawer border, performance exit gate)
 
 ### Phase 15: Component Redesign
 **Goal**: Every interactive element in the app — row cards, inputs, and buttons — uses the new glass, gradient, and press-scale design language established in Phase 14
@@ -113,6 +115,6 @@
 | 11. Summary & Payment UX | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 12. Visual Polish & Tech Debt | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 13. Design System Foundation | v1.3 | 2/2 | Complete | 2026-02-24 |
-| 14. Layout + Glass System | v1.3 | 0/? | Not started | — |
+| 14. Layout + Glass System | v1.3 | 1/2 | In Progress | — |
 | 15. Component Redesign | v1.3 | 0/? | Not started | — |
 | 16. Screens + Polish | v1.3 | 0/? | Not started | — |
