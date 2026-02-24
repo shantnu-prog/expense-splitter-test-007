@@ -15,16 +15,18 @@ Requirements for the Persistence + Sharing release. Each maps to roadmap phases.
 
 ### History
 
-- [ ] **HIST-01**: App shows a history list when saved splits exist, with date, people names, and total per entry
-- [ ] **HIST-02**: User can tap a saved split to re-open and edit it
-- [ ] **HIST-03**: User can start a new split from the history screen
-- [ ] **HIST-04**: User can delete a saved split with undo within 5 seconds
+- [x] **HIST-01**: App shows a history list when saved splits exist, with date, people names, and total per entry
+- [x] **HIST-02**: User can tap a saved split to re-open and edit it
+- [x] **HIST-03**: User can start a new split from the history screen
+- [x] **HIST-04**: User can delete a saved split with undo within 5 seconds
 
-### Payment Text
+### Payment & UPI
 
-- [ ] **PAY-01**: User can select who paid the bill from the people list
-- [ ] **PAY-02**: Payment text shows "Alice owes YOU $X.XX" for each non-payer person
-- [ ] **PAY-03**: User can copy payment text to clipboard with a single tap
+- [x] **PAY-01**: User can enter mobile number and UPI VPA (e.g., alice@ybl) when adding a person
+- [x] **PAY-02**: Contact details (mobile, UPI VPA) are saved with the person and persist across sessions
+- [ ] **PAY-03**: User can select who paid the bill from the people list
+- [ ] **PAY-04**: Each non-payer person has a "Request via UPI" button that opens a upi:// deep link with pre-filled amount
+- [ ] **PAY-05**: UPI deep link opens PhonePe/GPay/Paytm with correct payee VPA, amount in INR, and transaction note
 
 ## Future Requirements
 
@@ -47,7 +49,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Feature | Reason |
 |---------|--------|
 | Receipt photo upload / OCR | Complexity too high, 60-80% accuracy on restaurant receipts |
-| Venmo/Zelle deep links | Platform-specific integration; plain text sufficient |
+| Venmo/Zelle deep links | Replaced by UPI deep links for Indian market |
 | User accounts / authentication | Not needed; client-side only |
 | Cloud sync across devices | Requires backend; breaks client-side constraint |
 | IndexedDB storage | localStorage sufficient for bill data volume (~5-15 KB per split) |
@@ -62,19 +64,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERS-01 | Phase 6 | Complete |
 | PERS-02 | Phase 6 | Complete |
 | PERS-03 | Phase 6 | Complete |
-| HIST-01 | Phase 7 | Pending |
-| HIST-02 | Phase 7 | Pending |
-| HIST-03 | Phase 7 | Pending |
-| HIST-04 | Phase 7 | Pending |
-| PAY-01 | Phase 8 | Pending |
-| PAY-02 | Phase 8 | Pending |
+| HIST-01 | Phase 7 | Complete |
+| HIST-02 | Phase 7 | Complete |
+| HIST-03 | Phase 7 | Complete |
+| HIST-04 | Phase 7 | Complete |
+| PAY-01 | Phase 8 | Complete |
+| PAY-02 | Phase 8 | Complete |
 | PAY-03 | Phase 8 | Pending |
+| PAY-04 | Phase 8 | Pending |
+| PAY-05 | Phase 8 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 10 total
-- Mapped to phases: 10
+- v1.1 requirements: 12 total
+- Mapped to phases: 12
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-22*
-*Last updated: 2026-02-22 after roadmap creation (v1.1 phases 6-8)*
+*Last updated: 2026-02-24 after 08-01 execution (PAY-01, PAY-02 complete)*

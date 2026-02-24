@@ -24,7 +24,7 @@
 
 - [x] **Phase 6: Persistence Foundation** - Build the localStorage layer that all v1.1 features depend on (completed 2026-02-21)
 - [x] **Phase 7: History List + Edit Mode** - History UI, re-open/edit flow, and coordinated app entry (completed 2026-02-24)
-- [ ] **Phase 8: Payment Text** - Payer-directed payment text generation and copy to clipboard
+- [ ] **Phase 8: UPI Payments** - Contact details on people, payer selector, UPI deep links for payment requests (1/2 plans complete)
 
 ## Phase Details
 
@@ -57,16 +57,20 @@ Plans:
 - [ ] 07-01-PLAN.md — History panel, tab integration, delete with undo (Wave 1)
 - [ ] 07-02-PLAN.md — App entry coordination, load/edit flow, save/update button (Wave 2)
 
-### Phase 8: Payment Text
-**Goal**: Users can select who paid the bill and instantly copy payer-directed payment text ("Alice owes YOU $23.50") ready to paste into any payment app
+### Phase 8: UPI Payments
+**Goal**: Users can store contact details (mobile + UPI VPA) per person, select who paid the bill, and request payment from each person via UPI deep links that open PhonePe/GPay/Paytm with pre-filled amount
 **Depends on**: Phase 7
-**Requirements**: PAY-01, PAY-02, PAY-03
+**Requirements**: PAY-01, PAY-02, PAY-03, PAY-04, PAY-05
 **Success Criteria** (what must be TRUE):
-  1. User taps a person's name in the payer selector and the payment text updates immediately to show "X owes YOU $Y.YY" for every other person
-  2. Payment text correctly excludes the selected payer — they do not appear in the output owing themselves money
-  3. User taps "Copy" and the formatted payment text is on their clipboard, ready to paste into Venmo, Zelle, or any chat app
-  4. Payment text handles edge cases cleanly: single-person bill shows "Everyone is settled up." rather than empty output; zero-amount persons are excluded from the text
-**Plans**: TBD
+  1. User can enter mobile number and UPI VPA when adding a person; these fields persist across page refresh and in saved history
+  2. User selects who paid the bill; the payer is excluded from payment requests
+  3. Each non-payer person with a UPI VPA has a "Request via UPI" button that opens a upi:// deep link with correct payee VPA, amount in INR, and transaction note
+  4. Persons without a UPI VPA show a fallback (amount text only, no broken link)
+  5. Contact details survive schema migration — old saved splits without contact fields load without crashing
+**Plans**: 2 plans
+Plans:
+- [x] 08-01-PLAN.md — Person contact details (mobile + UPI VPA), schema migration v1→v2 (Wave 1) — completed 2026-02-24
+- [ ] 08-02-PLAN.md — Payer selector, UPI deep link utility, PaymentSection component (Wave 2)
 
 ## Progress
 
@@ -79,4 +83,4 @@ Plans:
 | 5. Build Fix | v1.0 | 1/1 | Complete | 2026-02-22 |
 | 6. Persistence Foundation | 2/2 | Complete   | 2026-02-21 | - |
 | 7. History List + Edit Mode | v1.1 | 2/2 | Complete | 2026-02-24 |
-| 8. Payment Text | v1.1 | 0/? | Not started | - |
+| 8. UPI Payments | v1.1 | 1/2 | In Progress | - |

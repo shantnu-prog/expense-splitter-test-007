@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-22)
 
 ## Current Position
 
-Phase: 7 of 8 (History List + Edit Mode)
-Plan: 2 of 2 complete in current phase
-Status: Phase complete — verified
-Last activity: 2026-02-24 — Phase 7 verified: 10/10 must-haves, all 5 success criteria met
+Phase: 8 of 8 (UPI Payments)
+Plan: 1 of 2 — 08-01 complete, 08-02 next
+Status: Phase in progress — 1 of 2 plans complete
+Last activity: 2026-02-24 — 08-01 complete: Person type extended with mobile/upiVpa, PeoplePanel contact inputs, PersonRow display, schema v2 migration
 
-Progress: [██░░░░░░░░] 20% (v1.1)
+Progress: [███░░░░░░░] 30% (v1.1)
 
 ## Performance Metrics
 
@@ -59,6 +59,12 @@ Full v1.0 decision log in PROJECT.md Key Decisions table and milestones/v1.0-ROA
 - createHistoryStore() factory uses immer(creator) without persist — mirrors createBillStore() pattern for test isolation
 - restore() is idempotent: skip if id already present, re-sort by savedAt DESC
 
+**08-01 decisions:**
+- Conditional spread in deserializeBillConfig for optional fields: `...(p.mobile !== undefined && { mobile: p.mobile })` — avoids undefined key pollution
+- addPerson takes optional contact as second parameter — existing call sites unchanged
+- Persist version 2 migration is a no-op — optional fields default to undefined, deserializeBillConfig handles absent fields gracefully
+- Contact fields toggle resets to hidden on successful addPerson — clean UX for next person entry
+
 ### Pending Todos
 
 None.
@@ -72,5 +78,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Phase 7 complete and verified — ready for Phase 8 (Payment Text)
+Stopped at: Completed 08-01-PLAN.md — Person model with contact fields, billStore v2, PeoplePanel contact inputs, PersonRow display
 Resume file: None
