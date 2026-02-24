@@ -23,7 +23,7 @@
 **Milestone Goal:** Save splits to localStorage with history, and generate payer-directed payment text for Venmo/Zelle
 
 - [x] **Phase 6: Persistence Foundation** - Build the localStorage layer that all v1.1 features depend on (completed 2026-02-21)
-- [ ] **Phase 7: History List + Edit Mode** - History UI, re-open/edit flow, and coordinated app entry
+- [x] **Phase 7: History List + Edit Mode** - History UI, re-open/edit flow, and coordinated app entry (completed 2026-02-24)
 - [ ] **Phase 8: Payment Text** - Payer-directed payment text generation and copy to clipboard
 
 ## Phase Details
@@ -52,7 +52,10 @@ Plans:
   3. User on the history screen taps "New Split" and gets a clean, empty bill editor
   4. User deletes a saved split and sees an undo toast; tapping undo within 5 seconds restores the entry exactly as it was
   5. User with no saved history sees an appropriate empty state rather than a blank screen
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 07-01-PLAN.md — History panel, tab integration, delete with undo (Wave 1)
+- [ ] 07-02-PLAN.md — App entry coordination, load/edit flow, save/update button (Wave 2)
 
 ### Phase 8: Payment Text
 **Goal**: Users can select who paid the bill and instantly copy payer-directed payment text ("Alice owes YOU $23.50") ready to paste into any payment app
@@ -75,5 +78,5 @@ Plans:
 | 4. Polish | v1.0 | 2/2 | Complete | 2026-02-21 |
 | 5. Build Fix | v1.0 | 1/1 | Complete | 2026-02-22 |
 | 6. Persistence Foundation | 2/2 | Complete   | 2026-02-21 | - |
-| 7. History List + Edit Mode | v1.1 | 0/? | Not started | - |
+| 7. History List + Edit Mode | v1.1 | 2/2 | Complete | 2026-02-24 |
 | 8. Payment Text | v1.1 | 0/? | Not started | - |

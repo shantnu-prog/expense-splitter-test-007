@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.1 Persistence + Sharing — Phase 6 in progress
+**Current focus:** v1.1 Persistence + Sharing — Phase 7 complete, Phase 8 next
 
 ## Current Position
 
-Phase: 6 of 8 (Persistence Foundation)
+Phase: 7 of 8 (History List + Edit Mode)
 Plan: 2 of 2 complete in current phase
-Status: Phase complete
-Last activity: 2026-02-22 — 06-02 complete: useHistoryStore + billStore persist middleware with branded type rehydration
+Status: Phase complete — verified
+Last activity: 2026-02-24 — Phase 7 verified: 10/10 must-haves, all 5 success criteria met
 
 Progress: [██░░░░░░░░] 20% (v1.1)
 
@@ -71,6 +71,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-22
-Stopped at: Completed 06-02-PLAN.md — useHistoryStore + billStore persist middleware with branded type rehydration
+Last session: 2026-02-24
+Stopped at: Phase 7 complete and verified — ready for Phase 8 (Payment Text)
 Resume file: None

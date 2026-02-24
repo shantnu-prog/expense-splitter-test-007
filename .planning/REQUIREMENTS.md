@@ -9,8 +9,8 @@ Requirements for the Persistence + Sharing release. Each maps to roadmap phases.
 
 ### Persistence
 
-- [ ] **PERS-01**: Current bill auto-saves to localStorage and survives page refresh
-- [ ] **PERS-02**: User can save a completed bill to history with a single tap
+- [x] **PERS-01**: Current bill auto-saves to localStorage and survives page refresh
+- [x] **PERS-02**: User can save a completed bill to history with a single tap
 - [x] **PERS-03**: Stored data migrates gracefully when the app schema changes (schema versioning)
 
 ### History
@@ -59,8 +59,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PERS-01 | Phase 6 | Pending |
-| PERS-02 | Phase 6 | Pending |
+| PERS-01 | Phase 6 | Complete |
+| PERS-02 | Phase 6 | Complete |
 | PERS-03 | Phase 6 | Complete |
 | HIST-01 | Phase 7 | Pending |
 | HIST-02 | Phase 7 | Pending |
