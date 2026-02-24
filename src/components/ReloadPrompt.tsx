@@ -17,7 +17,7 @@ export function ReloadPrompt() {
   return (
     <div
       role="alert"
-      className="fixed bottom-20 left-4 right-4 z-50 flex items-center justify-between rounded-lg bg-gray-800 px-4 py-3 shadow-lg"
+      className="fixed bottom-20 left-4 right-4 z-50 flex items-center justify-between rounded-xl glass-card px-4 py-3 shadow-lg"
     >
       <p className="text-sm text-white">
         {offlineReady ? 'App ready to work offline.' : 'New version available.'}
@@ -26,14 +26,14 @@ export function ReloadPrompt() {
         {needRefresh && (
           <button
             onClick={() => updateServiceWorker(true)}
-            className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+            className="rounded-lg gradient-primary px-3 py-1.5 text-sm font-medium text-white press-scale"
           >
             Update
           </button>
         )}
         <button
           onClick={close}
-          className="rounded border border-gray-600 px-3 py-1.5 text-sm text-gray-300"
+          className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-gray-300 press-scale"
         >
           Close
         </button>
