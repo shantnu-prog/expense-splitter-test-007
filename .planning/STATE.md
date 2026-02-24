@@ -5,16 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 12 COMPLETE
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 12 of 12 (Visual Polish & Tech Debt) — complete
-Plan: All plans complete (12-01, 12-02)
-Status: Phase 12 complete — v1.2 fully shipped
-Last activity: 2026-02-24 — 12-02 complete (4 tasks: branded types, useEffect fix, ErrorBoundary, UPI desktop)
-
-Progress: [##########] 100% (v1.2) — 9 of 9 plans complete
+Phase: All phases complete (12 of 12)
+Status: v1.2 shipped — milestone archived
+Last activity: 2026-02-24 — v1.2 milestone completed and archived
 
 ## Performance Metrics
 
@@ -29,6 +26,13 @@ Progress: [##########] 100% (v1.2) — 9 of 9 plans complete
 - Build: 244 KB (76 KB gzip)
 - Timeline: 3 days (2026-02-22 to 2026-02-24)
 
+**v1.2 (shipped 2026-02-24):**
+- 4 phases, 7 plans, 17 tasks
+- 16 files changed, 300 insertions, 87 deletions
+- Build: 254 KB (79 KB gzip)
+- Tests: 144 passing across 12 files
+- LOC: 6,120 total
+
 ## Accumulated Context
 
 ### Decisions
@@ -36,38 +40,8 @@ Progress: [##########] 100% (v1.2) — 9 of 9 plans complete
 Full decision logs archived in:
 - milestones/v1.0-ROADMAP.md
 - milestones/v1.1-ROADMAP.md
+- milestones/v1.2-ROADMAP.md
 - PROJECT.md Key Decisions table
-
-**v1.2 decisions (from research):**
-- vite-plugin-pwa v1.2.0 for PWA setup (generateSW strategy, registerType: 'prompt')
-- react-swipeable v7.0.2 for swipe gestures (~3KB, React 19 compatible)
-- touch-action: pan-y on main element to prevent scroll/swipe conflicts
-- 50px delta threshold for swipe detection (conservative, avoids accidental triggers)
-- Payer state to move from component useState to billStore for persistence across tab switches
-
-**v1.2 decisions (from 12-01 execution):**
-- min-h-10 (40px) standard for secondary/icon buttons; min-h-12 (48px) for primary actions
-- 1500ms transient copied state for CopyButton feedback — long enough to notice, short enough to not block repeated copies
-- Dynamic className (not conditional full-button rendering) for copied state — stable DOM, no layout shift
-
-**v1.2 decisions (from execution):**
-- registerType: 'prompt' to prevent unexpected SW reloads mid-bill-split
-- Programmatic PNG icon generation (raw zlib+CRC32) to avoid canvas/sharp dependency
-- includeAssets: ['**/*'] for complete offline precaching
-- Named export ReloadPrompt with bottom-20 positioning above TabBar
-- gray-800 toast on gray-950 background for dark theme visual contrast
-- touch-action: pan-y via style prop for compositor-level scroll/swipe conflict handling
-- preventScrollOnSwipe: false — CSS handles scroll conflicts more reliably than JS
-- 50px delta, 500ms swipeDuration for conservative swipe thresholds
-- Inline IIFE for conditional preview rendering in TipSegmentedControl
-- pl-1 left padding on tip preview for visual alignment with input
-- payerId type PersonId | null (not PersonId | '') for clean store semantics
-- payerId persisted via partialize alongside config for cross-tab/refresh persistence
-- Tab type import from TabBar for strict TypeScript onTabChange typing
-- [Phase 12-visual-polish-tech-debt]: Used branded type casts via Object.entries typed as [ItemId, PersonId[]][] to eliminate as-any at undo restore boundary
-- [Phase 12-visual-polish-tech-debt]: prevSubtotalRef pattern to skip useEffect on mount — initialized to current value, early-return when unchanged
-- [Phase 12-visual-polish-tech-debt]: ReloadPrompt kept outside ErrorBoundary so PWA SW updates work even when AppShell crashes
-- [Phase 12-visual-polish-tech-debt]: Mobile UPI gating via /Android|iPhone|iPad|iPod/i regex on navigator.userAgent — desktop shows 3s toast
 
 ### Pending Todos
 
@@ -79,23 +53,10 @@ None.
 
 ### Tech Debt
 
-All tech debt resolved in Phase 12:
-- DEBT-01: as-any casts eliminated via branded types
-- DEBT-02: useEffect mount firing fixed via prevSubtotalRef
-- DEBT-03: ErrorBoundary added with Reload App fallback
-- DEBT-04: Desktop UPI now shows actionable toast message
-
-## Performance Metrics (v1.2 plans)
-
-| Plan | Duration | Tasks | Key Files |
-|------|----------|-------|-----------|
-| 11-01 | 167s | 3/3 | billStore.ts, PaymentSection.tsx, PersonCard.tsx, SummaryPanel.tsx |
-| 11-02 | 97s | 2/2 | TipSegmentedControl.tsx, TipTaxPanel.tsx |
-| 12-01 | 5min | 2/2 | CopyButton.tsx, PeoplePanel.tsx, AppShell.tsx |
-| Phase 12-visual-polish-tech-debt P02 | 172s | 4 tasks | 7 files |
+None — all known tech debt resolved in v1.2 Phase 12.
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 12-02-PLAN.md — all tech debt resolved, Phase 12 and v1.2 complete
+Stopped at: v1.2 milestone archived — ready for next milestone
 Resume file: None

@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A web app that splits a restaurant bill fairly among friends, handling shared appetizers, different tip preferences, and tax calculations. Users add people, enter line items with prices, assign who had what (including shared items), configure tip and tax with split method, and get a clear per-person breakdown they can copy and share.
+A web app that splits a restaurant bill fairly among friends, handling shared appetizers, different tip preferences, and tax calculations. Installable as a PWA with full offline support, swipe navigation, and UPI payment integration for the Indian market.
 
 ## Core Value
 
@@ -10,29 +10,37 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 
 ## Current State
 
-**Shipped:** v1.1 (2026-02-24)
-**Tech stack:** React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5 (with immer + persist), Vitest 4
+**Shipped:** v1.2 (2026-02-24)
+**Tech stack:** React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5 (with immer + persist), Vitest 4, vite-plugin-pwa 1.2.0, react-swipeable 7.0.2
 **Tests:** 144 passing across 12 test files
-**Build:** 244 KB (76 KB gzip)
-**Architecture:** Client-side only, dark theme, mobile-first with bottom tab navigation, integer-cent arithmetic (Cents branded type), largest-remainder distribution
+**Build:** 254 KB (79 KB gzip), PWA with 11 precache entries
+**LOC:** 6,120 (TypeScript/TSX)
+**Architecture:** Client-side only PWA, dark theme, mobile-first with bottom tab navigation + swipe gestures, integer-cent arithmetic (Cents branded type), largest-remainder distribution
 
 ### What's Shipped
 
-**v1.0 MVP** (2026-02-22): 5 phases, 11 plans, 17 requirements
+**v1.0 MVP** (2026-02-22): 5 phases, 11 plans
 - Integer-cent calculation engine with largest-remainder distribution
 - Mobile-first data entry: people, items, item-centric assignments
 - Tip/tax configuration (presets + custom, equal/proportional split)
 - Per-person summary with copy-to-clipboard
 - Keyboard navigation, undo toast, onboarding screen, empty states
 
-**v1.1 Persistence + Sharing** (2026-02-24): 3 phases, 6 plans, 12 requirements
+**v1.1 Persistence + Sharing** (2026-02-24): 3 phases, 6 plans
 - localStorage persistence with branded-type deserialization and schema versioning
 - History list on app open, save/load/edit/delete with undo
 - UPI payment: person contact fields, payer selector, upi:// deep link requests
 
+**v1.2 Polish + PWA** (2026-02-24): 4 phases, 7 plans
+- PWA: installable, offline-capable, user-controlled update prompt
+- Swipe navigation between tabs with input exclusion
+- Summary UX: settlement direction, actionable UPI links, tip preview, payer persistence
+- Visual consistency: button tap targets, copy checkmark feedback, consistent spacing
+- Tech debt: branded types, useEffect fix, ErrorBoundary, desktop UPI guard
+
 ## Requirements
 
-### Validated (v1.0 + v1.1)
+### Validated
 
 - Add/remove people by name — v1.0
 - Add/edit/remove items with prices and quantity — v1.0
@@ -46,14 +54,15 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 - Save splits to localStorage, survives page refresh — v1.1
 - History list on app open with save/load/edit/delete flow — v1.1
 - UPI payment requests via deep links — v1.1
+- PWA: installable, offline-capable, update prompt — v1.2
+- Swipe gestures for tab navigation — v1.2
+- Summary UX: settlement direction, actionable UPI links, tip preview, payer persistence — v1.2
+- Visual consistency: button sizes, spacing, copy feedback — v1.2
+- Tech debt: branded types, useEffect fix, error boundary, desktop UPI message — v1.2
 
-### Active (v1.2)
+### Active
 
-- [ ] PWA: installable, offline-capable, update prompt
-- [ ] Swipe gestures for tab navigation
-- [ ] Summary UX: settlement direction, actionable UPI links, tip preview, payer persistence
-- [ ] Visual consistency: button sizes, spacing, copy feedback
-- [ ] Tech debt: remove `as any` casts, fix useEffect, error boundary, desktop UPI message
+(None — planning next milestone)
 
 ### Out of Scope
 
@@ -61,11 +70,13 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 - User accounts / authentication — not needed; client-side only
 - Cloud sync across devices — requires backend
 - Currency conversion — requires backend for exchange rate APIs
+- Dark/light mode toggle — sticking with dark theme
+- Animated tab transitions — instant switch preserves scroll position
 
 ## Constraints
 
 - **Platform**: Web app, must work well on mobile browsers (primary use case is at the table)
-- **Architecture**: Client-side only, no backend or database
+- **Architecture**: Client-side only PWA, no backend or database
 - **Rounding**: Always round up each person's total to the nearest cent
 
 ## Key Decisions
@@ -87,17 +98,11 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 | persist(immer(creator)) middleware order | persist MUST wrap immer; wrong order causes silent state loss | Good |
 | Single parse boundary (deserializeBillConfig) | All branded type rehydration in one place | Good |
 | UPI deep links (not Venmo/Zelle) | Indian market focus; standard upi://pay protocol | Good |
-| Payer state stays local (component useState) | Display preference only; must not enter bill store or history | Good |
-
-## Current Milestone: v1.2 Polish + PWA
-
-**Goal:** Make the app feel like a native mobile app — installable, offline-capable, with swipe gestures, polished summary UX, and visual consistency
-
-**Target features:**
-- PWA with full offline support and install prompt
-- Swipe left/right between tabs + unassigned items badge
-- Settlement direction on person cards, actionable UPI links, custom tip preview
-- Consistent button sizes and spacing, error boundary, tech debt cleanup
+| registerType: 'prompt' for PWA | Prevents unexpected SW reloads mid-bill-split | Good |
+| react-swipeable with touch-action: pan-y | Compositor-level scroll/swipe conflict prevention, ~3KB | Good |
+| payerId in billStore (not component state) | Persistence across tab switches and page refreshes | Good |
+| ReloadPrompt outside ErrorBoundary | PWA updates still work even if main app crashes | Good |
+| prevSubtotalRef pattern for useEffect | Skips mount fire without eslint-disable comments | Good |
 
 ---
-*Last updated: 2026-02-24 after v1.2 milestone start*
+*Last updated: 2026-02-24 after v1.2 milestone*

@@ -30,3 +30,20 @@
 
 ---
 
+
+## v1.2 Polish + PWA (Shipped: 2026-02-24)
+
+**Phases completed:** 4 phases (9-12), 7 plans, 17 tasks
+**Production build:** 254 KB (79 KB gzip)
+**Source changes:** 16 files, 300 insertions, 87 deletions
+**Tests:** 144 passing across 12 test files
+
+**Key accomplishments:**
+1. PWA with full offline support — vite-plugin-pwa, service worker precaching, installable to home screen, user-controlled update prompt
+2. Swipe navigation between tabs using react-swipeable with input exclusion and touch-action: pan-y for scroll conflict prevention
+3. Summary UX: settlement direction labels ("owes [name]"), actionable "Add UPI ID" navigation, live custom tip dollar preview, persistent payer selection
+4. Visual consistency: 48px primary and 40px secondary button tap targets, green checkmark copy feedback, consistent px-4 py-3 spacing
+5. Tech debt cleanup: branded types replacing `as any` casts, useEffect mount-fire fix via prevSubtotalRef, ErrorBoundary with crash recovery, desktop UPI guard message
+
+---
+
