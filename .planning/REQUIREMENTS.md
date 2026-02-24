@@ -22,7 +22,7 @@ Requirements for v1.3 UI Redesign. Each maps to roadmap phases.
 
 - [x] **LYOT-01**: TabBar displays SVG icons above labels for all 5 tabs
 - [x] **LYOT-02**: TabBar uses glass-surface styling with increased min-h-14
-- [ ] **LYOT-03**: SubtotalBar uses glass-surface styling with tracking-tight amount
+- [x] **LYOT-03**: SubtotalBar uses glass-surface styling with tracking-tight amount
 - [ ] **LYOT-04**: AppShell has subtle background gradient tint for glass blur effect
 - [ ] **LYOT-05**: AppShell bottom padding accommodates taller tab bar (pb-20)
 
@@ -32,7 +32,7 @@ Requirements for v1.3 UI Redesign. Each maps to roadmap phases.
 - [ ] **CARD-02**: ItemRow uses glass-card with bg-white/5 inputs and focus:ring glow
 - [ ] **CARD-03**: HistoryRow uses glass-card with hover highlight and press-scale
 - [ ] **CARD-04**: AssignmentRow uses glass-card with overflow-hidden
-- [ ] **CARD-05**: PersonCard (summary) uses glass-card with border-white/5 detail drawer
+- [x] **CARD-05**: PersonCard (summary) uses glass-card with border-white/5 detail drawer
 - [ ] **CARD-06**: PaymentSection uses glass-card rows with gradient green UPI button
 - [ ] **CARD-07**: List containers use px-4 pt-3 space-y-2 spacing pattern
 
@@ -93,14 +93,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DSYS-08 | Phase 13 | Pending |
 | LYOT-01 | Phase 14 | Complete |
 | LYOT-02 | Phase 14 | Complete |
-| LYOT-03 | Phase 14 | Pending |
+| LYOT-03 | Phase 14 | Complete |
 | LYOT-04 | Phase 13 | Pending |
 | LYOT-05 | Phase 13 | Pending |
 | CARD-01 | Phase 15 | Pending |
 | CARD-02 | Phase 15 | Pending |
 | CARD-03 | Phase 15 | Pending |
 | CARD-04 | Phase 15 | Pending |
-| CARD-05 | Phase 14 | Pending |
+| CARD-05 | Phase 14 | Complete |
 | CARD-06 | Phase 15 | Pending |
 | CARD-07 | Phase 15 | Pending |
 | INPT-01 | Phase 15 | Pending |

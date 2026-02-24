@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-24)
 
 Phase: 14 — Layout + Glass System
 Plan: 02
-Status: Phase 14 in progress (1/2 plans complete)
-Last activity: 2026-02-24 — Plan 01 complete (TabBar SVG Icons + Glass Styling)
+Status: Phase 14 complete (2/2 plans complete)
+Last activity: 2026-02-24 — Plan 02 complete (SubtotalBar Glass + PersonCard Glass)
 
 ```
-v1.3 Progress: [█████░░░░░░░░░░░░░░░] 1/4 phases
+v1.3 Progress: [██████████░░░░░░░░░░] 2/4 phases
 ```
 
 ## Performance Metrics
@@ -41,7 +41,7 @@ v1.3 Progress: [█████░░░░░░░░░░░░░░░] 1/
 **v1.3 (in progress):**
 - 4 phases planned (13-16), 30 requirements
 - Phase 13: 2 plans complete
-- Phase 14: Plan 01 complete (TabBar icons + glass), Plan 02 pending
+- Phase 14: 2 plans complete (TabBar icons + glass, SubtotalBar + PersonCard glass)
 
 ## Accumulated Context
 
@@ -80,5 +80,5 @@ None — all known tech debt resolved in v1.2 Phase 12.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 14-01-PLAN.md (TabBar SVG Icons + Glass Styling)
-Resume with: Execute Phase 14 Plan 02 (SubtotalBar Glass + PersonCard Glass)
+Stopped at: Completed 14-02-PLAN.md (SubtotalBar Glass + PersonCard Glass)
+Resume with: Plan Phase 15 (Component Redesign)
