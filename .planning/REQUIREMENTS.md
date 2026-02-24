@@ -83,13 +83,47 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| — | — | — |
+| DSYS-01 | Phase 13 | Pending |
+| DSYS-02 | Phase 13 | Pending |
+| DSYS-03 | Phase 13 | Pending |
+| DSYS-04 | Phase 13 | Pending |
+| DSYS-05 | Phase 13 | Pending |
+| DSYS-06 | Phase 13 | Pending |
+| DSYS-07 | Phase 13 | Pending |
+| DSYS-08 | Phase 13 | Pending |
+| LYOT-01 | Phase 14 | Pending |
+| LYOT-02 | Phase 14 | Pending |
+| LYOT-03 | Phase 14 | Pending |
+| LYOT-04 | Phase 13 | Pending |
+| LYOT-05 | Phase 13 | Pending |
+| CARD-01 | Phase 15 | Pending |
+| CARD-02 | Phase 15 | Pending |
+| CARD-03 | Phase 15 | Pending |
+| CARD-04 | Phase 15 | Pending |
+| CARD-05 | Phase 14 | Pending |
+| CARD-06 | Phase 15 | Pending |
+| CARD-07 | Phase 15 | Pending |
+| INPT-01 | Phase 15 | Pending |
+| INPT-02 | Phase 15 | Pending |
+| INPT-03 | Phase 15 | Pending |
+| INPT-04 | Phase 15 | Pending |
+| BTTN-01 | Phase 15 | Pending |
+| BTTN-02 | Phase 15 | Pending |
+| BTTN-03 | Phase 15 | Pending |
+| SCRN-01 | Phase 16 | Pending |
+| SCRN-02 | Phase 16 | Pending |
+| SCRN-03 | Phase 16 | Pending |
+| PLSH-01 | Phase 16 | Pending |
+| PLSH-02 | Phase 16 | Pending |
+| PLSH-03 | Phase 16 | Pending |
+| PLSH-04 | Phase 16 | Pending |
+| PLSH-05 | Phase 16 | Pending |
 
 **Coverage:**
 - v1.3 requirements: 30 total
-- Mapped to phases: 0
-- Unmapped: 30
+- Mapped to phases: 30
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-24*
-*Last updated: 2026-02-24 after initial definition*
+*Last updated: 2026-02-24 after roadmap creation (v1.3 Phases 13-16)*
