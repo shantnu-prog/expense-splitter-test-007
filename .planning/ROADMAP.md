@@ -34,7 +34,7 @@
 
 - [x] **Phase 9: PWA & Offline** — Service worker, manifest, icons, install prompt, update prompt (2 plans)
 - [x] **Phase 10: Swipe Navigation & Tab UX** — Horizontal swipe gestures between tabs, unassigned items badge (1 plan)
-- [ ] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence
+- [ ] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence (2 plans)
 - [ ] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes
 
 ## Phase Details
@@ -77,6 +77,10 @@ Plans:
   2. "No UPI ID" text is tappable and navigates the user to the People tab (where they can add a VPA)
   3. When user types a custom tip percentage, a live preview shows the dollar amount (e.g., "5% = $3.25") updating as they type
   4. User selects a payer, switches to Items tab, switches back to Split tab — payer selection is still there
+**Plans**: 2 plans
+Plans:
+- [ ] 11-01-PLAN.md — Payer store, settlement direction, and UPI navigation (SUM-01, SUM-02, SUM-04)
+- [ ] 11-02-PLAN.md — Custom tip live dollar preview (SUM-03)
 
 ### Phase 12: Visual Polish & Tech Debt
 **Goal**: Consistent button sizes, spacing, and interactive feedback across the app; all known tech debt resolved; error boundary prevents white-screen crashes
@@ -106,5 +110,5 @@ Plans:
 | 8. UPI Payments | v1.1 | 2/2 | Complete | 2026-02-24 |
 | 9. PWA & Offline | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 10. Swipe Navigation & Tab UX | v1.2 | 1/1 | Complete | 2026-02-24 |
-| 11. Summary & Payment UX | v1.2 | - | Pending | - |
+| 11. Summary & Payment UX | v1.2 | 0/2 | Planned | - |
 | 12. Visual Polish & Tech Debt | v1.2 | - | Pending | - |

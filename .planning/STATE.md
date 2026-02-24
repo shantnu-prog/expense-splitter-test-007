@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 11 next
+**Current focus:** v1.2 Polish + PWA — Phase 11 next (planned)
 
 ## Current Position
 
-Phase: 10 of 12 (Swipe Navigation & Tab UX) — complete
-Plan: 1/1 complete (10-01)
-Status: Phase 10 complete — ready for Phase 11
-Last activity: 2026-02-24 — Phase 10 executed (1 plan, 3 tasks, 89s)
+Phase: 11 of 12 (Summary & Payment UX) — planned, awaiting execution
+Plan: 2 plans (11-01, 11-02)
+Status: Phase planned — ready to execute
+Last activity: 2026-02-24 — Phase 11 planned (2 plans, 5 tasks)
 
-Progress: [######░░░░] 60% (v1.2) — 3 of 5 plans complete
+Progress: [######░░░░] 60% (v1.2) — 3 of 7 plans complete
 
 ## Performance Metrics
 
@@ -73,5 +73,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 10-01-PLAN.md — Phase 10 done, ready for Phase 11
+Stopped at: Phase 11 planned — 2 plans, 5 tasks, ready to execute
 Resume file: None
