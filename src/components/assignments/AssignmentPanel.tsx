@@ -62,7 +62,7 @@ export function AssignmentPanel({ onTabChange }: AssignmentPanelProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-4 pt-3 space-y-2">
         {items.map((item) => (
           <AssignmentRow
             key={item.id}

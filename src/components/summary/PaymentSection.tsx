@@ -89,7 +89,7 @@ export function PaymentSection({ people, results, onTabChange }: PaymentSectionP
             return (
               <div
                 key={person.id}
-                className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-xl px-4 py-3"
+                className="flex items-center justify-between glass-card rounded-xl px-4 py-3"
               >
                 <div className="flex-1 min-w-0">
                   <span className="text-gray-100 text-sm font-medium">{person.name}</span>

@@ -83,7 +83,7 @@ export function HistoryPanel({ onTabChange }: HistoryPanelProps) {
           </button>
         </div>
         {/* Scrollable split list */}
-        <div className="flex-1">
+        <div className="flex-1 px-4 pt-3 space-y-2">
           {splits.map((split) => (
             <HistoryRow
               key={split.id}

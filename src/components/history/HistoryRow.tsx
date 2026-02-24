@@ -51,8 +51,8 @@ export function HistoryRow({ split, onLoad, onDelete }: HistoryRowProps) {
   return (
     <button
       onClick={() => onLoad(split)}
-      className="w-full flex items-center justify-between px-4 py-3 min-h-16
-                 border-b border-gray-800 bg-gray-900/50 hover:bg-gray-800
+      className="w-full glass-card rounded-xl flex items-center justify-between px-4 py-3 min-h-16
+                 hover:bg-white/5 press-scale
                  transition text-left"
     >
       {/* Left side: date + people names */}

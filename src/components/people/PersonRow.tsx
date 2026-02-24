@@ -15,7 +15,7 @@ export function PersonRow({ name, mobile, upiVpa, onRemove }: PersonRowProps) {
   const hasContact = mobile || upiVpa;
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+    <div className="glass-card rounded-xl flex items-center justify-between px-4 py-3">
       <div className="flex-1 min-w-0">
         <span className="text-gray-100">{name}</span>
         {hasContact && (

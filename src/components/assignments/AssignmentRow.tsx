@@ -38,7 +38,7 @@ export function AssignmentRow({ item, people, assignedIds, onAssign }: Assignmen
   }
 
   return (
-    <div className="border-b border-gray-800">
+    <div className="glass-card rounded-xl overflow-hidden">
       {/* Item header row — tap to expand/collapse */}
       <button
         onClick={() => setExpanded((prev) => !prev)}

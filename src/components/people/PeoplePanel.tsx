@@ -151,7 +151,7 @@ export function PeoplePanel() {
         </div>
 
         {/* People list */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto px-4 pt-3 space-y-2">
           {people.map((person) => (
             <PersonRow
               key={person.id}
