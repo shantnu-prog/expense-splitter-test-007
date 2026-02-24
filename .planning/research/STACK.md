@@ -1,21 +1,23 @@
 # Stack Research
 
-**Domain:** Client-side bill-splitting web app — v1.1 Persistence + Sharing additions
-**Researched:** 2026-02-22
+**Domain:** PWA UI Redesign — glassmorphism, Inter font, gradients, micro-interactions, SVG tab icons
+**Researched:** 2026-02-24
 **Confidence:** HIGH
 
 ---
 
 ## Scope
 
-This document covers **only new stack additions for v1.1** features:
-- localStorage persistence with auto-save
-- History list (date + people + total)
-- Editable saved splits (re-open, modify, re-save)
-- Delete saved splits with undo toast
-- Payment text: payer-directed "Alice owes YOU $23.50" generation
+This document covers **only new stack additions for the UI redesign milestone**.
 
-The existing stack (React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5.0.11 + immer 11, Vitest 4) is validated and not re-researched. All new capabilities are built on top of existing dependencies.
+Features being added:
+- Glassmorphism (backdrop-blur, semi-transparent backgrounds, frosted borders)
+- Inter variable font (replacing system-ui fallback)
+- Gradient backgrounds (linear, radial via Tailwind v4 APIs)
+- Micro-interactions (enter/exit animations, hover feedback, tab transitions)
+- SVG tab bar icons replacing emoji/text placeholders
+
+The existing stack (React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4.2.0, Zustand 5, Vitest 4, vite-plugin-pwa 1.2.0) is validated and not re-researched. All capabilities below integrate with this existing setup.
 
 ---
 
@@ -25,139 +27,243 @@ The existing stack (React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5.
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| `zustand/middleware` persist | built-in (zustand 5.0.11) | Auto-save active bill to localStorage; persist history list across page loads | Zero new install — persist ships inside the zustand package. Synchronous localStorage hydration means the store is fully populated before the first React render, so no loading-state guards needed in components. v5.0.10 fixed a state-inconsistency bug with persist; the project already runs 5.0.11. |
-| Native `localStorage` API | browser-native | Storage backend for persist middleware | No library needed. localStorage is limited to 5 MB per origin, which is far more than required: a bill with 20 people and 30 items serializes to under 10 KB; 200 saved history entries = ~2 MB. The synchronous API pairs cleanly with Zustand's synchronous hydration path. |
-| Native `crypto.randomUUID()` | browser-native | Generate stable IDs for history entries (`HistoryId`) | Already used in `billStore.ts` (lines 92, 142) for PersonId and ItemId. Extend the same pattern for history entries. Supported in Chrome 92+, Safari 15.4+, Firefox 95+ — all current mobile browsers. Zero new dependency. |
-| Native `Intl.RelativeTimeFormat` | browser-native | Format history timestamps as "today", "yesterday", "3 days ago" | Zero bundle cost. Full support across all target browsers since 2020. Sufficient for history list display. No date library is warranted for this use case. |
+| `@fontsource-variable/inter` | 5.2.8 | Self-hosted Inter variable font (weights 100–900 in one file) | Self-hosting is required for offline PWA functionality — Google Fonts CDN fails when the device is offline. Since Chrome 86 (Oct 2020), cross-site CDN caching is partitioned, so there is zero browser cache benefit from using the Google Fonts CDN. Self-hosting avoids 2–4 extra DNS/SSL round-trips and eliminates the render-blocking external request. The variable font package covers all weights in a single woff2 file, making it smaller than loading multiple static weight files. Fontsource handles `@font-face` declaration and unicode-range subsetting automatically. |
+| `lucide-react` | 0.575.0 | SVG icon components for bottom tab bar | Fully tree-shakable — only imported icons enter the bundle (~1 KB per icon after tree-shaking). 1,500+ icons designed on a consistent 24×24 grid with configurable `size`, `strokeWidth`, and `color` props. 29.4M weekly npm downloads in 2026 vs Heroicons' 2M, indicating active maintenance and community trust. Ships TypeScript definitions. No additional runtime dependency. |
 
 ### Supporting Libraries
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| None required | — | — | All v1.1 capabilities are covered by Zustand's built-in persist middleware and native browser APIs. Zero new `npm install` entries needed. |
+| None required for glassmorphism | — | backdrop-blur, bg-white/5, border-white/10 are native Tailwind CSS 4 utilities | Glassmorphism is pure Tailwind + CSS. No plugin or library needed. |
+| None required for animations | — | Micro-interactions via Tailwind `@theme` @keyframes + `animate-*` utilities and CSS transitions | Tailwind v4's `@theme` supports `--animate-*` custom properties with embedded `@keyframes`. For simple enter/exit and hover transitions, `transition-*` utilities are sufficient. No external animation library (Framer Motion, GSAP) is needed. |
+
+### Development Tools
+
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| None new required | — | Vite 7 + `@tailwindcss/vite` 4.2.0 + existing PWA plugin already handle woff2 asset bundling and Workbox precaching |
 
 ---
 
-## Integration: Adding persist to the Existing immer Store
+## Integration Guide
 
-The existing store (line 221 of `billStore.ts`) is:
+### 1. Inter Font — Installation and Configuration
 
+**Install:**
+```bash
+npm install @fontsource-variable/inter
+```
+
+**Import in `src/main.tsx`** (load font before React renders):
 ```typescript
-export const useBillStore = create<BillState>()(immer(stateCreator));
+import '@fontsource-variable/inter';
+import './index.css';
+// ... rest of imports
 ```
 
-Adding persist requires wrapping immer from the outside. The correct middleware order is:
+**Configure in `src/index.css`:**
+```css
+@import "tailwindcss";
 
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans--font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+html, body, #root {
+  @apply min-h-screen bg-gray-950 text-gray-100 overscroll-none font-sans;
+}
 ```
-devtools( persist( immer( stateCreator ) ) )
+
+The `--font-sans` token in `@theme` makes `font-sans` utility use Inter Variable project-wide. The `--font-sans--font-feature-settings` registers contextual alternates that improve Inter's lowercase `l`, `a`, `i`, `r`, `g` rendering.
+
+**PWA offline support:** Workbox picks up the woff2 file automatically because it is bundled by Vite into the build output. The existing `vite.config.ts` already has `globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']` — this covers the font with no config change needed.
+
+**Preload hint for performance** (add to `index.html`):
+```html
+<link rel="preload" href="/assets/inter-variable.woff2" as="font" type="font/woff2" crossorigin>
+```
+Note: The actual filename will be hashed by Vite (e.g., `inter-variable-abc123.woff2`). Either add the preload after build by reading the manifest, or accept the minor FCP cost from not preloading — for a PWA that is almost always served from cache, this is low priority.
+
+---
+
+### 2. Glassmorphism — Tailwind CSS 4 Utilities
+
+All glassmorphism primitives are **built into Tailwind CSS 4**. No new package required.
+
+**Backdrop blur scale (v4 values — note rename from v3):**
+
+| Class | CSS Output | v3 Equivalent |
+|-------|-----------|---------------|
+| `backdrop-blur-xs` | `blur(4px)` | `backdrop-blur-sm` |
+| `backdrop-blur-sm` | `blur(8px)` | `backdrop-blur` (bare) |
+| `backdrop-blur-md` | `blur(12px)` | `backdrop-blur-md` |
+| `backdrop-blur-lg` | `blur(16px)` | `backdrop-blur-lg` |
+| `backdrop-blur-xl` | `blur(24px)` | `backdrop-blur-xl` |
+| `backdrop-blur-2xl` | `blur(40px)` | `backdrop-blur-2xl` |
+| `backdrop-blur-3xl` | `blur(64px)` | `backdrop-blur-3xl` |
+
+**The blur scale was renamed in v4.** `backdrop-blur-sm` in v3 is now `backdrop-blur-xs` in v4. If design specs reference v3 names, adjust accordingly. Since this project started fresh on Tailwind v4, use v4 names throughout.
+
+**Opacity modifier syntax (v4 is the modern standard):**
+```html
+<!-- Correct in v4 (also worked in v3) -->
+<div class="bg-white/5 border border-white/10 backdrop-blur-xl">
+
+<!-- DO NOT use v3-only syntax (removed in v4) -->
+<div class="bg-white bg-opacity-5">  <!-- bg-opacity-* removed in v4 -->
 ```
 
-Rationale for this order:
-- `immer` must be **innermost** — it transforms `set` to accept draft-mutating functions; if placed outside persist, persist would serialize immer draft proxies rather than plain objects
-- `persist` sits **around immer** — it receives plain state values after immer has resolved drafts, and serializes them correctly
-- `devtools` goes **outermost** — it must see all `setState` calls from all inner middleware without having its `type` parameter stripped
+**Glassmorphism card pattern:**
+```html
+<div class="
+  bg-white/5
+  border border-white/10
+  backdrop-blur-xl
+  rounded-2xl
+  shadow-lg
+">
+```
 
-For this milestone (no devtools middleware in production):
+**v4 uses `color-mix()` under the hood for opacity modifiers** — `bg-white/5` computes `color-mix(in srgb, white 5%, transparent)`. This is more accurate than the v3 rgba hack and works with CSS variables and `currentColor`.
 
-```typescript
-// src/store/billStore.ts — modified export
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
+**Custom glassmorphism token (optional, for consistency):**
+```css
+@theme {
+  --color-glass-surface: color-mix(in srgb, white 5%, transparent);
+  --color-glass-border: color-mix(in srgb, white 10%, transparent);
+}
+```
+This is optional — using `/5` and `/10` modifiers inline is equally idiomatic.
 
-export const useBillStore = create<BillState>()(
-  persist(
-    immer(stateCreator),
-    {
-      name: 'bill-splitter-active',           // localStorage key
-      storage: createJSONStorage(() => localStorage),
-      version: 1,                             // enables future migration
-      partialize: (state) => ({ config: state.config }),  // exclude action functions
+---
+
+### 3. Animations — Tailwind v4 @theme Approach
+
+**Built-in animate utilities (no config needed):**
+- `animate-spin`, `animate-ping`, `animate-pulse`, `animate-bounce`, `animate-none`
+
+**Custom micro-interaction animations — define in `src/index.css`:**
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Tab switch fade */
+  --animate-fade-in: fade-in 0.2s ease-out;
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Card enter */
+  --animate-slide-up: slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Button press */
+  --animate-pop: pop 0.15s ease-out;
+
+  @keyframes pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+}
+```
+
+Usage in JSX:
+```html
+<div class="animate-fade-in">...</div>
+<button class="animate-pop active:animate-pop">...</button>
+```
+
+**Reduced motion support — always pair with `motion-reduce:`:**
+```html
+<div class="animate-fade-in motion-reduce:animate-none">...</div>
+```
+
+**For transitions (hover, focus, active states) — use `transition-*` utilities, not `animate-*`:**
+```html
+<button class="
+  transition-all duration-150 ease-out
+  hover:scale-105 active:scale-95
+">
+```
+`transition-*` is simpler for state-driven changes; `animate-*` is for mount/enter effects.
+
+**v4 @starting-style (new feature — for pure CSS enter animations):**
+```css
+/* No JavaScript needed for enter animations in v4 */
+@layer utilities {
+  .enter-fade {
+    @starting-style {
+      opacity: 0;
+      transform: translateY(8px);
     }
-  )
-);
-```
-
-Key implementation notes:
-- `partialize` is required — without it, Zustand would try to serialize action functions, which are not JSON-serializable
-- `createJSONStorage` is the official helper; do not pass `localStorage` directly — it wraps `getItem`/`setItem`/`removeItem` into Zustand's `StateStorage` interface and handles `null` returns and quota errors
-- `version: 1` enables future schema migrations via the optional `migrate` option without clearing stored data
-- With localStorage (synchronous), hydration completes during store creation — the store is fully populated before any React component renders, so no `hasHydrated` guard is needed
-
-### Separate History Store (New File)
-
-The history list should live in a **separate Zustand store** with its own localStorage key, not merged into `useBillStore`.
-
-Why separate:
-- History is a list of immutable snapshots. The active bill is a live-editing workspace. They have different lifecycle and reset semantics.
-- The "New Split" button resets the active bill — this must not clear history.
-- Loading a saved entry is an explicit "copy this snapshot into active store" action, not a store merge.
-- Each store has its own `version` counter and migration path independently.
-- Two separate localStorage keys (under 5 MB each) avoids the need for a single-key size budget calculation.
-
-```typescript
-// src/store/historyStore.ts  (new file)
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
-import type { BillConfig } from '../engine/types';
-
-export interface HistoryEntry {
-  id: string;           // crypto.randomUUID() — stable identity
-  savedAt: number;      // Date.now() — epoch ms; cheap to sort and format
-  label: string;        // auto-generated: "Alice, Bob, Carol — $94.20"
-  totalCents: number;   // pre-computed for display; avoids re-running engine on load
-  config: BillConfig;   // full snapshot — enables re-open and edit
-}
-
-export interface HistoryState {
-  entries: HistoryEntry[];
-  saveEntry: (entry: HistoryEntry) => void;
-  deleteEntry: (id: string) => void;
-  restoreEntry: (entry: HistoryEntry) => void;  // for undo toast
-}
-
-export const useHistoryStore = create<HistoryState>()(
-  persist(
-    immer((set) => ({
-      entries: [],
-      saveEntry: (entry) => set((s) => {
-        s.entries.unshift(entry);
-        if (s.entries.length > 50) s.entries = s.entries.slice(0, 50); // cap at 50
-      }),
-      deleteEntry: (id) => set((s) => {
-        s.entries = s.entries.filter(e => e.id !== id);
-      }),
-      restoreEntry: (entry) => set((s) => {
-        if (!s.entries.find(e => e.id === entry.id)) s.entries.unshift(entry);
-      }),
-    })),
-    {
-      name: 'bill-splitter-history',
-      storage: createJSONStorage(() => localStorage),
-      version: 1,
-    }
-  )
-);
-```
-
-### Payment Text Generation (No Library)
-
-Payment text ("Alice owes YOU $23.50") is pure string computation. The pattern already established in `src/utils/formatSummary.ts` is the right model: a pure function, no side effects, colocated Vitest test file.
-
-```typescript
-// src/utils/formatPaymentText.ts  (new file)
-import type { EngineResult } from '../engine/types';
-import type { PersonId } from '../engine/types';
-import { formatCents } from './currency';
-
-export function formatPaymentText(result: EngineResult, payerId: PersonId): string[] {
-  return result.perPerson
-    .filter(p => p.personId !== payerId)
-    .map(p => `${p.name} owes YOU ${formatCents(p.totalCents)}`);
+    transition: opacity 0.2s, transform 0.2s;
+  }
 }
 ```
+Use `@starting-style` when you want CSS-only element entry without React state toggling. Browser support: Chrome 117+, Safari 17.5+, Firefox 129+. All covered by the PWA's existing target baseline.
 
-The function receives `EngineResult` (already produced by `computeSplit()`, which is already called by `getResult()`). No new computation needed — reuse what exists.
+---
+
+### 4. SVG Icons — lucide-react
+
+**Install:**
+```bash
+npm install lucide-react
+```
+
+**Usage:**
+```tsx
+import { Home, Users, Receipt, Settings } from 'lucide-react';
+
+// In tab bar JSX:
+<Home size={24} strokeWidth={1.5} className="text-current" />
+<Users size={24} strokeWidth={1.5} className="text-current" />
+<Receipt size={24} strokeWidth={1.5} className="text-current" />
+```
+
+**Active state pattern:**
+```tsx
+<Home
+  size={24}
+  strokeWidth={isActive ? 2 : 1.5}
+  className={isActive ? 'text-white' : 'text-gray-400'}
+/>
+```
+
+**Do not** import from `lucide-react/dist/esm/icons` or use the `LucideIcon` dynamically — import named icons only. This ensures tree-shaking.
+
+**Icon sizing for bottom tab bar:** `size={22}` or `size={24}` with `strokeWidth={1.5}` matches standard iOS/Android tab bar icon conventions and renders crisply at standard pixel densities.
+
+---
+
+### 5. Gradient APIs — Tailwind v4 Native
+
+Tailwind v4 ships new gradient utilities. No library or plugin needed.
+
+**Available gradient classes:**
+```html
+<!-- Linear gradient with angle -->
+<div class="bg-linear-to-br from-violet-950 via-gray-950 to-gray-950">
+
+<!-- Gradient with OKLCH interpolation (v4 exclusive) -->
+<div class="bg-linear-to-r/oklch from-violet-600 to-indigo-600">
+
+<!-- Radial gradient (new in v4) -->
+<div class="bg-radial-[at_top_left] from-violet-900/30 to-transparent">
+```
+
+**App background pattern (dark glassmorphism base):**
+```html
+<div class="min-h-screen bg-gray-950 bg-radial-[at_top] from-violet-950/40 to-gray-950">
+```
 
 ---
 
@@ -165,13 +271,14 @@ The function receives `EngineResult` (already produced by `computeSplit()`, whic
 
 | Recommended | Alternative | Why Not |
 |-------------|-------------|---------|
-| `zustand/middleware` persist (built-in) | `idb-keyval` + IndexedDB | IndexedDB is asynchronous — Zustand's async hydration path means the store starts with default (empty) state and hydrates in a microtask. Every component that reads history must handle a "loading" state and cannot render on the first pass. For <1 MB of bill history, the synchronous localStorage path is far simpler and equally capable. |
-| `zustand/middleware` persist (built-in) | `persist-and-sync` npm package | Adds a dependency for cross-tab sync, which is explicitly out of scope ("No real-time sync across devices" in PROJECT.md). |
-| `zustand/middleware` persist (built-in) | Manual `localStorage.getItem/setItem` in `useEffect` | Error-prone: misses hydration timing, storage quota errors, JSON parse failures, and SSR guards. Zustand's persist middleware handles all these edge cases, is well-tested, and is zero-cost since zustand is already installed. |
-| `crypto.randomUUID()` (native) | `nanoid` npm package | nanoid (130 bytes) is negligible in size, but `crypto.randomUUID()` is already used in `billStore.ts` for PersonId and ItemId. Adding nanoid for history entry IDs would introduce an inconsistency in the same codebase. Native wins on consistency. |
-| `Intl.RelativeTimeFormat` (native) | `date-fns` npm package | date-fns v4 costs ~13 KB min+gzip for the subset of functions needed here ("X days ago"). The native Intl API covers "today / yesterday / N days ago" with zero bundle cost and full support across all target browsers. Bring in date-fns if i18n or complex formatting requirements emerge later. |
-| Separate `historyStore` with its own persist | Merged into `billStore` with `partialize` to select history array | Merging works technically but creates coupling. The "reset" action in billStore (New Split button) must not clear history. Managing this distinction within a single store requires explicit guards in the reset action. Two stores with separate localStorage keys is architecturally cleaner and easier to reason about. |
-| `version: 1` + `migrate` option (built-in) | Key-name versioning (`'bill-splitter-active-v1'`) | Key-name versioning leaves stale keys orphaned in localStorage (old key never gets cleaned up). Zustand's built-in `version` + `migrate` option handles schema changes cleanly: old data is read, migrated to the new shape, and re-saved under the same key. |
+| `@fontsource-variable/inter` (self-hosted) | Google Fonts CDN `<link>` | CDN font fails offline — PWA must work offline. Google Fonts CDN provides zero cross-site cache benefit since Chrome 86. Self-hosting eliminates 2–4 DNS/SSL round-trips on cold load. |
+| `@fontsource-variable/inter` (variable font) | `@fontsource/inter` (static weights) | Static version requires separate CSS imports per weight (e.g., `400.css`, `600.css`, `700.css`). Variable font is one file covering weights 100–900. Simpler import, typically smaller combined file size for 3+ weights used. |
+| `lucide-react` | `@heroicons/react` | Heroicons only has 316 icons. Lucide has 1,500+. Both are tree-shakable. Lucide has 15x the weekly downloads, indicating broader community adoption and more active maintenance. Lucide's icon set is more complete for app UI patterns (e.g., Receipt, Split, UPI-style icons). |
+| `lucide-react` | Inline SVG strings in JSX | Manageable for <5 icons, but 4 tab icons + likely action icons = 10+ icons. Inline SVG strings in JSX have no type safety, no consistent sizing API, and require manual optimization. lucide-react's component API is cleaner and equally bundle-efficient. |
+| `lucide-react` | `react-icons` | react-icons bundles entire icon families — tree-shaking is less reliable, and the package has historically included non-tree-shakable re-exports. lucide-react is purpose-built for tree-shaking with each icon as a discrete named export. |
+| Tailwind v4 `@theme` @keyframes | Framer Motion | Framer Motion adds ~50 KB gzipped. For tab transitions and micro-interactions (scale, fade, slide), Tailwind transitions + @keyframes are sufficient. Framer Motion is warranted if gesture-based drag animations or layout animations (animating position changes across re-renders) are needed, which they are not in this redesign. |
+| Tailwind v4 `@theme` @keyframes | GSAP | GSAP is a commercial-license concern for PWA products and weighs ~35 KB. Not needed for CSS-level micro-interactions. |
+| Tailwind v4 native glassmorphism | `tailwind-glassmorphism` npm package | No such first-class package is needed — backdrop-blur and opacity modifiers are first-class Tailwind v4 utilities. Third-party packages for this are redundant. |
 
 ---
 
@@ -179,125 +286,82 @@ The function receives `EngineResult` (already produced by `computeSplit()`, whic
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| `redux-persist` | Requires Redux ecosystem (redux, react-redux). The project uses Zustand. | `zustand/middleware` persist |
-| `localforage` | Wraps IndexedDB/WebSQL/localStorage with async API. The async hydration creates "empty on first render" states that need loading guards throughout the component tree. Not justified by the storage volume (<1 MB). | Native `localStorage` via `createJSONStorage` |
-| IndexedDB directly | Verbose transactional API; async hydration. Not justified for a few hundred KB of bill history. | `localStorage` via persist middleware |
-| `sessionStorage` | Data is lost on tab close — defeats the purpose of persisting history. | `localStorage` |
-| `zustand/middleware` `skipHydration` | Only needed for SSR (Next.js, Remix) where the server does not have access to localStorage. This is a Vite SPA — synchronous hydration during store creation is correct and simpler. | Default hydration (synchronous for localStorage) |
-| Third-party payment text libraries | "Alice owes YOU $23.50" is a single-function string format; no library is warranted. | Pure function in `src/utils/formatPaymentText.ts` |
-| Backend / server sync | Explicitly out of scope in PROJECT.md for v1. | `localStorage` |
-
----
-
-## localStorage Schema Design
-
-Two keys, each owned by its own Zustand store:
-
-| Key | Store | Content | Estimated size |
-|-----|-------|---------|----------------|
-| `bill-splitter-active` | `useBillStore` | Single `BillConfig` (active editing session) | 2–10 KB |
-| `bill-splitter-history` | `useHistoryStore` | `HistoryEntry[]`, each containing a full `BillConfig` snapshot + metadata | ~50 KB for 50 entries |
-
-**Capping history at 50 entries** prevents localStorage quota errors on mobile Safari. iOS 16 has a known issue where localStorage is cleared after writing more than ~2.5 MB; capping entries keeps both keys well under 1 MB combined.
-
-**Version migration pattern (future use):**
-
-```typescript
-// If BillConfig shape changes in v1.2, increment version to 2 and provide migrate:
-{
-  name: 'bill-splitter-history',
-  storage: createJSONStorage(() => localStorage),
-  version: 2,
-  migrate: (persistedState: unknown, fromVersion: number) => {
-    if (fromVersion === 1) {
-      // e.g., add a new field with default value
-      const state = persistedState as HistoryState;
-      return {
-        ...state,
-        entries: state.entries.map(e => ({ ...e, newField: defaultValue })),
-      };
-    }
-    return persistedState as HistoryState;
-  },
-}
-```
+| Google Fonts CDN `<link rel="stylesheet">` | Fails offline in installed PWA; no cross-site cache benefit since Chrome 86; adds 100–300ms DNS+SSL on cold load | `@fontsource-variable/inter` self-hosted |
+| `bg-opacity-*` classes (e.g., `bg-opacity-5`) | Removed in Tailwind v4; these utilities no longer exist | `bg-white/5` opacity modifier syntax |
+| `backdrop-blur-sm` expecting 4px blur | In v4, `backdrop-blur-sm` = 8px (was `backdrop-blur` bare in v3). `backdrop-blur-xs` = 4px. Using v3 blur names gives wrong blur values. | `backdrop-blur-xs` for 4px, `backdrop-blur-sm` for 8px |
+| `@layer utilities { .custom { ... } }` for custom utilities | In v4, `@layer utilities` is no longer used for custom utility definitions — it silently won't generate variants/responsive support | `@utility custom-name { ... }` directive |
+| `tailwind.config.js` for animation/keyframe config | v4 no longer auto-detects `tailwind.config.js`; the JavaScript config approach is deprecated for CSS-first projects | `@theme { --animate-*: ... @keyframes ... }` in CSS |
+| Framer Motion for basic transitions | ~50 KB gzip overhead not justified for hover, fade, and slide animations achievable with Tailwind transition utilities | `transition-*` + `@theme` keyframes |
+| `react-icons` | Tree-shaking unreliable; whole icon family enters bundle | `lucide-react` named imports |
 
 ---
 
 ## Stack Patterns by Variant
 
-**If history grows beyond 2 MB (unlikely with 50-entry cap):**
-- Lower the cap further in `saveEntry`
-- No library change required; the cap is a single integer constant
+**If animations need to be synchronised with React state (e.g., conditional list reordering):**
+- Add Framer Motion `^12.x` at that point — its `layout` prop and `AnimatePresence` solve DOM-position animations that CSS cannot.
+- Keep `@theme` keyframes for static enter/exit effects; use Framer Motion only where layout animation is needed.
 
-**If "Today / Yesterday / 3 days ago" relative date format is insufficient:**
-- Add `date-fns` at that point (`npm install date-fns`)
-- The `savedAt: number` epoch timestamp stored in `HistoryEntry` is compatible with all date libraries; no schema migration needed
+**If additional font weights beyond 100–900 variable are needed:**
+- Nothing changes — `@fontsource-variable/inter` already covers all weights via the variable axis.
+- Control weight in CSS with `font-weight: 350` or Tailwind's `font-[350]` arbitrary value.
 
-**If cross-tab sync is required in a future milestone:**
-- Replace `createJSONStorage(() => localStorage)` with a `BroadcastChannel`-based custom storage adapter
-- Or migrate history to `idb-keyval` (IndexedDB) and switch to Zustand's async storage path
-- The `HistoryEntry` shape is compatible with either approach; no schema migration needed
-
-**If a backend is added in a future milestone:**
-- The `HistoryEntry` shape (id, savedAt, config) maps cleanly to a database record
-- The separation of active bill vs history stores means only `historyStore` needs a sync adapter
-- `useBillStore` persist can be disabled once the server becomes the source of truth
+**If custom brand icons are needed (not in Lucide's library):**
+- Create `src/assets/icons/CustomIcon.tsx` as a React component wrapping an inline SVG string.
+- Follow Lucide's prop API pattern (`size`, `strokeWidth`, `className`) for consistency.
+- Optimize SVGs with SVGO before embedding.
 
 ---
 
 ## Version Compatibility
 
-| Package | Version in use | Notes |
-|---------|----------------|-------|
-| `zustand` | 5.0.11 | persist middleware is built-in; v5.0.10 fixed a state-inconsistency bug with persist — already resolved at 5.0.11 |
-| `immer` | 11.1.4 | Compatible with `zustand/middleware/immer` at this version |
-| `zustand/middleware/immer` | (part of zustand 5.0.11) | immer peer dependency satisfied by immer ^11 |
-| `typescript` | 5.9.3 | In Zustand v5, `partialize` type changed from `Partial<T>` to `T` — no workarounds needed, inference works correctly |
+| Package | Version | Compatible With | Notes |
+|---------|---------|-----------------|-------|
+| `@fontsource-variable/inter` | 5.2.8 | Vite 7, `@tailwindcss/vite` 4.2.0 | woff2 bundled by Vite as a static asset; precached by Workbox via existing `globPatterns` |
+| `lucide-react` | 0.575.0 | React 19, TypeScript 5.9 | Ships its own `.d.ts`; no `@types/lucide-react` package needed |
+| Tailwind `backdrop-blur-xl` | Tailwind CSS 4.2.0 | All modern browsers (Chrome 76+, Safari 15.4+, Firefox 103+) | `backdrop-filter` has no IE11 support; irrelevant for this PWA's targets |
+| Tailwind `@theme { @keyframes }` | Tailwind CSS 4.2.0 | `@tailwindcss/vite` 4.2.0 | v4-specific syntax; not compatible with Tailwind v3 |
+| `@starting-style` (CSS) | Browser-native | Chrome 117+, Safari 17.5+, Firefox 129+ | Available in all browsers from 2023–2024; safe to use |
 
 ---
 
 ## Installation
 
-**No new packages.** All v1.1 capabilities are built into existing dependencies:
-
 ```bash
-# Nothing to install.
-# persist is part of zustand (already installed at 5.0.11)
-# crypto.randomUUID() is browser-native (already used in billStore.ts)
-# Intl.RelativeTimeFormat is browser-native
+# New production dependencies
+npm install @fontsource-variable/inter lucide-react
+
+# No new dev dependencies required
+# No changes to vite.config.ts required
+# No changes to tailwind configuration required (CSS-first @theme handles everything)
 ```
 
-**New files to create:**
-
-| File | Purpose |
-|------|---------|
-| `src/store/historyStore.ts` | History Zustand store with persist middleware |
-| `src/utils/formatPaymentText.ts` | Pure function for payer-directed payment text |
-| `src/utils/formatPaymentText.test.ts` | Vitest tests for payment text formatting |
-
-**Existing files to modify:**
+**Files to modify:**
 
 | File | Change |
 |------|--------|
-| `src/store/billStore.ts` | Wrap existing `immer(stateCreator)` with `persist(immer(stateCreator), { ... })` for active bill auto-save |
+| `src/main.tsx` | Add `import '@fontsource-variable/inter';` at top |
+| `src/index.css` | Add `@theme { --font-sans: 'Inter Variable', ... }` + micro-interaction `@keyframes` |
+| `index.html` | Optionally add `<link rel="preload">` for woff2 (post-build, hash-aware) |
+| Tab bar component | Replace emoji/text icons with lucide-react components |
 
 ---
 
 ## Sources
 
-- [Zustand persist middleware docs](https://zustand.docs.pmnd.rs/middlewares/persist) — partialize, version, migrate, createJSONStorage API (HIGH confidence)
-- [Zustand persisting store data guide](https://zustand.docs.pmnd.rs/integrations/persisting-store-data) — hydration behavior, localStorage vs async storage tradeoffs (HIGH confidence)
-- [Zustand immer middleware docs](https://zustand.docs.pmnd.rs/integrations/immer-middleware) — middleware combination (HIGH confidence)
-- [Zustand middleware priority discussion](https://github.com/pmndrs/zustand/discussions/2389) — devtools outermost, immer innermost confirmed (MEDIUM confidence, community-verified)
-- [Zustand v5.0.10 persist bug fix](https://github.com/pmndrs/zustand) — state-inconsistency fix in persist middleware (HIGH confidence, WebSearch)
-- [nanoid npm page](https://www.npmjs.com/package/nanoid) — v5.1.6, 130 bytes (HIGH confidence)
-- [MDN: crypto.randomUUID()](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID) — browser support baseline (HIGH confidence)
-- [MDN: Storage quotas and eviction criteria](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) — localStorage 5 MB limit, Safari eviction behavior (HIGH confidence)
-- [WebKit: Updates to Storage Policy](https://webkit.org/blog/14403/updates-to-storage-policy/) — iOS Safari 7-day script-writable storage cap (MEDIUM confidence)
-- [zustand partialize TypeScript discussion](https://github.com/pmndrs/zustand/discussions/1317) — type changed from Partial<T> to T in v5 (MEDIUM confidence)
+- [Tailwind CSS docs: backdrop-filter-blur](https://tailwindcss.com/docs/backdrop-filter-blur) — v4 blur scale values and custom value syntax (HIGH confidence, official docs)
+- [Tailwind CSS docs: animation](https://tailwindcss.com/docs/animation) — @theme `--animate-*` with embedded @keyframes pattern (HIGH confidence, official docs)
+- [Tailwind CSS docs: theme](https://tailwindcss.com/docs/theme) — @theme directive, @layer usage, font-family and CSS variable namespaces (HIGH confidence, official docs)
+- [Tailwind CSS v4 upgrade guide](https://tailwindcss.com/docs/upgrade-guide) — opacity modifier removals (`bg-opacity-*`), blur scale rename, `@layer utilities` → `@utility` (HIGH confidence, official docs)
+- [Tailwind CSS v4.0 announcement](https://tailwindcss.com/blog/tailwindcss-v4) — new gradient APIs, @starting-style, color-mix() (HIGH confidence, official blog)
+- [Fontsource Inter install guide](https://fontsource.org/fonts/inter/install) — variable font package, import pattern (HIGH confidence, official docs)
+- [@fontsource-variable/inter on npm](https://www.npmjs.com/package/@fontsource-variable/inter) — version 5.2.8 confirmed current (HIGH confidence, npm registry)
+- [lucide-react on npm](https://www.npmjs.com/package/lucide-react) — version 0.575.0 confirmed current (HIGH confidence, npm registry)
+- [React Icon Libraries Bundle Size Benchmark 2026](https://medium.nkcroft.com/the-hidden-bundle-cost-of-react-icons-why-lucide-wins-in-2026-1ddb74c1a86c) — Lucide vs Heroicons tree-shaking benchmark (MEDIUM confidence, community benchmark)
+- [Should you self-host Google Fonts?](https://www.tunetheweb.com/blog/should-you-self-host-google-fonts/) — CDN cache partitioning since Chrome 86, performance tradeoffs (HIGH confidence, verified against official Chrome docs)
+- [Vite PWA: Service Worker Precache](https://vite-pwa-org.netlify.app/guide/service-worker-precache) — woff2 precaching via globPatterns (HIGH confidence, official Vite PWA docs)
 
 ---
 
-*Stack research for: Expense Splitter v1.1 — localStorage persistence, history management, payment text*
-*Researched: 2026-02-22*
+*Stack research for: Expense Splitter — UI Redesign (glassmorphism, Inter font, gradients, micro-interactions, SVG icons)*
+*Researched: 2026-02-24*

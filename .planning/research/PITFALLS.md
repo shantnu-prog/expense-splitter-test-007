@@ -1,454 +1,397 @@
 # Pitfalls Research
 
-**Domain:** Expense / Bill Splitting Web App — v1.1 Persistence, History & Payment Text additions to existing React+Zustand+Immer architecture
-**Researched:** 2026-02-22
-**Confidence:** HIGH for localStorage/serialization pitfalls (well-documented); HIGH for branded-type serialization (directly derived from existing codebase); MEDIUM for payment text edge cases (reasoned from existing formatSummary.ts and domain knowledge)
+**Domain:** Visual redesign (glassmorphism, animations, SVG icons, font changes) of existing React 19 + Tailwind CSS 4 PWA
+**Researched:** 2026-02-24
+**Confidence:** HIGH — claims verified against MDN, web.dev, official Tailwind docs, Workbox docs, and real-world issue trackers (shadcn/ui, workbox GitHub, CanIUse)
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Branded Types Silently Survive Serialization But Lose Their Type Brand on Deserialization
+### Pitfall 1: Google Fonts CDN Breaks Offline Mode
 
 **What goes wrong:**
-`Cents`, `PersonId`, and `ItemId` are TypeScript "branded" types: at runtime they are plain `number` and `string` respectively. `JSON.stringify` serializes them without issue — the underlying value is preserved. The failure happens on `JSON.parse`: the result is a plain `number` or `string`, not a branded type. TypeScript's type system does not enforce brands at runtime. So `parsedState.config.tip.amountCents` has the correct integer value but is typed as `number`, not `Cents`. The engine and store accept it without complaint at compile time because TypeScript cannot detect the missing brand at runtime. The app works — until branded-type-narrowing logic (e.g., `if (val as Cents)`) or a future strict type check catches that the deserialized value was never run through the `cents()`, `personId()`, or `itemId()` constructor.
+Adding `<link href="https://fonts.googleapis.com/css2?family=Inter...">` to `index.html` causes the font stack to silently fail when the user opens the app offline. The browser falls back to the system font — which can break layout if Inter's line-height and character metrics differ from the fallback — and the service worker does NOT automatically intercept cross-origin font requests without explicit `runtimeCaching` configuration.
+
+`vite-plugin-pwa` / Workbox's `globPatterns` only precaches local build artifacts (`js`, `css`, `html`, `ico`, `png`, `svg`). External CDN domains (`fonts.googleapis.com`, `fonts.gstatic.com`) are out of scope by default. Developers assume "the service worker handles everything" but cross-origin requests require explicit opt-in.
 
 **Why it happens:**
-TypeScript branded types are a compile-time fiction. There is no runtime `instanceof` check or property that distinguishes `Cents` from `number`. Developers serialize and deserialize assuming the type is preserved because `JSON.parse(JSON.stringify(x))` produces the same *value*, not realizing the brand is gone.
+The redesign phase adds Inter via a CDN `<link>` tag (the quickest way to use a new font). Nobody audits whether the existing service worker covers external domains. The font works perfectly online — the regression is invisible until a user goes offline or tests with Lighthouse's PWA audit.
 
 **How to avoid:**
-Write an explicit deserializer/revivor function that re-applies constructor helpers after `JSON.parse`. Pattern:
-
-```typescript
-function deserializeBillConfig(raw: unknown): BillConfig {
-  const r = raw as Record<string, unknown>;
-  return {
-    people: (r.people as Array<{id: string; name: string}>).map(p => ({
-      id: personId(p.id),
-      name: p.name,
-    })),
-    items: (r.items as Array<{id: string; label: string; priceCents: number; quantity: number}>).map(i => ({
-      id: itemId(i.id),
-      label: i.label,
-      priceCents: cents(i.priceCents),
-      quantity: i.quantity,
-    })),
-    assignments: Object.fromEntries(
-      Object.entries(r.assignments as Record<string, string[]>).map(
-        ([k, v]) => [itemId(k), v.map(personId)]
-      )
-    ) as Assignments,
-    tip: deserializeTipTax(r.tip),
-    tax: deserializeTipTax(r.tax),
-  };
-}
+Option A — Self-host Inter using `@fontsource-variable/inter` (recommended). Font files land in the build output and are precached automatically with no extra config:
+```bash
+npm install @fontsource-variable/inter
 ```
-
-This deserializer goes in a `src/storage/` module. It is the ONLY place `JSON.parse` results are consumed — everything above it receives properly branded types.
-
-**Warning signs:**
-- `JSON.parse(localStorage.getItem(...))` called directly and the result is spread into store state without wrapping in constructor helpers
-- `computeSplit` accepting a config loaded from localStorage where `tip.amountCents` was never passed through `cents()`
-- TypeScript errors appearing after adding `as Cents` type assertions in strict mode that catch raw `number` being passed where `Cents` is expected
-
-**Phase to address:**
-localStorage persistence phase (first). Define the serializer/deserializer before wiring auto-save. The deserializer must have unit tests that verify round-tripping a `BillConfig` through `JSON.stringify → JSON.parse → deserialize` produces a value equal to the original and passes TypeScript's branded type checks.
-
----
-
-### Pitfall 2: No Schema Version on Stored Data Causes Silent Corruption When Fields Are Added or Renamed
-
-**What goes wrong:**
-A user saves a split in v1.1 (schema version 0). The app ships v1.2 which adds a field (e.g., `savedAt: number` on each history entry, or `currency` on `BillConfig`). The user opens the app. The old stored blob is deserialized. The new field is `undefined`. If any code path reads the new field without a null check, the engine throws or returns NaN. If the deserializer does not version-check first, it happily returns a partially-populated object that breaks the running engine. This is a production crash for returning users — new users are unaffected, so the bug is invisible in testing.
-
-**Why it happens:**
-Developers write the initial serializer against the current schema with no thought for future changes, because "we haven't changed anything yet." The version field is the easiest thing to forget because it has zero value on day one.
-
-**How to avoid:**
-Embed a `schemaVersion: number` field in every stored blob at write time, starting at `1`:
-
-```typescript
-interface PersistedHistory {
-  schemaVersion: 1;
-  entries: HistoryEntry[];
-}
+```ts
+// main.tsx
+import '@fontsource-variable/inter';
 ```
-
-At read time, check `schemaVersion` before deserializing:
-
-```typescript
-function loadHistory(): HistoryEntry[] {
-  const raw = localStorage.getItem(HISTORY_KEY);
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw);
-    if (parsed?.schemaVersion !== CURRENT_SCHEMA_VERSION) {
-      // Unknown or older version — discard and start fresh
-      localStorage.removeItem(HISTORY_KEY);
-      return [];
+Option B — Keep CDN but add explicit Workbox `runtimeCaching` rules to `vite.config.ts`:
+```ts
+runtimeCaching: [
+  {
+    urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'google-fonts-cache',
+      expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+      cacheableResponse: { statuses: [0, 200] }
     }
-    return deserializeHistory(parsed);
-  } catch {
-    localStorage.removeItem(HISTORY_KEY);
-    return [];
+  },
+  {
+    urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'gstatic-fonts-cache',
+      expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+      cacheableResponse: { statuses: [0, 200] }
+    }
   }
-}
+]
 ```
-
-For v1.1 this means: start at `schemaVersion: 1`, define `CURRENT_SCHEMA_VERSION = 1`, and discard on mismatch rather than attempt migration. Migration logic can be added later if needed — discarding is always safe for a history list (data loss is recoverable by re-entering a split, which is the same cost as not having persistence at all).
+Also add `crossorigin="anonymous"` to every `<link>` referencing `fonts.googleapis.com` — without it the service worker cannot intercept the request due to CORS opaque response handling.
 
 **Warning signs:**
-- Stored blobs with no `schemaVersion` field
-- Deserializer that reads `parsed.entries` without first checking `parsed.schemaVersion`
-- Any schema change shipped without a version bump
+- Font renders correctly in dev but looks different on first offline load
+- Chrome DevTools → Application → Cache Storage shows no `google-fonts-cache` entry after first page load
+- Lighthouse PWA audit reports "Does not respond with a 200 when offline"
+- Font changes to a system serif when network is disabled in DevTools
 
-**Phase to address:**
-localStorage persistence phase (first). The schema version is a design decision, not an afterthought. Include it in the initial storage spec before writing the first line of persistence code.
+**Phase to address:** Typography and font integration phase — the very first phase before any component styling begins. This is a one-time configuration fix that takes 5 minutes but cannot be retroactively applied to users who are already offline with a broken cache.
 
 ---
 
-### Pitfall 3: `localStorage.setItem` Throws Synchronously Without Try-Catch, Crashing the App
+### Pitfall 2: Tailwind CSS 4 Purges Dynamically-Constructed Class Names
 
 **What goes wrong:**
-`localStorage.setItem` throws `DOMException: QuotaExceededError` when the origin's 5 MiB storage budget is full. It also throws a `SecurityError` in Safari Private Browsing mode. Both are synchronous throws — not rejected Promises. A Zustand `persist` middleware call or a manual `localStorage.setItem` inside a store action that is not wrapped in `try/catch` causes an unhandled exception that propagates up the React call stack, resulting in a blank white screen if no error boundary is present.
+In a bill-splitting app, category colors, status badges, and member avatars are derived from data — e.g., `` `bg-${category.color}-500` `` or `` `text-${member.theme}-600` ``. In production builds, Tailwind's static scanner never sees these complete class names, so they are silently removed from the CSS output. The component renders with no color styles applied — no error, no warning, just invisible styling.
 
 **Why it happens:**
-`localStorage` API looks synchronous and simple. Developers use it like a plain object without thinking about exception paths. Storage quota is never hit during development with 3 test entries. Safari Private Browsing is not tested locally.
+Tailwind 4 uses a Rust-based engine that scans source files as plain text, looking for complete class-name strings. Template literals produce the string `bg-${color}-500` — which does not match any Tailwind class pattern. The JIT engine only generates what it literally sees in source.
+
+Critical change from v3: Tailwind 4 removed `tailwind.config.js` entirely. The v3 `safelist: [{ pattern: /.../ }]` approach no longer works. The new approach is `@source inline()` in your CSS file or static lookup maps in your components.
 
 **How to avoid:**
-Wrap every `localStorage.setItem` and `localStorage.getItem` call in a try-catch. Centralize all storage access in a single `src/storage/localStorageAdapter.ts` module that handles errors:
-
-```typescript
-function safeSetItem(key: string, value: string): boolean {
-  try {
-    localStorage.setItem(key, value);
-    return true;
-  } catch (e) {
-    // QuotaExceededError or SecurityError — log and continue
-    console.warn('[storage] setItem failed:', e);
-    return false;
-  }
-}
-```
-
-If `safeSetItem` returns `false` on auto-save, surface a non-blocking toast: "Could not save — storage full." Do not crash the bill-in-progress. For the history list, implement a MAX_ENTRIES limit (e.g., 50) so quota is bounded. Each `BillConfig` blob is small (< 5 KB for a typical restaurant bill), so 50 entries fits easily within 5 MiB, but the cap prevents edge-case accumulation.
-
-**Warning signs:**
-- `localStorage.setItem(key, JSON.stringify(state))` appearing without a surrounding try-catch
-- No test for Private Browsing behavior (open app in Safari Private Window and verify it works)
-- No MAX_ENTRIES cap on the history list
-
-**Phase to address:**
-localStorage persistence phase. The storage adapter is the first thing to build — before the Zustand `persist` middleware integration or any manual setItem calls. If using `persist` middleware, pass a custom `storage` option that wraps the adapter.
-
----
-
-### Pitfall 4: Middleware Ordering — `persist` Must Wrap `immer`, Not the Other Way Around
-
-**What goes wrong:**
-Zustand's `persist` and `immer` middleware must be composed in the correct order: `persist(immer(stateCreator))`. If the order is reversed to `immer(persist(stateCreator))`, the persist middleware's internal `setState` interception does not see immer's draft-mutation model, causing either: (a) the persisted state to always be the initial state (changes not captured), or (b) TypeScript type errors from incompatible generic constraints that are suppressed with `as any` and hide the real bug.
-
-The existing codebase uses `create<BillState>()(immer(stateCreator))`. Adding `persist` means changing the wrapping to `create<BillState>()(persist(immer(stateCreator), options))`. The natural mistake is to do it the other way because immer "feels like" the innermost concern.
-
-**Why it happens:**
-Middleware composition order is not intuitive. Developers read "I want to add persist to my existing immer store" and wrap the outer layer without reading the Zustand docs' ordering guidance. The Zustand v5 TypeScript types partially catch this but the error messages are opaque.
-
-**How to avoid:**
-Follow Zustand's documented pattern: `create<T>()(devtools(persist(immer(creator), options)))`. Since this project does not use devtools in production, the pattern is: `create<BillState>()(persist(immer(stateCreator), persistOptions))`.
-
-Use `partialize` to persist ONLY the `config` field (not actions):
-
-```typescript
-const persistOptions: PersistOptions<BillState, Pick<BillState, 'config'>> = {
-  name: 'bill-splitter-active',
-  version: 1,
-  partialize: (state) => ({ config: state.config }),
+Option A (safest, recommended) — Replace all dynamic class construction with lookup maps of complete static strings:
+```tsx
+// Tailwind sees "bg-orange-500", "bg-blue-500", "bg-purple-500" as literal strings
+const colorMap: Record<string, string> = {
+  food: 'bg-orange-500 text-orange-50',
+  transport: 'bg-blue-500 text-blue-50',
+  rent: 'bg-purple-500 text-purple-50',
 };
+<Badge className={colorMap[expense.category]} />
 ```
-
-This prevents function serialization issues entirely and keeps the stored blob minimal.
+Option B — Use Tailwind 4's `@source inline()` in your main CSS file to force-generate specific utilities:
+```css
+/* app.css */
+@import "tailwindcss";
+@source inline("{bg,text}-{orange,blue,purple,green,red}-{400,500,600}");
+```
+Option C — Create a `tailwind-safelist.txt` file in the project root listing every dynamic class on separate lines; Tailwind 4 scans all text files it discovers.
 
 **Warning signs:**
-- Zustand TypeScript errors about incompatible `StateCreator` generics when combining persist and immer
-- Auto-save never writes to localStorage (check DevTools > Application > Local Storage after any store mutation)
-- Auto-save always writes the initial state rather than current state
+- Component renders correctly in `npm run dev` (Vite serves all classes) but loses color in `npm run build && npm run preview`
+- Styles present in hot-reload dev server but missing in `dist/` output — this is the definitive signal
+- `grep -r "bg-orange" dist/assets/*.css` returns no matches despite the class being in source
 
-**Phase to address:**
-localStorage persistence phase. Verify with a DevTools inspection immediately after wiring up: mutate store state, check localStorage in Application tab, confirm the blob reflects the mutation.
+**Phase to address:** Design system tokens and component foundation phase — the first phase where data-driven colors are introduced. Extremely hard to retrofit across 6,120 LOC after the fact. Establish the "always use static class maps" convention on day one of the redesign.
 
 ---
 
-### Pitfall 5: Onboarding Screen and History List Create a Conflicting First-Visit Experience
+### Pitfall 3: `backdrop-filter: blur()` Causes GPU Jank on Mid-Range Android Devices
 
 **What goes wrong:**
-The existing `useOnboarding` hook shows the splash screen when `bill-splitter-onboarding-complete` is absent from localStorage. The new history list shows a "No saved splits" empty state when the history array is empty. For a new user, the expected flow is: see splash → dismiss → see empty history → start a new split. If the history list is shown as the default landing screen for returning users but the onboarding key check is evaluated before history is hydrated, a returning user who cleared their onboarding key (or a new device) sees the splash AND then lands on a history list screen with their saved splits suddenly appearing — because history is loaded in a `useEffect` that fires after the splash dismissal.
+`backdrop-filter: blur(12px)` or higher on scroll-following elements (sticky headers, bottom sheets, modal overlays) causes GPU compositing stalls on mid-range Android devices (Snapdragon 665 class, 3 GB RAM). This is documented in the real world: shadcn/ui opened a tracking issue specifically for `backdrop-blur-sm` causing "CSS rendering/painting problems" with "severe lag" — the root cause confirmed as a GPU dependency for 2D rendering in Chromium on non-discrete GPU hardware.
 
-A subtler failure: if the history list becomes the new "home" screen for returning users (those with saved splits), but the active bill state is also persisted and auto-loaded, the user sees their last bill's data pre-populated in the new-split view and gets confused about whether they are editing an old split or starting fresh.
+CSS support is not the issue — CanIUse shows >97% global support including Safari 17 (which dropped the `-webkit-` prefix). The problem is the per-frame GPU cost of sampling and blurring the entire pixel buffer behind every animated or scrolled element.
 
 **Why it happens:**
-Each feature (onboarding, history, active bill persistence) uses localStorage independently with no coordination. The onboarding hook reads localStorage synchronously at mount. History loads asynchronously in `useEffect`. The active bill state rehydrates via `persist` middleware before first render. These three timing differences produce subtle ordering bugs that only appear on actual user flows, not in unit tests.
+Each element with `backdrop-filter` forces the browser to promote that element AND everything behind it to a GPU compositing layer. When the viewport scrolls, the blur must be resampled every frame at 60 fps. High blur radii (>20px) and stacked blur elements multiply this cost non-linearly. Developer MacBooks with discrete GPUs never reproduce the issue.
 
 **How to avoid:**
-Define the explicit state machine for app entry:
-
-```
-New user (no onboarding key, empty history):
-  → Show splash → Dismiss → Empty history list → "New Split" button
-
-Returning user with history (onboarding complete, history entries exist):
-  → Skip splash → Show history list → User taps entry or "New Split"
-
-Returning user, no history (onboarding complete, history cleared):
-  → Skip splash → Show empty history list with "New Split" CTA
-```
-
-The onboarding key check and history load must complete before any rendering decision. Implement a single `useAppEntry` hook that reads both localStorage values synchronously at initialization and returns `{ isNewUser, hasSavedSplits }`. Do not rely on `useEffect` timing for either check.
-
-The active bill persist store must use `skipHydration: false` with a partialize that only saves `config`. On history list load, if the user taps "New Split", call `reset()` explicitly — do not assume the persisted active bill is empty.
+1. Cap blur radius at `blur(8px)` to `blur(12px)` maximum. The GPU cost scales roughly with the square of the blur radius.
+2. Apply `backdrop-filter` ONLY to fixed/static glass panels — not to elements that scroll with the viewport. Sticky headers with backdrop-blur require blur recalculation every scroll frame.
+3. Use `will-change: transform` on the blurred element only if it animates, and remove `will-change` after animation ends. Permanent `will-change` wastes GPU memory layers without benefit.
+4. Provide a `@media (prefers-reduced-transparency)` fallback replacing `backdrop-blur-*` with a solid opaque background for users who have enabled this accessibility setting.
+5. Never stack multiple backdrop-blur layers (e.g., a blurred modal inside a blurred card inside a blurred background). Each layer compounds the GPU cost.
 
 **Warning signs:**
-- Separate `useEffect` calls loading onboarding state and history state (race condition)
-- History list visible for a flash before being replaced by the splash screen (or vice versa)
-- Returning users see a pre-populated new-split form with data from their last session without being told they're editing a saved split
+- FPS drops below 50 in Chrome DevTools Performance panel when scrolling past a blurred card
+- "Paint flashing" in DevTools Rendering tab shows large purple rectangles covering the viewport during scroll
+- The Layers panel in DevTools shows dozens of GPU compositing layers on a screen with multiple glass cards
+- Smooth on MacBook, janky on Android — this hardware disparity is the canonical symptom
 
-**Phase to address:**
-History list phase (Phase 2 or whichever phase introduces the history screen). The history list fundamentally changes the app's entry point. This phase must explicitly define the entry-state machine and coordinate the three localStorage reads before any screen renders.
+**Phase to address:** Glassmorphism foundation phase — establish a blur budget (maximum blur radius, maximum simultaneous backdrop-filter elements) before applying the pattern to any component. Verify on real or throttled hardware before signing off on the design system.
 
 ---
 
-### Pitfall 6: Editing a Saved Split Does Not Clearly Delineate "Are You Editing The Original?" — Silent Overwrite Risk
+### Pitfall 4: Glassmorphism Fails WCAG Contrast on Variable Backgrounds
 
 **What goes wrong:**
-When a user opens a saved split from history, edits a price, and navigates away, the app must decide: auto-save overwrites the original, creates a copy, or asks. If the answer is "auto-save overwrites the original," the user has no way to get back to the original split data if they made a mistake. If the answer is "create a copy on any mutation," the history list accumulates duplicates silently. If the answer is "ask with a modal," the user is interrupted every time they accidentally tap an item.
+White or light-grey text on a frosted-glass panel passes contrast checks in the designer's static mockup (fixed dark gradient behind it) but fails WCAG 2.2 Level AA (4.5:1 minimum for body text, 3:1 for UI components) when real content shifts behind the glass — e.g., a colorful expense category badge, a green "credit" transaction row, or a white empty-state illustration.
 
-The undo toast pattern exists for item/person deletion within a session but cannot undo an auto-save overwrite of a history entry.
+Semi-transparent panels have a variable effective background. A `bg-white/10` glass panel over a bright yellow expense category row produces near-white-on-white contrast. Automated tools (Lighthouse, axe-core) check foreground vs. the nearest opaque ancestor in the DOM — they do NOT simulate the composited visual result of `backdrop-filter`. Failures only surface during manual testing against real content.
 
 **Why it happens:**
-Auto-save is designed for the active bill. Applying auto-save semantics to a "loaded from history" bill means the history entry is the save target, not a separate copy. Developers implement auto-save first for the active bill, then wire up history load by populating the store from the history entry — and the existing auto-save subscription immediately starts overwriting that entry on the next mutation.
+Glassmorphism is evaluated in isolation during design reviews. The static mockup always shows the "best case" dark gradient. No automated tool currently simulates backdrop-filter compositing to compute the actual visual contrast.
 
 **How to avoid:**
-Introduce a concept of `editingHistoryEntryId: string | null` in the store or a separate context. When `null`, auto-save writes to the "active unsaved split" slot. When set to an ID, auto-save updates that specific history entry.
-
-On load from history: set `editingHistoryEntryId` to the entry's ID. Show a visible affordance ("Editing: Jul 4, 2025 dinner") so the user knows they are modifying an existing record. Provide an explicit "Save changes" and a "Duplicate as new" action — do not silently overwrite.
+1. Never rely solely on the glass blur layer for text legibility. Add an explicit semi-opaque solid inner backing behind all text inside glass cards: `bg-black/40` for dark mode or `bg-white/60` for light mode, as a separate layer from the blur.
+2. Measure contrast against the WORST-CASE background content that can appear behind the glass (bright category colors, white transaction amounts, photos if applicable). Target 7:1 or above to provide headroom for variable backgrounds.
+3. Implement `@media (prefers-reduced-transparency)` to fall back to fully opaque panels for users with visual impairments who have enabled this OS-level setting.
+4. Run axe-core audits on every screen state (empty list, list with colorful expense categories, balance summary with green/red amounts).
 
 **Warning signs:**
-- History entry data mutates immediately after being loaded into the active store (check in DevTools before any user action)
-- No distinction in the UI between "new split" and "editing saved split" session modes
-- Loading from history populates the store with auto-save already subscribed but no `editingHistoryEntryId` concept
+- Lighthouse accessibility score passes on the empty-state screen but drops when a full expense list is present
+- QA reports "the total text is hard to read on the green settlement card" — a subjective complaint that signals a real contrast failure
+- Text contrast ratio below 7:1 against the glass layer alone (leaves zero headroom for bright backgrounds)
 
-**Phase to address:**
-History list phase, specifically the "re-open and edit saved splits" sub-feature. Define the editing mode explicitly before wiring auto-save to a history entry.
+**Phase to address:** Glassmorphism foundation phase — define the text contrast floor (minimum backing opacity) before applying the glass pattern to any component. Changing this after 20 components are built requires touching all of them.
 
 ---
 
-### Pitfall 7: Payment Text "Payer" Feature Fails for Zero-Amount and Self-Reference Edge Cases
+### Pitfall 5: Touch Target Regression from Glass Card Padding Changes
 
 **What goes wrong:**
-The payment text feature picks a payer and generates "Alice owes YOU $23.50" per person. Edge cases that produce wrong or embarrassing output:
+Glassmorphism redesigns frequently change card padding (increased for visual breathing room) and replace text-based action rows with icon-only glass buttons. The padding change can SHRINK the effective clickable area if icon-only buttons have their padding reduced to fit inside tight glass cards. WCAG 2.5.8 (Level AA, mandatory under the EU Accessibility Act effective June 28, 2025) requires targets to be at least 24x24 CSS pixels with 24px spacing around them. Google Material and Apple HIG both recommend 48x48 physical pixels.
 
-1. **Payer is included in results with $0.00:** The payer paid the bill but may also owe themselves. The text "YOU owe YOU $0.00" or "Alice owes Alice $8.50" must never appear. The payer's own line must be omitted from the generated text.
-
-2. **A non-payer person owes $0.00:** Possible when a person has no items assigned (no food, no tip share if proportional, no tax share if proportional). The text "Bob owes YOU $0.00" is confusing — it implies Bob owes nothing, not that he's excluded. Either omit zero-amount entries or replace with "Bob is settled up."
-
-3. **Negative amount (structural impossibility but defensive):** The engine always produces non-negative `roundedTotalCents` because all inputs are non-negative. However, if a history entry from a future schema version had a different engine, a negative value would produce "Bob owes YOU -$5.00." The payment text formatter must guard `amount > 0` before generating a payment line.
-
-4. **Person name contains characters that break the text format:** Names like "Alice & Bob (couple)", "O'Malley", or emoji names ("🍕 Person") are valid in the `name` field. In the simple text format "Name owes YOU $X.XX", these render correctly because they are just strings. The risk is if the text is later parsed (e.g., by a Venmo link) — but since the requirement is plain text only, this is not a crash risk. Still, document that names are passed through as-is without escaping.
-
-5. **Single-person bill with payer selected:** If only Alice is in the bill and she's the payer, the output list is empty (she's excluded as payer, no one else exists). The UI must handle "no other people" gracefully: show a message like "Everyone is settled — Alice paid the whole bill."
+The existing 144 tests in this app almost certainly do not assert rendered pixel dimensions of interactive elements — so touch target regressions pass CI completely silently.
 
 **Why it happens:**
-Payment text is implemented by looping over `result.results`, filtering out the payer's `PersonId`, and formatting each remaining entry. The zero-amount case is not a compile-time error, the self-reference case is a simple filter omission, and the empty-result case is never tested because tests always use 2+ people.
+Designers specify glass cards with minimal inner padding to make content feel "airy." A delete icon button inside a card gets `p-2` (8px padding each side), giving a total tap area of 24px icon + 16px padding = 40px — technically below the recommended 48px. The regression is invisible in browser dev tools on a MacBook (mouse precision compensates) and only manifests as real-world miss-taps on a 5-inch Android phone.
 
 **How to avoid:**
-Write a pure `formatPaymentText(result, people, payerPersonId)` function in `src/utils/` with explicit handling:
+1. Never set icon button padding below `p-3` (12px padding each side: 24px icon + 24px = 48px total). Add `min-h-12 min-w-12` as a hard constraint on all interactive elements regardless of visual padding.
+2. For icon-only buttons inside space-constrained glass cards, use negative margins to expand the tap area beyond the visual bounds: apply `p-1 -m-1` on the outer wrapper.
+3. Add a Playwright accessibility check to the PR process that reports elements with bounding rects smaller than 44x44px.
+4. Use Chrome DevTools → Accessibility → inspect element to verify the touch target size on redesigned interactive elements before merging.
 
-```typescript
-export function formatPaymentText(
-  result: EngineSuccess,
-  people: Person[],
-  payerPersonId: PersonId,
-): string {
-  const lines: string[] = [];
-  for (const r of result.results) {
-    if (r.personId === payerPersonId) continue; // skip payer
-    if (r.roundedTotalCents <= 0) continue;     // skip $0 and negative
-    const person = people.find(p => p.id === r.personId);
-    const name = person?.name ?? 'Unknown';
-    const amount = centsToDollars(r.roundedTotalCents);
-    lines.push(`${name} owes YOU $${amount}`);
-  }
-  if (lines.length === 0) {
-    return 'Everyone is settled up.';
-  }
-  return lines.join('\n');
+**Warning signs:**
+- User testing reports "it's hard to tap the X button on the expense card"
+- Chrome DevTools accessibility tree shows elements with computed size below 44px
+- Lighthouse accessibility score drops after the redesign PR merges (though Lighthouse does not currently check target size by default)
+
+**Phase to address:** Component redesign phase — add touch target validation to the PR review checklist for every component that contains icon-only interactive elements.
+
+---
+
+### Pitfall 6: Animating Layout-Triggering CSS Properties Causes Jank
+
+**What goes wrong:**
+Animating `width`, `height`, `padding`, `margin`, `top`, `left`, `box-shadow`, or `border-width` forces the browser to run layout recalculation and paint on every animation frame. At 60fps this means 16ms per frame for layout + paint + composite — on a mid-range Android phone, these operations alone can exceed the frame budget, causing dropped frames and jank.
+
+Common in glassmorphism redesigns: animating `box-shadow` for hover states on glass cards (produces repaints), or animating `height` for accordion-style glass panels (triggers full layout reflow).
+
+**Why it happens:**
+`box-shadow` changes look harmless — they are just visual styling. But `box-shadow` is a paint operation that cannot be promoted to the GPU compositor layer. It forces the browser to re-rasterize the entire element on every frame. Developers test hover states on a MacBook where the CPU/GPU handles it effortlessly, then ship to mobile devices where it degrades.
+
+**How to avoid:**
+Only animate these two properties for performance-critical animations: `transform` and `opacity`. Both run on the GPU compositor thread, bypassing layout and paint entirely.
+
+```css
+/* BAD: triggers layout + paint every frame */
+.glass-card:hover {
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4); /* animating this = repaint */
+  padding: 20px; /* layout thrash */
+}
+
+/* GOOD: compositor-only, zero layout/paint cost */
+.glass-card {
+  /* pre-render both shadow states as opacity layers */
+}
+.glass-card::after {
+  content: '';
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.glass-card:hover::after {
+  opacity: 1; /* only opacity changes = compositor thread */
 }
 ```
 
-Unit test all five edge cases: payer excluded, zero-amount excluded, single-person bill, name with special characters, name with emoji.
+For entry animations on glass cards, use `transform: translateY()` + `opacity`, never `height` or `margin` animations.
 
 **Warning signs:**
-- Payment text output contains the payer's own name
-- "owes YOU $0.00" appears in output
-- Calling `formatPaymentText` with a single-person result crashes or returns empty string without a fallback message
+- Chrome DevTools Performance panel shows "Recalculate Style" and "Layout" tasks longer than 8ms during hover animations
+- "Paint flashing" (green overlays) in the Rendering tab appears on glass card hover
+- Framer Motion or CSS `@keyframes` use `height: auto` or `margin-top` as animated values
 
-**Phase to address:**
-Payment text phase (final feature). The pure function approach means it is independently testable before any UI is wired. Write the function and tests before building the payer-selection UI.
+**Phase to address:** Animation system phase — establish the "compositor-only animation" rule as a hard constraint before implementing any transitions. Review all glassmorphism hover states for `box-shadow` animation and replace with the `::after` opacity-layer pattern.
 
 ---
 
-### Pitfall 8: Auto-Save Subscription Fires on Every Keystroke, Writing Full State to localStorage on Each Character
+### Pitfall 7: `prefers-reduced-motion` Not Respected — WCAG 2.3.3 Violation
 
 **What goes wrong:**
-The Zustand `persist` middleware auto-saves on every store state change. The current store is mutated on every keystroke in item price, tip, and tax inputs (through `updateItem`, `setTip`, `setTax`). For a bill with 10 items and 5 people, the full `config` blob is approximately 2–4 KB. Serializing and writing 4 KB to localStorage on every keystroke is synchronous work on the main thread. On low-end Android devices, this can cause perceptible input lag (> 16 ms per frame), degrading the "at the table" use case.
+Adding entry animations (fade-in, slide-up), hover animations, and transition effects to a redesigned PWA without honoring `prefers-reduced-motion` is a WCAG 2.3.3 violation. This affects 70+ million people with vestibular disorders, migraines, and motion sensitivities. On iOS, the "Reduce Motion" setting is widely used — it is not a niche edge case.
+
+The existing `App.css` already shows the correct pattern (`@media (prefers-reduced-motion: no-preference)`) for the Vite default logo animation. The risk is that new animation code in the redesign does NOT follow this pattern, adding animations that run unconditionally.
 
 **Why it happens:**
-`persist` middleware subscribes to every state change and serializes synchronously. This is fine for infrequent state changes (adding/removing people/items) but is excessive for continuous input events.
+Developers add animations ad-hoc in component files without a centralized animation system. Each developer checks their own component but forgets the reduced-motion check. No automated test catches missing media query guards. The setting is rarely enabled on development machines.
 
 **How to avoid:**
-Two strategies, in order of preference:
-
-1. **Control inputs locally (recommended):** Keep price/tip/tax inputs as local component state (`useState`). Commit to the store only on `onBlur` (when user leaves the field). This is already the intended pattern for React forms. The `persist` middleware then fires only on blur, not on every keypress. This matches the existing UX pattern used in v1.0.
-
-2. **Debounce the storage write (fallback):** If the store must update on every keypress (e.g., for live subtotal calculation), configure `persist` with a custom `storage` that debounces writes:
-
-```typescript
-const debouncedSetItem = debounce((key: string, value: string) => {
-  localStorage.setItem(key, value);
-}, 500);
+Add a global reduced-motion reset at the top of the CSS file that covers all animations added during the redesign:
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
 ```
-
-Option 1 is preferred because it also reduces unnecessary `computeSplit` calls during typing.
+For Framer Motion: check `useReducedMotion()` hook and provide static variants as the reduced-motion alternative.
+For Tailwind: use the `motion-reduce:` variant prefix on all transition/animation classes: `motion-reduce:transition-none`.
 
 **Warning signs:**
-- DevTools > Application > Local Storage updates on every keypress in an item price field
-- Input lag noticeable when typing on a mid-range Android device with a large bill (10+ items)
-- `persist` middleware configured with no `partialize`, serializing action functions along with state (adds ~10x to serialized size)
+- Animation keyframes or `transition` classes not wrapped in `motion-reduce:` or `@media (prefers-reduced-motion: no-preference)`
+- No `useReducedMotion` hook usage alongside Framer Motion animations
+- Lighthouse accessibility audit flags WCAG 2.3.3 after the redesign
 
-**Phase to address:**
-localStorage persistence phase. Verify the write frequency before shipping: type quickly in a price field and watch the Application > Local Storage tab in DevTools.
+**Phase to address:** Animation system phase — first thing implemented before any transitions or entry animations are added to components. This is a one-line global CSS rule that prevents all future violations automatically.
 
 ---
 
 ## Technical Debt Patterns
 
+Shortcuts that seem reasonable but create long-term problems.
+
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Skip `schemaVersion` on first ship | Save 5 minutes of code | First schema change is a breaking migration with no upgrade path for existing users | Never — add version: 1 from the start |
-| Use `persist` middleware without `partialize` | No extra code | Functions serialized into localStorage, "old function" bugs on deploy (pmndrs/zustand discussion #2556), bloated storage blob | Never — always partialize to data-only fields |
-| Deserialize without re-applying branded type constructors | No extra deserializer code | Branded type guarantees silently broken; future strict type checks fail; engine may receive unbranded values | Never — the deserializer is the type boundary |
-| `localStorage.setItem` without try-catch | Simpler code | Crashes entire app in Private Browsing (Safari) and on full storage | Never — wrap every localStorage call |
-| No MAX_ENTRIES limit on history | No pruning logic needed | History grows unbounded; serialization size grows; eventual QuotaExceededError | Never — set a cap (50 entries is generous) |
-| Overwrite history entry on every active-bill state change | Simple auto-save | User's original saved data is irretrievably modified on first load | Never — distinguish active-bill slot from history entries |
-| Omit payer-self-exclusion in payment text | Simpler loop | "Alice owes YOU $23.50" when Alice IS the payer; confusing output | Never — always filter payer's own PersonId |
+| Google Fonts CDN `<link>` without Workbox runtime caching rules | Zero npm install, font available instantly in dev | Font silently breaks offline; PWA audit fails; user sees system font on first offline launch | Never — self-host with `@fontsource-variable/inter` (2 minutes setup) or add Workbox rules |
+| `will-change: transform` on all animated elements globally | Smoother animations in dev testing | GPU memory exhaustion on mobile; battery drain; each `will-change` element creates a permanent GPU layer | Only on elements actively mid-animation; remove via JS after animation completes |
+| Template literal Tailwind classes (`` `bg-${color}-500` ``) | DRY, flexible component props | Silent purge in production builds; styles missing in `npm run build` output; no error or warning | Never — always use static lookup maps or `@source inline()` |
+| Stacking multiple `backdrop-blur-*` layers (blurred modal inside blurred card) | Richer visual depth | Non-linear GPU cost; scroll jank on Android; drains battery | Never — use solid opacity overlay for depth rather than nested blur |
+| Skipping `prefers-reduced-motion` on entry animations | Simpler component code | WCAG 2.3.3 violation; triggers vestibular disorders in real users | Never — one global CSS rule covers all components automatically |
+| Inline every SVG as a React component | Tree-shaking friendly, no network request | DOM bloat at scale; duplicate SVG nodes per re-render of list items | Acceptable for ≤30 unique icons used sparingly; use sprite or icon library for icon-heavy lists |
+| Animating `box-shadow` directly in CSS transition | Simple hover effect code | Paint operation every frame; GPU cannot promote to compositor layer; jank on mobile | Never — use `::after` pseudo-element with `opacity` transition instead |
+| Loading full Inter variable font (all weights, all subsets) | Matches design spec exactly | ~95kb vs ~16kb for Latin-only subset; FOUT on first load; LCP regression | Never — specify only weights and subsets used; English-only app needs Latin subset only |
 
 ---
 
 ## Integration Gotchas
 
+Common mistakes when connecting to external services and build tools.
+
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| Zustand `persist` + `immer` | Wrong middleware order: `immer(persist(...))` instead of `persist(immer(...))` | Always `create()(persist(immer(creator), options))` — persist wraps immer |
-| Zustand `persist` + `partialize` | Not using `partialize`, serializing action functions | `partialize: (s) => ({ config: s.config })` — persist only the data slice |
-| Zustand `persist` + version | Omitting `version` field — defaults to 0 but never migrates | Always set `version: 1` and a `migrate` function stub even if migration is a no-op for now |
-| `JSON.parse` + branded types | Using result directly as `BillConfig` without deserializer | Pass through `deserializeBillConfig()` before any engine or store consumption |
-| localStorage + Private Browsing | `SecurityError` on `getItem` / `setItem` in Safari | Wrap both in try-catch; fall back to in-memory-only mode silently |
-| History list + active bill persist | Same `persist` key for active bill and history | Use separate localStorage keys: `bill-splitter-active` (active bill) and `bill-splitter-history` (history list) |
+| Google Fonts CDN + vite-plugin-pwa | Adding `<link>` to `index.html` without Workbox runtime caching | Add `runtimeCaching` for both `fonts.googleapis.com` and `fonts.gstatic.com` using `CacheFirst` + 1-year expiration |
+| Google Fonts CDN + service worker | Missing `crossorigin="anonymous"` on `<link rel="preconnect">` tags | Without this attribute, the service worker cannot intercept the request; CORS opaque responses won't cache |
+| Tailwind CSS 4 + dynamic colors | Using v3-style `safelist` in `tailwind.config.js` (file no longer exists in v4) | Use `@source inline("{bg,text}-{colors}-{shades}")` in CSS or static string lookup maps in components |
+| Tailwind CSS 4 + custom `@layer utilities` | Defining utilities in `@layer` but referencing them via template literals | Static class names only; Tailwind 4 scans plain text and must see the complete class name as a literal string |
+| lucide-react / heroicons icon libraries | `import * as Icons from 'lucide-react'` imports the entire library | `import { Plus, Trash2, ChevronDown } from 'lucide-react'` — tree-shaking only works with named imports |
+| Framer Motion + PWA | Installing full `framer-motion` when only basic animations are needed | Consider `motion/react` (the new package name) or CSS transitions for simple opacity/transform animations to avoid a ~50kb addition to the JS bundle |
 
 ---
 
 ## Performance Traps
 
+Patterns that work in development but degrade on real mobile devices.
+
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Serialize full state (including actions) on every store mutation | DevTools shows 50 KB+ blobs in localStorage; writes on every keypress | Always `partialize` to data-only; debounce or move to blur-only writes | Immediately with immer+persist without partialize |
-| Load entire history list into memory at startup | Startup time increases with history size | Keep history list as IDs + metadata (date, people names, total); load full `BillConfig` blob only when user opens an entry | Perceptible at > 200 entries; unlikely in practice but design for lazy load |
-| Deserialize full `BillConfig` on history list render | History list renders slowly because it deserializes every entry to compute display data | Store pre-computed display metadata (date, participant names, total) alongside the full blob — extract at save time | Perceptible at > 20 entries if full deserialization runs on render |
-| `computeSplit` called on every history entry during list render | CPU spike on history screen load | History list shows pre-computed display metadata only — never call engine on render | Immediate if total is re-derived at render time |
-
----
-
-## Security Mistakes
-
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| Storing sensitive data in localStorage | localStorage is readable by any JS on the same origin | Bill data (names, amounts) is inherently not sensitive — no mitigation needed for v1.1 |
-| Parsing history entry `BillConfig` blob without try-catch | Corrupted blob (user edited DevTools, storage limit partial write) crashes app | Always `try/catch` around `JSON.parse`; delete the key and return empty on any parse error |
-| Rendering person names from stored history as `innerHTML` | XSS if name contains `<script>` — though attacker can only attack themselves in client-side-only app | Always render names as React text nodes, never `dangerouslySetInnerHTML`; this is already the v1.0 pattern |
+| Multiple simultaneous `backdrop-filter` elements on one screen | Scroll jank, FPS < 40 on Android during list scrolling | Maximum 2 active `backdrop-filter` elements per screen; no `backdrop-filter` on scroll-following elements | 3+ stacked blur elements; any blur on a sticky element that scrolls |
+| Loading SVG icon libraries as namespace imports | Large initial JS chunk; slow TTI | Named imports only from `lucide-react`; audit chunk size with `npm run build` Vite visualizer | Any namespace import regardless of icon count |
+| Permanent `will-change: transform` on hover-animated glass cards | Excess GPU layers; memory pressure across all cards in a list | Apply `will-change` via JS only during active animation; remove on `animationend`/`transitionend` | Page with more than 10 elements with simultaneous `will-change` |
+| Loading Inter variable font without subsetting | ~95kb font download; slower LCP; FOUT on first load | `@fontsource-variable/inter` with only weights `300-700`; Latin subset only | Any locale-specific subset included for a Latin-only app |
+| Entry animations on every list item (expense list, person list) | Individual `translate` animations on 20+ items = 20x animation overhead | Animate the list container once, not each item; or stagger with reduced duration and `will-change` cleanup | Lists with > 10 animated items on a mid-range Android device |
 
 ---
 
 ## UX Pitfalls
 
+Common user experience mistakes specific to this redesign domain.
+
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| History list shows raw timestamp (epoch ms) | "1737984000000" is meaningless | Format as "Jan 27 · 4 people · $87.50" using `Intl.DateTimeFormat` with locale-aware short date |
-| Deleting a history entry with no undo | Irrecoverable data loss | Apply the existing `useUndoDelete` pattern to history deletion — 5-second undo toast, same as item/person deletion |
-| Auto-save overwrites history entry without warning | User's original split is gone after any edit | Show "Editing saved split" indicator; provide explicit "Save changes" action for history-loaded splits |
-| Payer selection UI doesn't reset when opening new split | Previous payer selection persists into a different split | Reset payer selection to null whenever `reset()` is called or a new history entry is loaded |
-| Payment text copies names as-is including emoji | "🍕Pizza Fan owes YOU $12.00" — works but looks odd in Venmo/Zelle | Document this is acceptable; do not add name sanitization (it would restrict valid names) |
-| "Owes YOU" text when the person is NOT the copy recipient | User shares "Alice owes YOU $12" with Alice — Alice gets confused who "YOU" is | This is an inherent limitation of the payer-directed text model; document it as a known UX tradeoff, not a bug |
-| Empty history list shows nothing (blank screen) | First-time returning user confused about what to do | Show explicit empty state: "No saved splits yet. Start a new one to see it here." with a CTA button |
+| Glass card contrast only verified against static dark background | Text unreadable when bright expense category badge appears behind glass | Add `bg-black/40` text-backing layer behind all text in glass cards; verify contrast against colorful list item backgrounds |
+| Entry animations that replay on every back-navigation | Annoys frequent users navigating between screens rapidly | Wrap entry animations in a `useRef` + `useEffect` that animates only on first mount, not on re-mount from router cache |
+| Icon-only glass buttons without accessible labels | Screen readers announce nothing; WCAG 4.1.2 failure | Every icon-only button needs `aria-label="Delete expense"` or visually-hidden `<span>` |
+| Font fallback causes layout shift (CLS) during Inter load | Text reflowing shifts other elements; looks broken | Use `font-display: swap` with a system font stack that closely matches Inter metrics; self-hosting eliminates FOUT entirely |
+| Glassmorphism effect removed by `prefers-reduced-transparency` with no graceful fallback | Glass cards look unstyled (no background, invisible against page) | `prefers-reduced-transparency` should fall back to `bg-surface/95 backdrop-blur-none border border-border`, not to no background at all |
+| New font (Inter) loads after first paint, pushing content down | FOUT causes layout shift; Cumulative Layout Shift score degrades | Preload font: `<link rel="preload" href="..." as="font" crossorigin>` or use `@fontsource-variable/inter` (precached by service worker) |
 
 ---
 
 ## "Looks Done But Isn't" Checklist
 
-- [ ] **Branded type round-trip:** Load a saved `BillConfig` from localStorage, pass to `computeSplit` — verify no TypeScript errors and result matches the original calculation. Run this as a unit test, not a manual check.
-- [ ] **Schema version check:** Change `CURRENT_SCHEMA_VERSION` to `2` in the codebase and reload the app — verify it discards v1 data gracefully (empty history, no crash) rather than attempting to parse an incompatible blob.
-- [ ] **Storage quota:** Fill localStorage to near capacity (add ~200 fake 5 KB entries) and verify the auto-save failure path shows a non-blocking toast, not a crash or blank screen.
-- [ ] **Safari Private Browsing:** Open the app in Safari Private Window — verify the app loads and all features work except persistence (no crash, no blank screen).
-- [ ] **Payer = only person:** Create a 1-person bill, select that person as payer — verify payment text shows "Everyone is settled up." not an empty string or crash.
-- [ ] **Payer self-exclusion:** In a 3-person bill, select person B as payer — verify person B's name does NOT appear in the generated payment text.
-- [ ] **Zero-amount person:** Create a bill where person C has $0 total (no items, proportional tip/tax) — verify "C owes YOU $0.00" does not appear in payment text.
-- [ ] **History entry editing:** Load a history entry, change one item price — verify the change is attributed to the loaded entry, not silently creating a duplicate in history.
-- [ ] **Onboarding + history coordination:** Clear ALL localStorage, reload — verify splash screen appears. Dismiss splash — verify empty history list appears (not the active bill screen). Add a split, save it, reload — verify history list appears (no splash screen).
-- [ ] **Undo delete on history entry:** Delete a history entry — verify 5-second undo toast appears. Click Undo — verify entry is restored with all data intact.
-- [ ] **Serialize/deserialize round-trip:** Run a test that creates a `BillConfig` with items, people, assignments, tip, and tax; serializes it; deserializes it; and passes both to `computeSplit` — verify results are identical.
-- [ ] **LocalStorage keys don't collide:** Verify `bill-splitter-active`, `bill-splitter-history`, and `bill-splitter-onboarding-complete` are all distinct keys that do not overwrite each other.
+Things that appear complete in development but have hidden production failures.
+
+- [ ] **Offline font loading:** Font renders in browser — verify by going to DevTools → Network → Offline → hard reload. If font changes to a system font, caching is not configured.
+- [ ] **Production class purge:** Design looks correct in `npm run dev` — verify with `npm run build && npm run preview`. Missing colors = dynamic class names need static maps or `@source inline()`.
+- [ ] **Contrast on all backgrounds:** Glass card looks fine on dark background — test against a bright green "credit" transaction row, an orange food category badge, and a white empty-state illustration behind the card.
+- [ ] **Touch targets on physical device:** Everything tappable on MacBook — test on a physical Android phone (or Chrome DevTools mobile emulation). Icon-only delete buttons inside list cards are the most common failure point.
+- [ ] **Reduced motion respected:** Animations run in browser — test with macOS/iOS "Reduce Motion" enabled in System Settings → Accessibility. If animations still run, the global CSS rule or `motion-reduce:` variants are missing.
+- [ ] **Blur performance under throttle:** Glass looks smooth on MacBook — test in Chrome DevTools with CPU 4x throttle + mobile emulation while scrolling an expense list with 10+ items. FPS should stay above 50.
+- [ ] **Service worker updates on redesign deploy:** Users with old cached version — verify the PWA update prompt appears or the page auto-refreshes after deploying. CSS changes update the service worker only if the file content hash changes (Vite handles this; verify the SW filename changes in `dist/`).
+- [ ] **`will-change` cleanup after animations:** Applied `will-change` for entry animations — verify via Chrome DevTools Layers panel that GPU layers are released after animations complete, not permanently allocated.
+- [ ] **SVG icon bundle size:** Added icon imports — verify `npm run build` chunk size stays below Vite's 500kb warning. Named imports from `lucide-react` are tree-shaken; namespace imports are not.
+- [ ] **Inter subsetting:** Loaded Inter variable font — verify in DevTools Network tab that only the necessary font weights are downloaded, not the full variable font file with all axes.
 
 ---
 
 ## Recovery Strategies
 
+When pitfalls occur despite prevention, how to recover.
+
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Branded types not re-applied after deserialization | MEDIUM | Add `deserializeBillConfig()` at the localStorage read boundary; unit test round-trip; no data migration needed — values are identical, just re-wrapped |
-| No schema version shipped, then schema changes | HIGH | Pick a version number retroactively; treat all stored blobs with no `schemaVersion` as version 0; write migration from 0 → 1; ship the migrate function |
-| `localStorage.setItem` throws uncaught, app crashes | LOW | Add try-catch in the storage adapter; no data loss since the write failed anyway |
-| History entries silently overwritten on edit | HIGH | Introduce `editingHistoryEntryId` state; replay auto-save with correct target; previously overwritten entries are lost — communicate to users that history for the affected session may be gone |
-| Payment text shows wrong payer/zero-amount output | LOW | Fix `formatPaymentText` guard conditions; no data migration needed — format is computed on demand |
-| Middleware ordering wrong (immer/persist swapped) | LOW | Fix the `create()` call order; verify with DevTools Application tab; no data loss |
+| Google Fonts offline failure discovered post-launch | LOW | Add Workbox `runtimeCaching` rules to `vite.config.ts`, rebuild, deploy. Existing users get updated service worker within 24 hours via the service worker update cycle. |
+| Dynamic Tailwind classes purged in production | MEDIUM | Run `grep -r 'bg-\${' src/ && grep -r 'text-\${' src/` to find all dynamic patterns. Convert each to a static lookup map or add to `@source inline()`. Rebuild and verify. |
+| Contrast failures found in accessibility audit | MEDIUM | Add `bg-black/40` backing layer to all glass text containers. Requires touching every glass component but no architectural change — can be done in one PR. |
+| Touch target regressions on icon buttons | LOW | Add `min-h-12 min-w-12` constraint to a shared `IconButton` component. Replace all icon-only `<button>` elements with this component. |
+| Backdrop-blur jank reported by users on Android | MEDIUM | Remove `backdrop-filter` from all scroll-following elements. For fixed panels, reduce blur radius to `blur(8px)`. May require design review if the visual is considered core to brand identity. |
+| SVG bundle bloat (Vite chunk size warning) | LOW | Audit imports with Vite bundle visualizer. Switch namespace imports to named imports. Verify chunk size drops below warning threshold. |
+| `prefers-reduced-motion` violations found in audit | LOW | Add the global CSS reset rule once at the top of `app.css`. All existing and future animations are covered without touching individual components. |
 
 ---
 
 ## Pitfall-to-Phase Mapping
 
+How roadmap phases should address these pitfalls.
+
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| Branded type serialization (Pitfall 1) | localStorage persistence phase | Unit test: `BillConfig` round-trips through JSON and deserializer, then passes `computeSplit` with identical result |
-| Schema versioning (Pitfall 2) | localStorage persistence phase | Test: mismatched version discards blob gracefully; version match deserializes correctly |
-| localStorage throws (Pitfall 3) | localStorage persistence phase | Manual test: Safari Private Window; DevTools storage fill simulation |
-| Middleware ordering (Pitfall 4) | localStorage persistence phase | DevTools: mutate store, confirm localStorage updates with `config` key only |
-| Onboarding/history coordination (Pitfall 5) | History list phase | Manual flow: clear storage → new user flow; return with history → returning user flow |
-| History entry edit mode (Pitfall 6) | History list phase — "re-open and edit" sub-feature | DevTools: load entry, mutate, verify correct entry ID is target of auto-save |
-| Payment text edge cases (Pitfall 7) | Payment text phase | Unit tests: payer excluded, zero-amount excluded, single-person, special char names |
-| Auto-save write frequency (Pitfall 8) | localStorage persistence phase | DevTools: type in price field, watch Application > Local Storage; verify writes are blur-triggered or debounced |
+| Google Fonts offline failure (Pitfall 1) | Phase 1: Typography and font setup | `npm run build && npm run preview` with DevTools offline mode; Lighthouse PWA offline audit |
+| Tailwind dynamic class purge (Pitfall 2) | Phase 1: Design system tokens and color foundation | `npm run build` followed by visual regression check against dev server; `grep` check on `dist/` CSS |
+| Backdrop-filter GPU jank (Pitfall 3) | Phase 2: Glassmorphism foundation | Chrome DevTools Performance recording with 4x CPU throttle; Rendering tab FPS meter during scroll |
+| Glassmorphism contrast failures (Pitfall 4) | Phase 2: Glassmorphism foundation | axe-core audit on all expense list screens with bright category backgrounds populated |
+| Touch target regression (Pitfall 5) | Phase 3: Component redesign | Playwright accessibility check asserting `getBoundingClientRect` >= 44px on all interactive elements |
+| Layout-triggering animation jank (Pitfall 6) | Phase 4: Animation system | Chrome DevTools Performance panel; no "Layout" or "Recalculate Style" tasks > 8ms during hover animations |
+| Missing `prefers-reduced-motion` (Pitfall 7) | Phase 4: Animation system — implement global CSS rule first | Test with OS Reduce Motion enabled across all animated screens |
+| SVG icon bundle bloat | Phase 3 or wherever icons are introduced | `npm run build` chunk size; Vite bundle visualizer |
 
 ---
 
 ## Sources
 
-- Zustand `persist` middleware docs and middleware ordering: [persist - Zustand](https://zustand.docs.pmnd.rs/middlewares/persist) — HIGH confidence
-- Zustand `persist` + `immer` ordering discussion: [Immer + Persist Middleware Problems, pmndrs/zustand Discussion #1143](https://github.com/pmndrs/zustand/discussions/1143) — MEDIUM confidence (discussed in community, consistent with docs)
-- Zustand schema migration: [Persisting store data - Zustand](https://zustand.docs.pmnd.rs/integrations/persisting-store-data) — HIGH confidence
-- Zustand function serialization bug: [Persist middleware keeping old versions of functions around, pmndrs/zustand Discussion #2556](https://github.com/pmndrs/zustand/discussions/2556) — MEDIUM confidence
-- localStorage `QuotaExceededError` and `SecurityError`: [Handling localStorage errors, Matteo Mazzarolo](https://mmazzarolo.com/blog/2022-06-25-local-storage-status/); [MDN: Storage quotas and eviction criteria](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) — HIGH confidence
-- `JSON.parse` on corrupted localStorage: [Stop Using JSON.parse(localStorage.getItem(...)) Without This Check, Medium/Devmap](https://medium.com/devmap/stop-using-json-parse-localstorage-getitem-without-this-check-94cd034e092e) — HIGH confidence
-- TypeScript branded types serialization behavior: derived directly from inspection of `src/engine/types.ts` and `JSON.stringify` runtime behavior — HIGH confidence (first-party analysis)
-- Payment text edge cases: derived from `src/utils/formatSummary.ts` analysis and `computeSplit` engine output guarantees — HIGH confidence (first-party analysis)
-- Auto-save UX patterns: [To save or to autosave, Medium](https://medium.com/@brooklyndippo/to-save-or-to-autosave-autosaving-patterns-in-modern-web-applications-39c26061aa6b) — MEDIUM confidence
+- [MDN: backdrop-filter CSS property](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter)
+- [web.dev: High-performance CSS animations guide](https://web.dev/articles/animations-guide)
+- [shadcn/ui GitHub issue #327: backdrop-filter causes performance issues in Chrome](https://github.com/shadcn-ui/ui/issues/327)
+- [CanIUse: CSS backdrop-filter browser support](https://caniuse.com/css-backdrop-filter)
+- [Tailwind CSS v4 official docs: Detecting classes in source files](https://tailwindcss.com/docs/detecting-classes-in-source-files)
+- [Tailwind Labs GitHub discussion #16592: Safelist support in V4](https://github.com/tailwindlabs/tailwindcss/discussions/16592)
+- [Vite PWA: Workbox generateSW configuration and runtimeCaching](https://vite-pwa-org.netlify.app/workbox/generate-sw)
+- [Axess Lab: Glassmorphism meets accessibility — can frosted glass be inclusive?](https://axesslab.com/glassmorphism-meets-accessibility-can-frosted-glass-be-inclusive/)
+- [Nielsen Norman Group: Glassmorphism definition and best practices](https://www.nngroup.com/articles/glassmorphism/)
+- [WCAG 2.2 Understanding SC 1.4.3: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html)
+- [WCAG 2.2 Understanding SC 2.5.8: Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
+- [WCAG 2.3.3: Animation from Interactions understanding document](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions.html)
+- [web.dev: Accessible tap targets (48dp recommendation)](https://web.dev/articles/accessible-tap-targets)
+- [web.dev: Font best practices and font-display](https://web.dev/articles/font-best-practices)
+- [MDN: prefers-reduced-motion media query](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion)
+- [Workbox GitHub issue #1563: Google fonts not rendering when fully offline](https://github.com/GoogleChrome/workbox/issues/1563)
+- [Motion.dev: Web animation performance tier list](https://motion.dev/blog/web-animation-performance-tier-list)
+- [Cloud Four: SVG icon technique stress test (inline vs sprite vs component)](https://cloudfour.com/thinks/svg-icon-stress-test/)
+- [web.dev: Optimize web fonts (subsetting and font-display)](https://web.dev/learn/performance/optimize-web-fonts)
 
 ---
-
-*Pitfalls research for: Expense Splitter v1.1 — adding localStorage persistence, history management, and payment text to existing React+Zustand+Immer app*
-*Researched: 2026-02-22*
+*Pitfalls research for: Visual redesign (glassmorphism, animations, SVG icons) of React 19 + Tailwind CSS 4 PWA with 144 tests and full offline support*
+*Researched: 2026-02-24*
