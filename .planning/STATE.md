@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 11 in progress
+**Current focus:** v1.2 Polish + PWA — Phase 11 complete
 
 ## Current Position
 
-Phase: 11 of 12 (Summary & Payment UX) — in progress
-Plan: 11-02 complete (2 of 2 plans in phase)
-Status: Phase 11 plan 02 complete — custom tip live dollar preview
-Last activity: 2026-02-24 — Completed 11-02 (custom tip live dollar preview, 97s)
+Phase: 11 of 12 (Summary & Payment UX) — complete
+Plan: 11-01 complete (2 of 2 plans in phase — all plans done)
+Status: Phase 11 complete — payer persistence, settlement direction, UPI navigation
+Last activity: 2026-02-24 — Completed 11-01 (payer store + settlement direction, 167s)
 
-Progress: [#######░░░] 71% (v1.2) — 5 of 7 plans complete
+Progress: [########░░] 86% (v1.2) — 6 of 7 plans complete
 
 ## Performance Metrics
 
@@ -56,6 +56,9 @@ Full decision logs archived in:
 - 50px delta, 500ms swipeDuration for conservative swipe thresholds
 - Inline IIFE for conditional preview rendering in TipSegmentedControl
 - pl-1 left padding on tip preview for visual alignment with input
+- payerId type PersonId | null (not PersonId | '') for clean store semantics
+- payerId persisted via partialize alongside config for cross-tab/refresh persistence
+- Tab type import from TabBar for strict TypeScript onTabChange typing
 
 ### Pending Todos
 
@@ -76,10 +79,11 @@ None.
 
 | Plan | Duration | Tasks | Key Files |
 |------|----------|-------|-----------|
+| 11-01 | 167s | 3/3 | billStore.ts, PaymentSection.tsx, PersonCard.tsx, SummaryPanel.tsx |
 | 11-02 | 97s | 2/2 | TipSegmentedControl.tsx, TipTaxPanel.tsx |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 11-02-PLAN.md (custom tip live dollar preview)
+Stopped at: Completed 11-01-PLAN.md (payer store, settlement direction, UPI navigation)
 Resume file: None
