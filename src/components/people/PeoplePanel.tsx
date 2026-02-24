@@ -122,7 +122,7 @@ export function PeoplePanel() {
           <button
             type="button"
             onClick={() => setShowContact(!showContact)}
-            className="text-blue-400 text-sm font-medium mt-2 min-h-8"
+            className="text-blue-400 text-sm font-medium mt-2 min-h-10"
           >
             {showContact ? '− Hide contact details' : '+ Add contact details'}
           </button>

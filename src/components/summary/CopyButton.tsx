@@ -20,7 +20,7 @@ export function CopyButton({ onClick, ariaLabel }: CopyButtonProps) {
     <button
       onClick={handleClick}
       aria-label={ariaLabel}
-      className="text-gray-500 hover:text-gray-300 min-w-8 min-h-8 flex items-center justify-center"
+      className="text-gray-500 hover:text-gray-300 min-w-10 min-h-10 flex items-center justify-center"
     >
       {/* Clipboard SVG icon — 16x16 rectangle with folded corner */}
       <svg

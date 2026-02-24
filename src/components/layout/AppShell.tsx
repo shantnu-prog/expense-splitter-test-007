@@ -91,7 +91,7 @@ export function AppShell() {
           </span>
           <button
             onClick={() => setActiveTab('history')}
-            className="text-blue-400 text-xs font-medium min-h-8 px-2"
+            className="text-blue-400 text-xs font-medium min-h-10 px-2"
           >
             Back to History
           </button>
