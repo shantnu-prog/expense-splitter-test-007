@@ -25,14 +25,14 @@ export function UndoToast({ message, visible, onUndo, onDismiss }: UndoToastProp
       aria-atomic="true"
       role="status"
       className={`fixed bottom-20 inset-x-4 flex items-center justify-between
-                  bg-gray-800 text-gray-100 text-sm font-medium px-4 py-3 rounded-xl
-                  shadow-lg transition-opacity duration-200
-                  ${visible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                  glass-card text-gray-100 text-sm font-medium px-4 py-3 rounded-xl
+                  shadow-lg transition-all duration-300
+                  ${visible ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none translate-y-4'}`}
     >
       <span className="flex-1 mr-3">{message}</span>
       <button
         onClick={onUndo}
-        className="text-blue-400 font-semibold min-h-11 px-2 shrink-0"
+        className="text-blue-400 font-semibold min-h-11 px-2 shrink-0 press-scale"
         aria-label="Undo deletion"
         tabIndex={visible ? 0 : -1}
       >
