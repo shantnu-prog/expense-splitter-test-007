@@ -119,4 +119,4 @@
 | 13. Design System Foundation | v1.3 | 2/2 | Complete | 2026-02-24 |
 | 14. Layout + Glass System | v1.3 | 2/2 | Complete | 2026-02-24 |
 | 15. Component Redesign | v1.3 | 2/2 | Complete | 2026-02-24 |
-| 16. Screens + Polish | v1.3 | 0/? | Not started | — |
+| 16. Screens + Polish | v1.3 | 1/2 | In Progress | — |
