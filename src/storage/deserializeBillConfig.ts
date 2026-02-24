@@ -23,7 +23,7 @@ import type { BillConfig, Assignments } from '../engine/types';
  */
 export function deserializeBillConfig(raw: unknown): BillConfig {
   const r = raw as {
-    people: Array<{ id: string; name: string }>;
+    people: Array<{ id: string; name: string; mobile?: string; upiVpa?: string }>;
     items: Array<{ id: string; label: string; priceCents: number; quantity: number }>;
     assignments: Record<string, string[]>;
     tip: { amountCents: number; method: string; includeZeroFoodPeople: boolean };
@@ -36,7 +36,12 @@ export function deserializeBillConfig(raw: unknown): BillConfig {
   }
 
   return {
-    people: r.people.map((p) => ({ id: personId(p.id), name: p.name })),
+    people: r.people.map((p) => ({
+      id: personId(p.id),
+      name: p.name,
+      ...(p.mobile !== undefined && { mobile: p.mobile }),
+      ...(p.upiVpa !== undefined && { upiVpa: p.upiVpa }),
+    })),
     items: r.items.map((i) => ({
       id: itemId(i.id),
       label: i.label,

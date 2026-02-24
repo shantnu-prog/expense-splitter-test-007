@@ -62,6 +62,10 @@ export interface Item {
 export interface Person {
   id: PersonId;
   name: string;
+  /** Mobile number (optional, for contact/UPI). */
+  mobile?: string;
+  /** UPI Virtual Payment Address, e.g. "alice@ybl" (optional, for UPI payment links). */
+  upiVpa?: string;
 }
 
 /**
