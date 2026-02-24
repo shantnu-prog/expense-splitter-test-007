@@ -70,7 +70,7 @@ export function AssignmentRow({ item, people, assignedIds, onAssign }: Assignmen
           {/* Everyone button */}
           <button
             onClick={handleEveryoneClick}
-            className="w-full min-h-10 rounded-lg text-sm font-medium bg-blue-600/20 text-blue-400 active:bg-blue-600/30 mb-2"
+            className="w-full min-h-10 rounded-lg text-sm font-medium bg-blue-600/20 text-blue-400 press-scale mb-2"
           >
             {allAssigned ? 'Deselect All' : 'Everyone'}
           </button>

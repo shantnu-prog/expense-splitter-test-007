@@ -106,11 +106,11 @@ export function PeoplePanel() {
                 setError('');
               }}
               placeholder="Person name"
-              className="flex-1 min-h-12 px-4 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none text-base"
+              className="flex-1 min-h-12 px-4 bg-white/5 text-gray-100 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-base"
             />
             <button
               onClick={handleAdd}
-              className="min-h-12 px-6 bg-blue-600 text-white font-medium rounded-lg active:bg-blue-700"
+              className="min-h-12 px-6 gradient-primary text-white font-medium rounded-lg press-scale shadow-lg"
             >
               Add
             </button>
@@ -134,7 +134,7 @@ export function PeoplePanel() {
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}
                 placeholder="Mobile number"
-                className="min-h-12 px-4 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none text-base"
+                className="min-h-12 px-4 bg-white/5 text-gray-100 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-base"
                 inputMode="tel"
               />
               <input
@@ -142,7 +142,7 @@ export function PeoplePanel() {
                 value={upiVpa}
                 onChange={(e) => setUpiVpa(e.target.value)}
                 placeholder="UPI ID (e.g., name@ybl)"
-                className="min-h-12 px-4 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none text-base"
+                className="min-h-12 px-4 bg-white/5 text-gray-100 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-base"
                 inputMode="text"
                 autoCapitalize="none"
               />
@@ -168,7 +168,7 @@ export function PeoplePanel() {
               <p className="text-gray-500 text-sm">Add everyone splitting this bill</p>
               <button
                 onClick={() => addInputRef.current?.focus()}
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg min-h-11 text-sm font-medium active:bg-blue-700"
+                className="px-5 py-2 gradient-primary text-white rounded-lg min-h-11 text-sm font-medium press-scale shadow-lg"
               >
                 Add your first person
               </button>

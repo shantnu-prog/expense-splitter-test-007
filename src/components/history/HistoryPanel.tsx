@@ -54,7 +54,7 @@ export function HistoryPanel({ onTabChange }: HistoryPanelProps) {
           </p>
           <button
             onClick={handleNewSplit}
-            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-xl min-h-12 active:bg-blue-700"
+            className="px-6 py-3 gradient-primary text-white font-medium rounded-xl min-h-12 press-scale shadow-lg"
           >
             New Split
           </button>

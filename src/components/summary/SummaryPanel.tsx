@@ -160,7 +160,7 @@ export function SummaryPanel({ onTabChange }: SummaryPanelProps) {
         <div className="px-4 pt-4 pb-4 border-t border-gray-800 mt-4">
           <button
             onClick={handleCopyAll}
-            className="w-full bg-blue-600 text-white font-medium rounded-xl min-h-12 active:bg-blue-700"
+            className="w-full gradient-primary text-white font-medium rounded-xl min-h-12 press-scale shadow-lg"
           >
             Copy summary
           </button>
@@ -170,7 +170,7 @@ export function SummaryPanel({ onTabChange }: SummaryPanelProps) {
         <div className="px-4 pb-4">
           <button
             onClick={handleSave}
-            className="w-full bg-gray-800 text-gray-100 font-medium rounded-xl min-h-12 border border-gray-700 active:bg-gray-700"
+            className="w-full bg-white/5 text-gray-100 font-medium rounded-xl min-h-12 border border-white/10 press-scale"
           >
             {currentSplitId ? 'Update Split' : 'Save Split'}
           </button>

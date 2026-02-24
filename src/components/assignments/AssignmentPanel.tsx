@@ -37,7 +37,7 @@ export function AssignmentPanel({ onTabChange }: AssignmentPanelProps) {
         <p className="text-gray-500 text-sm">Add items first to start assigning</p>
         <button
           onClick={() => onTabChange('items')}
-          className="px-5 py-2 bg-blue-600 text-white rounded-lg min-h-11 text-sm font-medium active:bg-blue-700"
+          className="px-5 py-2 gradient-primary text-white rounded-lg min-h-11 text-sm font-medium press-scale shadow-lg"
         >
           Go to Items
         </button>
@@ -52,7 +52,7 @@ export function AssignmentPanel({ onTabChange }: AssignmentPanelProps) {
         <p className="text-gray-500 text-sm">Add people first to start assigning</p>
         <button
           onClick={() => onTabChange('people')}
-          className="px-5 py-2 bg-blue-600 text-white rounded-lg min-h-11 text-sm font-medium active:bg-blue-700"
+          className="px-5 py-2 gradient-primary text-white rounded-lg min-h-11 text-sm font-medium press-scale shadow-lg"
         >
           Go to People
         </button>

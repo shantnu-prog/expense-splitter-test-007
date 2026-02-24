@@ -59,7 +59,7 @@ export function TipSegmentedControl({
       <div
         role="group"
         aria-label="Tip percentage"
-        className="flex bg-gray-800 rounded-lg p-1 gap-1"
+        className="flex glass-surface rounded-lg p-1 gap-1"
       >
         {PRESETS.map((preset) => {
           const isActive = selected === preset.id;
@@ -69,7 +69,7 @@ export function TipSegmentedControl({
               className={[
                 'flex-1 text-center py-1.5 text-sm font-medium rounded-md cursor-pointer transition-colors select-none',
                 isActive
-                  ? 'bg-blue-600 text-white'
+                  ? 'gradient-primary text-white'
                   : 'text-gray-400 hover:text-gray-200',
               ].join(' ')}
             >
@@ -98,7 +98,7 @@ export function TipSegmentedControl({
               onBlur={handleCustomBlur}
               placeholder="0"
               aria-label="Custom tip percentage"
-              className="flex-1 min-h-12 px-3 py-2 text-base bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
+              className="flex-1 min-h-12 px-3 py-2 text-base bg-white/5 border border-white/10 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
             <span className="text-sm text-gray-400">%</span>
           </div>

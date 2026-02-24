@@ -27,7 +27,7 @@ export function CopyButton({ onClick, ariaLabel }: CopyButtonProps) {
     <button
       onClick={handleClick}
       aria-label={ariaLabel}
-      className={`${copied ? 'text-green-400' : 'text-gray-500 hover:text-gray-300'} min-w-10 min-h-10 flex items-center justify-center`}
+      className={`${copied ? 'text-green-400' : 'text-gray-500 hover:text-gray-300'} min-w-10 min-h-10 flex items-center justify-center press-scale`}
     >
       {copied ? (
         /* Checkmark SVG — shown for 1.5s after copy */

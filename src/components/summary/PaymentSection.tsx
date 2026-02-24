@@ -57,7 +57,7 @@ export function PaymentSection({ people, results, onTabChange }: PaymentSectionP
         <select
           value={payerId ?? ''}
           onChange={(e) => setPayerId(e.target.value ? (e.target.value as PersonId) : null)}
-          className="w-full min-h-12 px-4 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none text-base appearance-none"
+          className="w-full min-h-12 px-4 bg-white/5 text-gray-100 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-base appearance-none"
         >
           <option value="">Select payer...</option>
           {people.map((p) => (
@@ -99,7 +99,7 @@ export function PaymentSection({ people, results, onTabChange }: PaymentSectionP
                 {upiUrl ? (
                   <button
                     onClick={() => handleUpiClick(upiUrl)}
-                    className="ml-3 px-4 min-h-10 bg-green-600 text-white text-sm font-medium rounded-lg active:bg-green-700 shrink-0"
+                    className="ml-3 px-4 min-h-10 bg-gradient-to-r from-green-600 to-emerald-500 text-white text-sm font-medium rounded-lg press-scale shadow-lg shrink-0"
                   >
                     Request via UPI
                   </button>

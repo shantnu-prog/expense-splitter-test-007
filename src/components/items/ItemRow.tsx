@@ -59,7 +59,7 @@ export function ItemRow({ item, onUpdate, onRemove }: ItemRowProps) {
         onChange={(e) => setLocalLabel(e.target.value)}
         onBlur={handleLabelBlur}
         placeholder="Item name"
-        className="flex-1 bg-transparent text-gray-100 focus:bg-gray-800 rounded px-2 py-1 min-h-10 text-base"
+        className="flex-1 bg-white/5 text-gray-100 rounded-lg px-2 py-1 min-h-10 text-base border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
       />
 
       {/* Price input with $ prefix */}
@@ -74,7 +74,7 @@ export function ItemRow({ item, onUpdate, onRemove }: ItemRowProps) {
           onChange={handlePriceChange}
           onBlur={handlePriceBlur}
           placeholder="0.00"
-          className="w-24 min-h-10 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 pl-7 pr-2 text-right text-base"
+          className="w-24 min-h-10 bg-white/5 text-gray-100 rounded-lg border border-white/10 pl-7 pr-2 text-right text-base focus:outline-none focus:ring-2 focus:ring-blue-500/30"
         />
       </div>
 
@@ -84,7 +84,7 @@ export function ItemRow({ item, onUpdate, onRemove }: ItemRowProps) {
           onClick={() => onUpdate(item.id, { quantity: Math.max(1, item.quantity - 1) })}
           disabled={item.quantity <= 1}
           aria-label="Decrease quantity"
-          className="min-w-11 min-h-11 rounded-lg bg-gray-800 text-gray-100 disabled:opacity-30 active:bg-gray-700"
+          className="min-w-11 min-h-11 rounded-lg bg-white/5 text-gray-100 disabled:opacity-30 press-scale"
         >
           −
         </button>
@@ -94,7 +94,7 @@ export function ItemRow({ item, onUpdate, onRemove }: ItemRowProps) {
         <button
           onClick={() => onUpdate(item.id, { quantity: item.quantity + 1 })}
           aria-label="Increase quantity"
-          className="min-w-11 min-h-11 rounded-lg bg-gray-800 text-gray-100 active:bg-gray-700"
+          className="min-w-11 min-h-11 rounded-lg bg-white/5 text-gray-100 press-scale"
         >
           +
         </button>

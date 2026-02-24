@@ -57,14 +57,14 @@ export function TaxInput({
   return (
     <div className="flex items-center gap-2">
       {/* Mode toggle: $ | % */}
-      <div className="flex bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
+      <div className="flex glass-surface rounded-lg overflow-hidden flex-shrink-0">
         <button
           type="button"
           onClick={() => handleModeChange('dollar')}
           className={[
             'px-3 py-2 text-sm font-medium transition-colors min-h-11',
             mode === 'dollar'
-              ? 'bg-gray-700 text-gray-100'
+              ? 'gradient-primary text-white'
               : 'text-gray-500 hover:text-gray-300',
           ].join(' ')}
         >
@@ -76,7 +76,7 @@ export function TaxInput({
           className={[
             'px-3 py-2 text-sm font-medium transition-colors min-h-11',
             mode === 'percent'
-              ? 'bg-gray-700 text-gray-100'
+              ? 'gradient-primary text-white'
               : 'text-gray-500 hover:text-gray-300',
           ].join(' ')}
         >
@@ -93,7 +93,7 @@ export function TaxInput({
         onBlur={onBlur}
         placeholder={mode === 'dollar' ? '0.00' : '0'}
         aria-label={mode === 'dollar' ? 'Tax amount in dollars' : 'Tax percentage'}
-        className="flex-1 min-h-12 px-3 py-2 text-base bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:border-blue-500"
+        className="flex-1 min-h-12 px-3 py-2 text-base bg-white/5 border border-white/10 rounded-lg text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
       />
     </div>
   );

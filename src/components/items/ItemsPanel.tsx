@@ -56,7 +56,7 @@ export function ItemsPanel() {
         <div className="p-4">
           <button
             onClick={() => addItem('', 0, 1)}
-            className="min-h-12 w-full bg-gray-800 text-blue-400 font-medium rounded-lg border border-dashed border-gray-600 active:bg-gray-700"
+            className="min-h-12 w-full bg-white/5 text-blue-400 font-medium rounded-lg border border-dashed border-white/10 press-scale"
           >
             +
           </button>
