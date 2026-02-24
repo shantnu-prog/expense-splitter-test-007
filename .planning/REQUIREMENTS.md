@@ -28,13 +28,13 @@ Requirements for v1.3 UI Redesign. Each maps to roadmap phases.
 
 ### Cards
 
-- [ ] **CARD-01**: PersonRow uses glass-card with rounded-xl, no border-b separator
-- [ ] **CARD-02**: ItemRow uses glass-card with bg-white/5 inputs and focus:ring glow
-- [ ] **CARD-03**: HistoryRow uses glass-card with hover highlight and press-scale
-- [ ] **CARD-04**: AssignmentRow uses glass-card with overflow-hidden
+- [x] **CARD-01**: PersonRow uses glass-card with rounded-xl, no border-b separator
+- [x] **CARD-02**: ItemRow uses glass-card with bg-white/5 inputs and focus:ring glow
+- [x] **CARD-03**: HistoryRow uses glass-card with hover highlight and press-scale
+- [x] **CARD-04**: AssignmentRow uses glass-card with overflow-hidden
 - [x] **CARD-05**: PersonCard (summary) uses glass-card with border-white/5 detail drawer
-- [ ] **CARD-06**: PaymentSection uses glass-card rows with gradient green UPI button
-- [ ] **CARD-07**: List containers use px-4 pt-3 space-y-2 spacing pattern
+- [x] **CARD-06**: PaymentSection uses glass-card rows with gradient green UPI button
+- [x] **CARD-07**: List containers use px-4 pt-3 space-y-2 spacing pattern
 
 ### Inputs
 
@@ -96,13 +96,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LYOT-03 | Phase 14 | Complete |
 | LYOT-04 | Phase 13 | Pending |
 | LYOT-05 | Phase 13 | Pending |
-| CARD-01 | Phase 15 | Pending |
-| CARD-02 | Phase 15 | Pending |
-| CARD-03 | Phase 15 | Pending |
-| CARD-04 | Phase 15 | Pending |
+| CARD-01 | Phase 15 | Complete |
+| CARD-02 | Phase 15 | Complete |
+| CARD-03 | Phase 15 | Complete |
+| CARD-04 | Phase 15 | Complete |
 | CARD-05 | Phase 14 | Complete |
-| CARD-06 | Phase 15 | Pending |
-| CARD-07 | Phase 15 | Pending |
+| CARD-06 | Phase 15 | Complete |
+| CARD-07 | Phase 15 | Complete |
 | INPT-01 | Phase 15 | Pending |
 | INPT-02 | Phase 15 | Pending |
 | INPT-03 | Phase 15 | Pending |

@@ -43,7 +43,7 @@
 
 - [x] **Phase 13: Design System Foundation** — Inter font, design tokens, utility classes, motion reset, AppShell tint (2/2 plans) — completed 2026-02-24
 - [x] **Phase 14: Layout + Glass System** — TabBar SVG icons, glass TabBar/SubtotalBar, PersonCard glass prototype (2/2 plans) -- completed 2026-02-24
-- [ ] **Phase 15: Component Redesign** — All row cards, all inputs, all buttons with glass/gradient/press-scale
+- [ ] **Phase 15: Component Redesign** — All row cards, all inputs, all buttons with glass/gradient/press-scale (2 plans)
 - [ ] **Phase 16: Screens + Polish** — Onboarding, ErrorBoundary, empty states, toasts, animations, SummaryPanel
 
 ## Phase Details
@@ -85,7 +85,9 @@
   3. Tip, tax, and split method toggle controls have a glass container with the active segment shown in a gradient highlight
   4. All primary action buttons (Add Person, Add Item, Save Split, UPI payment) display a blue-to-violet gradient; tapping any interactive element produces a visible press-scale shrink and spring-back
   5. All 144 existing tests pass without modification after all className changes
-**Plans**: TBD
+**Plans**:
+  - Plan 01: Row Cards + List Spacing (5 tasks: PersonRow, ItemRow, HistoryRow, AssignmentRow, PaymentSection glass-card + 4 panel list spacing)
+  - Plan 02: Inputs, Toggles + Buttons (7 tasks: 8 text inputs bg-white/5 + focus:ring, 3 toggle controls glass + gradient, primary/secondary/copy buttons gradient + press-scale, regression verification)
 
 ### Phase 16: Screens + Polish
 **Goal**: The full app surface is redesigned — onboarding and error screens have gradient heroes, empty states guide users with icons, notifications use glass styling, and the summary panel leads with a prominent bill total
@@ -116,5 +118,5 @@
 | 12. Visual Polish & Tech Debt | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 13. Design System Foundation | v1.3 | 2/2 | Complete | 2026-02-24 |
 | 14. Layout + Glass System | v1.3 | 2/2 | Complete | 2026-02-24 |
-| 15. Component Redesign | v1.3 | 0/? | Not started | — |
+| 15. Component Redesign | v1.3 | 1/2 | In Progress | — |
 | 16. Screens + Polish | v1.3 | 0/? | Not started | — |
