@@ -9,7 +9,7 @@
 
 import { useRef } from 'react';
 
-export type Tab = 'people' | 'items' | 'assignments' | 'split';
+export type Tab = 'history' | 'people' | 'items' | 'assignments' | 'split';
 
 interface TabBarProps {
   activeTab: Tab;
@@ -18,6 +18,7 @@ interface TabBarProps {
 }
 
 const TABS: { id: Tab; label: string }[] = [
+  { id: 'history', label: 'History' },
   { id: 'people', label: 'People' },
   { id: 'items', label: 'Items' },
   { id: 'assignments', label: 'Assign' },

@@ -16,7 +16,9 @@ import { SubtotalBar } from './SubtotalBar';
 import { TabBar, type Tab } from './TabBar';
 import { OnboardingScreen } from './OnboardingScreen';
 import { useBillStore } from '../../store/billStore';
+import { useHistoryStore } from '../../store/historyStore';
 import { useOnboarding } from '../../hooks/useOnboarding';
+import { HistoryPanel } from '../history/HistoryPanel';
 import { PeoplePanel } from '../people/PeoplePanel';
 import { ItemsPanel } from '../items/ItemsPanel';
 import { AssignmentPanel } from '../assignments/AssignmentPanel';
@@ -24,7 +26,10 @@ import { TipTaxPanel } from '../tip-tax/TipTaxPanel';
 import { SummaryPanel } from '../summary/SummaryPanel';
 
 export function AppShell() {
-  const [activeTab, setActiveTab] = useState<Tab>('people');
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    const hasSplits = useHistoryStore.getState().splits.length > 0;
+    return hasSplits ? 'history' : 'people';
+  });
   const { showOnboarding, dismissOnboarding } = useOnboarding();
 
   // Count unassigned items for the badge on Assign tab
@@ -44,11 +49,14 @@ export function AppShell() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <SubtotalBar />
+      {activeTab !== 'history' && <SubtotalBar />}
 
       {/* Main content area — padding-bottom for the fixed tab bar */}
       <main className="flex-1 overflow-y-auto pb-16 overscroll-contain">
         {/* All panels kept mounted; CSS hidden class preserves scroll/input state */}
+        <div className={activeTab === 'history' ? '' : 'hidden'}>
+          <HistoryPanel onTabChange={setActiveTab} />
+        </div>
         <div className={activeTab === 'people' ? '' : 'hidden'}>
           <PeoplePanel />
         </div>
