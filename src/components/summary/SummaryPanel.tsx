@@ -123,7 +123,7 @@ export function SummaryPanel({ onTabChange }: SummaryPanelProps) {
       <div className="flex flex-col">
         {/* Hint banner when tip and tax are both unconfigured */}
         {tipCents === 0 && taxCents === 0 && (
-          <div className="mx-4 mt-4 px-4 py-3 bg-gray-800/50 rounded-lg text-center">
+          <div className="mx-4 mt-4 px-4 py-3 glass-card rounded-xl text-center">
             <p className="text-gray-400 text-sm">Configure tip and tax above to see the full split</p>
           </div>
         )}
@@ -131,7 +131,7 @@ export function SummaryPanel({ onTabChange }: SummaryPanelProps) {
         {/* Bill total header */}
         <div className="px-4 py-4 border-b border-gray-800 flex items-center justify-between">
           <span className="text-gray-400 text-sm font-medium">Bill total</span>
-          <span className="text-white font-semibold tabular-nums text-xl">
+          <span className="text-white font-bold tabular-nums text-2xl">
             ${centsToDollars(cents(billTotalCents))}
           </span>
         </div>
