@@ -17,6 +17,9 @@ import type { PersonId } from '../../engine/types';
 export function PeoplePanel() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [upiVpa, setUpiVpa] = useState('');
+  const [showContact, setShowContact] = useState(false);
   const addInputRef = useRef<HTMLInputElement>(null);
 
   const { people, assignments, addPerson, removePerson, restorePerson } = useBillStore(
@@ -44,9 +47,16 @@ export function PeoplePanel() {
       return;
     }
 
-    addPerson(trimmed);
+    const contact: { mobile?: string; upiVpa?: string } = {};
+    if (mobile.trim()) contact.mobile = mobile.trim();
+    if (upiVpa.trim()) contact.upiVpa = upiVpa.trim();
+
+    addPerson(trimmed, Object.keys(contact).length > 0 ? contact : undefined);
     setName('');
+    setMobile('');
+    setUpiVpa('');
     setError('');
+    setShowContact(false);
   }
 
   function handleRemove(personId: PersonId) {
@@ -107,6 +117,38 @@ export function PeoplePanel() {
             </button>
           </div>
           {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
+
+          {/* Contact details toggle */}
+          <button
+            type="button"
+            onClick={() => setShowContact(!showContact)}
+            className="text-blue-400 text-sm font-medium mt-2 min-h-8"
+          >
+            {showContact ? '− Hide contact details' : '+ Add contact details'}
+          </button>
+
+          {/* Contact fields (collapsible) */}
+          {showContact && (
+            <div className="flex flex-col gap-2 mt-2">
+              <input
+                type="tel"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                placeholder="Mobile number"
+                className="min-h-12 px-4 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none text-base"
+                inputMode="tel"
+              />
+              <input
+                type="text"
+                value={upiVpa}
+                onChange={(e) => setUpiVpa(e.target.value)}
+                placeholder="UPI ID (e.g., name@ybl)"
+                className="min-h-12 px-4 bg-gray-800 text-gray-100 rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none text-base"
+                inputMode="text"
+                autoCapitalize="none"
+              />
+            </div>
+          )}
         </div>
 
         {/* People list */}
