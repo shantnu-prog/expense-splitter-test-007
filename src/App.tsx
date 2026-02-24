@@ -1,7 +1,13 @@
 import { AppShell } from './components/layout/AppShell';
+import { ReloadPrompt } from './components/ReloadPrompt';
 
 function App() {
-  return <AppShell />;
+  return (
+    <>
+      <AppShell />
+      <ReloadPrompt />
+    </>
+  );
 }
 
 export default App;
