@@ -35,7 +35,7 @@
 - [x] **Phase 9: PWA & Offline** — Service worker, manifest, icons, install prompt, update prompt (2 plans)
 - [x] **Phase 10: Swipe Navigation & Tab UX** — Horizontal swipe gestures between tabs, unassigned items badge (1 plan)
 - [ ] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence (2 plans)
-- [ ] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes
+- [ ] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes (2 plans)
 
 ## Phase Details
 
@@ -95,6 +95,10 @@ Plans:
   6. TipTaxPanel's subtotal useEffect only fires on actual value change, not on mount
   7. A top-level error boundary catches React rendering errors and shows a recovery UI
   8. Tapping "Request via UPI" on desktop shows a message like "Open on mobile to use UPI" instead of silently failing
+**Plans**: 2 plans
+Plans:
+- [ ] 12-01-PLAN.md — Button tap targets, copy feedback, and spacing verification (VIS-01, VIS-02, VIS-03, VIS-04)
+- [ ] 12-02-PLAN.md — Tech debt cleanup (DEBT-01, DEBT-02, DEBT-03, DEBT-04)
 
 ## Progress
 
@@ -111,4 +115,4 @@ Plans:
 | 9. PWA & Offline | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 10. Swipe Navigation & Tab UX | v1.2 | 1/1 | Complete | 2026-02-24 |
 | 11. Summary & Payment UX | v1.2 | 0/2 | Planned | - |
-| 12. Visual Polish & Tech Debt | v1.2 | - | Pending | - |
+| 12. Visual Polish & Tech Debt | v1.2 | 0/2 | Planned | - |
