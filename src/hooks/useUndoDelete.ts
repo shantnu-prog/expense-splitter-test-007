@@ -13,6 +13,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { Person, Item } from '../engine/types';
+import type { SavedSplit } from '../store/historyStore';
 
 export interface DeletedPerson {
   kind: 'person';
@@ -30,7 +31,12 @@ export interface DeletedItem {
   assignedIds: string[];
 }
 
-export type DeletedSnapshot = DeletedPerson | DeletedItem;
+export interface DeletedSplit {
+  kind: 'savedSplit';
+  split: SavedSplit;
+}
+
+export type DeletedSnapshot = DeletedPerson | DeletedItem | DeletedSplit;
 
 const UNDO_TIMEOUT_MS = 5000;
 
@@ -77,11 +83,16 @@ export function useUndoDelete() {
       const name = snap.person.name;
       if (count === 0) return `Deleted ${name}`;
       return `Deleted ${name} (had ${count} item${count !== 1 ? 's' : ''} assigned)`;
-    } else {
+    } else if (snap.kind === 'item') {
       const label = snap.item.label || 'Unnamed item';
       const count = snap.assignedIds.length;
       if (count === 0) return `Deleted ${label}`;
       return `Deleted ${label} (was assigned to ${count} ${count !== 1 ? 'people' : 'person'})`;
+    } else {
+      // kind === 'savedSplit'
+      const peopleCount = snap.split.config.people.length;
+      const date = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(new Date(snap.split.savedAt));
+      return `Deleted split from ${date} (${peopleCount} ${peopleCount !== 1 ? 'people' : 'person'})`;
     }
   }
 
