@@ -41,7 +41,7 @@
 
 ### v1.3 UI Redesign (Phases 13-16)
 
-- [ ] **Phase 13: Design System Foundation** — Inter font, design tokens, utility classes, motion reset, AppShell tint
+- [ ] **Phase 13: Design System Foundation** — Inter font, design tokens, utility classes, motion reset, AppShell tint (2 plans)
 - [ ] **Phase 14: Layout + Glass System** — TabBar SVG icons, glass TabBar/SubtotalBar, PersonCard glass prototype
 - [ ] **Phase 15: Component Redesign** — All row cards, all inputs, all buttons with glass/gradient/press-scale
 - [ ] **Phase 16: Screens + Polish** — Onboarding, ErrorBoundary, empty states, toasts, animations, SummaryPanel
@@ -58,7 +58,9 @@
   3. The app background shows a subtle gradient tint visible behind glass-blurred elements (glass blur is not invisible against a flat background)
   4. AppShell bottom padding is pb-20 and accommodates the taller tab bar without content cutoff
   5. With OS "Reduce Motion" enabled, all CSS animations and transitions are disabled — no visual motion occurs anywhere in the app
-**Plans**: TBD
+**Plans**:
+  - Plan 01: Design Tokens & Utility Classes (4 tasks: font install, @theme block, utility classes, reduced-motion reset + App.css delete)
+  - Plan 02: AppShell Layout Adjustments (2 tasks: background gradient tint, bottom padding pb-20)
 
 ### Phase 14: Layout + Glass System
 **Goal**: Every screen in the app shows the new glass TabBar with SVG icons, and the glass pattern is proven correct on SubtotalBar and PersonCard before propagating to other components
@@ -110,7 +112,7 @@
 | 10. Swipe Navigation & Tab UX | v1.2 | 1/1 | Complete | 2026-02-24 |
 | 11. Summary & Payment UX | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 12. Visual Polish & Tech Debt | v1.2 | 2/2 | Complete | 2026-02-24 |
-| 13. Design System Foundation | v1.3 | 0/? | Not started | — |
+| 13. Design System Foundation | v1.3 | 0/2 | Planned | — |
 | 14. Layout + Glass System | v1.3 | 0/? | Not started | — |
 | 15. Component Redesign | v1.3 | 0/? | Not started | — |
 | 16. Screens + Polish | v1.3 | 0/? | Not started | — |

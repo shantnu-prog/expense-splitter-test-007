@@ -80,7 +80,7 @@ export function AppShell() {
   if (showOnboarding) return <OnboardingScreen onDismiss={dismissOnboarding} />;
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-950 via-gray-950 to-blue-950/30">
       {activeTab !== 'history' && <SubtotalBar />}
 
       {/* Editing indicator — visible on editor tabs when editing a saved split */}
@@ -101,7 +101,7 @@ export function AppShell() {
       {/* Main content area — padding-bottom for the fixed tab bar */}
       <main
         {...swipeHandlers}
-        className="flex-1 overflow-y-auto pb-16 overscroll-contain"
+        className="flex-1 overflow-y-auto pb-20 overscroll-contain"
         style={{ touchAction: 'pan-y' }}
       >
         {/* All panels kept mounted; CSS hidden class preserves scroll/input state */}
