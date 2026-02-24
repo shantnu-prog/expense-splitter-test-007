@@ -35,7 +35,7 @@
 - [x] **Phase 9: PWA & Offline** — Service worker, manifest, icons, install prompt, update prompt (2 plans)
 - [x] **Phase 10: Swipe Navigation & Tab UX** — Horizontal swipe gestures between tabs, unassigned items badge (1 plan)
 - [x] **Phase 11: Summary & Payment UX** — Settlement direction, actionable UPI links, tip preview, payer persistence (2 plans)
-- [ ] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes (2 plans)
+- [x] **Phase 12: Visual Polish & Tech Debt** — Button/spacing consistency, copy feedback, error boundary, tech debt fixes (2 plans) (completed 2026-02-24)
 
 ## Phase Details
 
@@ -115,4 +115,4 @@ Plans:
 | 9. PWA & Offline | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 10. Swipe Navigation & Tab UX | v1.2 | 1/1 | Complete | 2026-02-24 |
 | 11. Summary & Payment UX | v1.2 | 2/2 | Complete | 2026-02-24 |
-| 12. Visual Polish & Tech Debt | v1.2 | 1/2 | In Progress | - |
+| 12. Visual Polish & Tech Debt | 2/2 | Complete   | 2026-02-24 | - |

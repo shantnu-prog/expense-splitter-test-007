@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 12 in progress
+**Current focus:** v1.2 Polish + PWA — Phase 12 COMPLETE
 
 ## Current Position
 
-Phase: 12 of 12 (Visual Polish & Tech Debt) — in progress
-Plan: 12-01 complete, 12-02 remaining
-Status: Executing — 12-01 done, 12-02 next
-Last activity: 2026-02-24 — 12-01 complete (2 tasks: tap targets, copy feedback)
+Phase: 12 of 12 (Visual Polish & Tech Debt) — complete
+Plan: All plans complete (12-01, 12-02)
+Status: Phase 12 complete — v1.2 fully shipped
+Last activity: 2026-02-24 — 12-02 complete (4 tasks: branded types, useEffect fix, ErrorBoundary, UPI desktop)
 
-Progress: [#########░] 89% (v1.2) — 8 of 9 plans complete
+Progress: [##########] 100% (v1.2) — 9 of 9 plans complete
 
 ## Performance Metrics
 
@@ -64,6 +64,10 @@ Full decision logs archived in:
 - payerId type PersonId | null (not PersonId | '') for clean store semantics
 - payerId persisted via partialize alongside config for cross-tab/refresh persistence
 - Tab type import from TabBar for strict TypeScript onTabChange typing
+- [Phase 12-visual-polish-tech-debt]: Used branded type casts via Object.entries typed as [ItemId, PersonId[]][] to eliminate as-any at undo restore boundary
+- [Phase 12-visual-polish-tech-debt]: prevSubtotalRef pattern to skip useEffect on mount — initialized to current value, early-return when unchanged
+- [Phase 12-visual-polish-tech-debt]: ReloadPrompt kept outside ErrorBoundary so PWA SW updates work even when AppShell crashes
+- [Phase 12-visual-polish-tech-debt]: Mobile UPI gating via /Android|iPhone|iPad|iPod/i regex on navigator.userAgent — desktop shows 3s toast
 
 ### Pending Todos
 
@@ -73,12 +77,13 @@ None.
 
 None.
 
-### Tech Debt (to be fixed in Phase 12)
+### Tech Debt
 
-- `as any` casts at undo restore boundary (PeoplePanel:81, ItemsPanel:49) — DEBT-01
-- `useEffect` on subtotal fires on mount in TipTaxPanel — DEBT-02
-- No error boundary — DEBT-03
-- UPI window.location.href is a no-op on desktop — DEBT-04
+All tech debt resolved in Phase 12:
+- DEBT-01: as-any casts eliminated via branded types
+- DEBT-02: useEffect mount firing fixed via prevSubtotalRef
+- DEBT-03: ErrorBoundary added with Reload App fallback
+- DEBT-04: Desktop UPI now shows actionable toast message
 
 ## Performance Metrics (v1.2 plans)
 
@@ -87,9 +92,10 @@ None.
 | 11-01 | 167s | 3/3 | billStore.ts, PaymentSection.tsx, PersonCard.tsx, SummaryPanel.tsx |
 | 11-02 | 97s | 2/2 | TipSegmentedControl.tsx, TipTaxPanel.tsx |
 | 12-01 | 5min | 2/2 | CopyButton.tsx, PeoplePanel.tsx, AppShell.tsx |
+| Phase 12-visual-polish-tech-debt P02 | 172s | 4 tasks | 7 files |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 12-01-PLAN.md — tap targets and CopyButton feedback done, 12-02 next
+Stopped at: Completed 12-02-PLAN.md — all tech debt resolved, Phase 12 and v1.2 complete
 Resume file: None
