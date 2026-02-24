@@ -41,7 +41,7 @@
 
 ### v1.3 UI Redesign (Phases 13-16)
 
-- [ ] **Phase 13: Design System Foundation** — Inter font, design tokens, utility classes, motion reset, AppShell tint (2 plans)
+- [x] **Phase 13: Design System Foundation** — Inter font, design tokens, utility classes, motion reset, AppShell tint (2/2 plans) — completed 2026-02-24
 - [ ] **Phase 14: Layout + Glass System** — TabBar SVG icons, glass TabBar/SubtotalBar, PersonCard glass prototype
 - [ ] **Phase 15: Component Redesign** — All row cards, all inputs, all buttons with glass/gradient/press-scale
 - [ ] **Phase 16: Screens + Polish** — Onboarding, ErrorBoundary, empty states, toasts, animations, SummaryPanel
@@ -112,7 +112,7 @@
 | 10. Swipe Navigation & Tab UX | v1.2 | 1/1 | Complete | 2026-02-24 |
 | 11. Summary & Payment UX | v1.2 | 2/2 | Complete | 2026-02-24 |
 | 12. Visual Polish & Tech Debt | v1.2 | 2/2 | Complete | 2026-02-24 |
-| 13. Design System Foundation | v1.3 | 0/2 | Planned | — |
+| 13. Design System Foundation | v1.3 | 2/2 | Complete | 2026-02-24 |
 | 14. Layout + Glass System | v1.3 | 0/? | Not started | — |
 | 15. Component Redesign | v1.3 | 0/? | Not started | — |
 | 16. Screens + Polish | v1.3 | 0/? | Not started | — |
