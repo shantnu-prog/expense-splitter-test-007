@@ -45,8 +45,7 @@ export function ItemsPanel() {
   function handleUndo() {
     const snap = undo.handleUndo(undo.snapshot);
     if (snap && snap.kind === 'item') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      restoreItem(snap.item, snap.assignedIds as any);
+      restoreItem(snap.item, snap.assignedIds);
     }
   }
 

@@ -12,7 +12,7 @@ import { useBillStore } from '../../store/billStore';
 import { PersonRow } from './PersonRow';
 import { useUndoDelete } from '../../hooks/useUndoDelete';
 import { UndoToast } from '../shared/UndoToast';
-import type { PersonId } from '../../engine/types';
+import type { PersonId, ItemId } from '../../engine/types';
 
 export function PeoplePanel() {
   const [name, setName] = useState('');
@@ -67,10 +67,10 @@ export function PeoplePanel() {
       (ids) => ids.includes(personId)
     ).length;
     // Snapshot the assignments map entries where this person appears
-    const assignmentSnapshot: Record<string, string[]> = {};
-    for (const [itemId, personIds] of Object.entries(assignments)) {
-      if (personIds.includes(personId)) {
-        assignmentSnapshot[itemId] = [...personIds];
+    const assignmentSnapshot = {} as Record<ItemId, PersonId[]>;
+    for (const [iid, pids] of Object.entries(assignments) as [ItemId, PersonId[]][]) {
+      if (pids.includes(personId)) {
+        assignmentSnapshot[iid] = [...pids];
       }
     }
     // Execute the delete immediately (optimistic)
@@ -87,8 +87,7 @@ export function PeoplePanel() {
   function handleUndo() {
     const snap = undo.handleUndo(undo.snapshot);
     if (snap && snap.kind === 'person') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      restorePerson(snap.person, snap.assignments as any);
+      restorePerson(snap.person, snap.assignments);
     }
   }
 

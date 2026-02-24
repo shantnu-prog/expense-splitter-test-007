@@ -12,14 +12,14 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { Person, Item } from '../engine/types';
+import type { Person, Item, ItemId, PersonId } from '../engine/types';
 import type { SavedSplit } from '../store/historyStore';
 
 export interface DeletedPerson {
   kind: 'person';
   person: Person;
   /** Snapshot of ALL assignments at delete time (Record<ItemId, PersonId[]>) */
-  assignments: Record<string, string[]>;
+  assignments: Record<ItemId, PersonId[]>;
   /** Count of items this person was assigned to (for toast message) */
   assignedItemCount: number;
 }
@@ -28,7 +28,7 @@ export interface DeletedItem {
   kind: 'item';
   item: Item;
   /** PersonIds assigned to this item at delete time */
-  assignedIds: string[];
+  assignedIds: PersonId[];
 }
 
 export interface DeletedSplit {
