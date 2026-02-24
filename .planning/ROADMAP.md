@@ -51,7 +51,7 @@
   5. Service worker does NOT activate during `vite dev` — only in production builds
 **Plans**: 2 plans
 Plans:
-- [ ] 09-01-PLAN.md — PWA plugin setup, manifest, and icons (Wave 1)
+- [x] 09-01-PLAN.md — PWA plugin setup, manifest, and icons (Wave 1)
 - [ ] 09-02-PLAN.md — ReloadPrompt component and App integration (Wave 2)
 
 ### Phase 10: Swipe Navigation & Tab UX
@@ -101,7 +101,7 @@ Plans:
 | 6. Persistence Foundation | v1.1 | 2/2 | Complete | 2026-02-21 |
 | 7. History List + Edit Mode | v1.1 | 2/2 | Complete | 2026-02-24 |
 | 8. UPI Payments | v1.1 | 2/2 | Complete | 2026-02-24 |
-| 9. PWA & Offline | v1.2 | 0/2 | Planned | - |
+| 9. PWA & Offline | v1.2 | 1/2 | In Progress | - |
 | 10. Swipe Navigation & Tab UX | v1.2 | - | Pending | - |
 | 11. Summary & Payment UX | v1.2 | - | Pending | - |
 | 12. Visual Polish & Tech Debt | v1.2 | - | Pending | - |

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 9 next
+**Current focus:** v1.2 Polish + PWA — Phase 9 in progress
 
 ## Current Position
 
-Phase: 9 of 12 (PWA & Offline) — planned, awaiting execution
-Plan: 2 plans (09-01, 09-02)
-Status: Phase planned — ready to execute
-Last activity: 2026-02-24 — Phase 9 planned (2 plans, 5 tasks)
+Phase: 9 of 12 (PWA & Offline) — executing
+Plan: 09-02 next (09-01 complete)
+Status: Plan 09-01 complete — PWA plugin, manifest, and icons
+Last activity: 2026-02-24 — Plan 09-01 executed (3 tasks, 1 commit)
 
-Progress: [░░░░░░░░░░] 0% (v1.2)
+Progress: [##░░░░░░░░] 17% (v1.2) — 1 of 6 plans complete
 
 ## Performance Metrics
 
@@ -45,6 +45,11 @@ Full decision logs archived in:
 - 50px delta threshold for swipe detection (conservative, avoids accidental triggers)
 - Payer state to move from component useState to billStore for persistence across tab switches
 
+**v1.2 decisions (from execution):**
+- registerType: 'prompt' to prevent unexpected SW reloads mid-bill-split
+- Programmatic PNG icon generation (raw zlib+CRC32) to avoid canvas/sharp dependency
+- includeAssets: ['**/*'] for complete offline precaching
+
 ### Pending Todos
 
 None.
@@ -63,5 +68,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: v1.2 milestone created — requirements + roadmap written
+Stopped at: Completed 09-01-PLAN.md — PWA plugin, manifest, icons
 Resume file: None

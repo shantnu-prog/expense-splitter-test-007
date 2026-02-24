@@ -12,7 +12,7 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 - [ ] **PWA-01**: App can be installed to home screen on mobile (manifest + icons + install prompt)
 - [ ] **PWA-02**: App works fully offline after first visit (service worker precaches all assets)
 - [ ] **PWA-03**: When a new version is available, user sees an update prompt (not auto-reload) to avoid losing in-progress input
-- [ ] **PWA-04**: App has proper icons (192x192 and 512x512 PNG) and displays app name on splash screen
+- [x] **PWA-04**: App has proper icons (192x192 and 512x512 PNG) and displays app name on splash screen
 
 ### Mobile UX
 
@@ -61,7 +61,7 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 | PWA-01 | Phase 9 | Pending |
 | PWA-02 | Phase 9 | Pending |
 | PWA-03 | Phase 9 | Pending |
-| PWA-04 | Phase 9 | Pending |
+| PWA-04 | Phase 9 | Complete (09-01) |
 | UX-01 | Phase 10 | Pending |
 | UX-02 | Phase 10 | Pending |
 | UX-03 | Phase 10 | Pending |
