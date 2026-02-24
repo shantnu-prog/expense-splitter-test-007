@@ -47,6 +47,14 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 - History list on app open with save/load/edit/delete flow — v1.1
 - UPI payment requests via deep links — v1.1
 
+### Active (v1.2)
+
+- [ ] PWA: installable, offline-capable, update prompt
+- [ ] Swipe gestures for tab navigation
+- [ ] Summary UX: settlement direction, actionable UPI links, tip preview, payer persistence
+- [ ] Visual consistency: button sizes, spacing, copy feedback
+- [ ] Tech debt: remove `as any` casts, fix useEffect, error boundary, desktop UPI message
+
 ### Out of Scope
 
 - Receipt photo upload / OCR — complexity too high
@@ -81,5 +89,15 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 | UPI deep links (not Venmo/Zelle) | Indian market focus; standard upi://pay protocol | Good |
 | Payer state stays local (component useState) | Display preference only; must not enter bill store or history | Good |
 
+## Current Milestone: v1.2 Polish + PWA
+
+**Goal:** Make the app feel like a native mobile app — installable, offline-capable, with swipe gestures, polished summary UX, and visual consistency
+
+**Target features:**
+- PWA with full offline support and install prompt
+- Swipe left/right between tabs + unassigned items badge
+- Settlement direction on person cards, actionable UPI links, custom tip preview
+- Consistent button sizes and spacing, error boundary, tech debt cleanup
+
 ---
-*Last updated: 2026-02-24 after v1.1 milestone completion*
+*Last updated: 2026-02-24 after v1.2 milestone start*
