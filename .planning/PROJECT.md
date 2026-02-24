@@ -8,58 +8,56 @@ A web app that splits a restaurant bill fairly among friends, handling shared ap
 
 Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
 
+## Current State
+
+**Shipped:** v1.1 (2026-02-24)
+**Tech stack:** React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5 (with immer + persist), Vitest 4
+**Tests:** 144 passing across 12 test files
+**Build:** 244 KB (76 KB gzip)
+**Architecture:** Client-side only, dark theme, mobile-first with bottom tab navigation, integer-cent arithmetic (Cents branded type), largest-remainder distribution
+
+### What's Shipped
+
+**v1.0 MVP** (2026-02-22): 5 phases, 11 plans, 17 requirements
+- Integer-cent calculation engine with largest-remainder distribution
+- Mobile-first data entry: people, items, item-centric assignments
+- Tip/tax configuration (presets + custom, equal/proportional split)
+- Per-person summary with copy-to-clipboard
+- Keyboard navigation, undo toast, onboarding screen, empty states
+
+**v1.1 Persistence + Sharing** (2026-02-24): 3 phases, 6 plans, 12 requirements
+- localStorage persistence with branded-type deserialization and schema versioning
+- History list on app open, save/load/edit/delete with undo
+- UPI payment: person contact fields, payer selector, upi:// deep link requests
+
 ## Requirements
 
-### Validated
+### Validated (v1.0 + v1.1)
 
-- Add people to the bill by name — v1.0
-- Remove a person from the bill — v1.0
-- Add items with prices from the receipt — v1.0
-- Edit an existing item's name or price — v1.0
-- Remove an item from the bill — v1.0
-- Set quantity for each item — v1.0
+- Add/remove people by name — v1.0
+- Add/edit/remove items with prices and quantity — v1.0
 - Running subtotal updates as items change — v1.0
 - Assign items to specific people, including shared items — v1.0
-- Shared items split equally among sharers — v1.0
-- Tip presets (15/18/20%) + custom input — v1.0
-- Tip split method: equal or proportional — v1.0
-- Tax as dollar amount or percentage — v1.0
-- Tax split method: equal or proportional — v1.0
-- Per-person summary with name and total — v1.0
-- Round up each person's total to nearest cent — v1.0
+- Tip presets (15/18/20%) + custom, equal or proportional split — v1.0
+- Tax as dollar amount or percentage, equal or proportional split — v1.0
+- Per-person summary with name and total, rounded up to nearest cent — v1.0
 - Copy-friendly formatted output — v1.0
 - Mobile-responsive with large tap targets — v1.0
-
-### Active
-
-- [ ] Save splits to localStorage with auto-save
-- [ ] History list on app open (date + people + total, auto-generated)
-- [ ] Re-open and edit saved splits
-- [ ] Delete saved splits with undo toast
-- [ ] Payment text: user picks payer, generates "Alice owes YOU $23.50" per-person text
+- Save splits to localStorage, survives page refresh — v1.1
+- History list on app open with save/load/edit/delete flow — v1.1
+- UPI payment requests via deep links — v1.1
 
 ### Out of Scope
 
-- Receipt photo upload / OCR — complexity too high, 60-80% accuracy on restaurant receipts
-- Venmo/payment deep links — deep links require platform-specific integration; plain text sufficient
-- Shareable URLs — deferred; payment text covers sharing need for now
+- Receipt photo upload / OCR — complexity too high
 - User accounts / authentication — not needed; client-side only
-- Mobile native app — web app works on mobile browsers
+- Cloud sync across devices — requires backend
 - Currency conversion — requires backend for exchange rate APIs
-- Real-time sync across devices — requires WebSocket server
-
-## Context
-
-Shipped v1.0 with 4,734 LOC (TypeScript/TSX/CSS).
-Tech stack: React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5 (with immer), Vitest 4.
-125 tests passing across 9 test files. Production build succeeds (`npm run build`).
-Dark theme, mobile-first design with bottom tab navigation.
-Integer-cent arithmetic throughout (Cents branded type) with largest-remainder distribution for penny-exact splits.
 
 ## Constraints
 
 - **Platform**: Web app, must work well on mobile browsers (primary use case is at the table)
-- **Architecture**: Client-side only for v1, no backend or database
+- **Architecture**: Client-side only, no backend or database
 - **Rounding**: Always round up each person's total to the nearest cent
 
 ## Key Decisions
@@ -67,7 +65,7 @@ Integer-cent arithmetic throughout (Cents branded type) with largest-remainder d
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Web app (not native) | Easiest to share and use at a restaurant — just open a URL | Good |
-| Client-side only | No user accounts needed, simpler architecture for v1 | Good |
+| Client-side only | No user accounts needed, simpler architecture | Good |
 | Round up per person | Avoids under-collecting; simpler than tracking who absorbs the penny | Good |
 | Shared items split among sharers only | More fair than splitting across everyone | Good |
 | Integer cents (branded type) | Eliminates floating-point rounding errors at compile time | Good |
@@ -77,17 +75,11 @@ Integer-cent arithmetic throughout (Cents branded type) with largest-remainder d
 | Bottom tab bar | Better one-thumb reach on mobile at restaurant table | Good |
 | Item-centric assignment | Matches "who ate this item?" mental model at restaurant | Good |
 | Optimistic delete + undo toast | Gmail-style deletion — immediate feedback, recoverable within 5 seconds | Good |
-| No Enter-to-submit on People input | Forces explicit Add button click — prevents accidental submissions | Good |
-
-## Current Milestone: v1.1 Persistence + Sharing
-
-**Goal:** Save splits to localStorage with history, and generate payer-directed payment text for Venmo/Zelle
-
-**Target features:**
-- History list on app open (auto-generated from bill data)
-- Editable saved splits (re-open, modify, re-save)
-- Delete saved splits with undo toast
-- Payment text: pick who paid, generate "Alice owes YOU $23.50" per person
+| Explicit save (not auto-save-to-history) | Avoids cluttering history with incomplete bills | Good |
+| persist(immer(creator)) middleware order | persist MUST wrap immer; wrong order causes silent state loss | Good |
+| Single parse boundary (deserializeBillConfig) | All branded type rehydration in one place | Good |
+| UPI deep links (not Venmo/Zelle) | Indian market focus; standard upi://pay protocol | Good |
+| Payer state stays local (component useState) | Display preference only; must not enter bill store or history | Good |
 
 ---
-*Last updated: 2026-02-22 after v1.1 milestone start*
+*Last updated: 2026-02-24 after v1.1 milestone completion*

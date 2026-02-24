@@ -16,3 +16,17 @@
 
 ---
 
+## v1.1 Persistence + Sharing (Shipped: 2026-02-24)
+
+**Phases completed:** 3 phases, 6 plans
+**Production build:** 244 KB (76 KB gzip)
+**Timeline:** 3 days (2026-02-21 to 2026-02-24)
+**Tests:** 144 passing across 12 test files
+
+**Key accomplishments:**
+1. localStorage persistence layer with safe adapter, branded-type deserialization, and schema versioning (v1→v2 migration)
+2. History list on app open with save/load/edit/delete flow, editing indicator, and undo toast
+3. UPI payment integration: person contact fields (mobile + VPA), payer selector, upi:// deep link buttons for payment requests
+
+---
+

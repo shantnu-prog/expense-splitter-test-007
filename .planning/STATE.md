@@ -2,74 +2,40 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-22)
+See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.1 Persistence + Sharing — Phase 7 complete, Phase 8 next
+**Current focus:** Between milestones — v1.1 shipped, no active milestone
 
 ## Current Position
 
-Phase: 8 of 8 (UPI Payments)
-Plan: 2 of 2 — 08-01 complete, 08-02 complete
-Status: Phase complete — all plans done, v1.1 milestone complete
-Last activity: 2026-02-24 — 08-02 complete: buildUpiLink utility, PaymentSection payer selector + UPI deep link buttons, SummaryPanel updated
+Phase: None active
+Status: v1.1 milestone complete and archived
+Last activity: 2026-02-24 — v1.1 archived (3 phases, 6 plans, 12 requirements)
 
-Progress: [██████████] 100% (v1.1)
+Progress: No active milestone
 
 ## Performance Metrics
 
-**Velocity (v1.0 completed):**
-- Total plans completed: 11
-- v1.0 phases: 5 phases, 11 plans
+**v1.0 (shipped 2026-02-22):**
+- 5 phases, 11 plans
+- 4,734 LOC, 125 tests across 9 files
+- Timeline: 4 days (2026-02-19 to 2026-02-22)
 
-**By Phase (v1.0):**
-
-| Phase | Plans | Status |
-|-------|-------|--------|
-| 1. Foundation | 3 | Complete 2026-02-19 |
-| 2. Data Entry | 3 | Complete 2026-02-18 |
-| 3. Output | 2 | Complete 2026-02-21 |
-| 4. Polish | 2 | Complete 2026-02-21 |
-| 5. Build Fix | 1 | Complete 2026-02-22 |
-
-*v1.1 metrics will populate as plans complete*
+**v1.1 (shipped 2026-02-24):**
+- 3 phases, 6 plans, 15 tasks
+- 3,413 lines added, 144 tests across 12 files
+- Build: 244 KB (76 KB gzip)
+- Timeline: 3 days (2026-02-22 to 2026-02-24)
 
 ## Accumulated Context
 
 ### Decisions
 
-Full v1.0 decision log in PROJECT.md Key Decisions table and milestones/v1.0-ROADMAP.md.
-
-**v1.1 decisions (from research):**
-- Explicit save (not auto-save-to-history): avoids cluttering history with incomplete bills
-- Two-store architecture: `useHistoryStore` (persist) + `useBillStore` (ephemeral)
-- Inputs-only storage: `BillConfig` stored, never derived outputs; engine re-computes on demand
-- 50-entry history cap: single guard in `save()` to prevent localStorage quota errors
-- Payer state stays local (component `useState`): must NOT enter bill store or history
-
-**06-01 decisions:**
-- No validation in deserializeBillConfig — engine computeSplit handles invalid data; parse boundary only does type reconstruction
-- safeLocalStorage.setItem logs console.warn on failure, never throws — app continues in memory-only mode on storage errors
-- Round-trip tests run in node environment — deserializeBillConfig is a pure function, no jsdom required
-
-**06-02 decisions:**
-- persist wraps immer (critical middleware order) — wrong order causes persist to silently capture only initial state
-- partialize on billStore selects config only — currentSplitId excluded (always null on refresh), actions excluded (not serializable)
-- deserializeBillConfig called inside persist merge — the rehydration boundary where branded types must be reconstructed
-- createHistoryStore() factory uses immer(creator) without persist — mirrors createBillStore() pattern for test isolation
-- restore() is idempotent: skip if id already present, re-sort by savedAt DESC
-
-**08-01 decisions:**
-- Conditional spread in deserializeBillConfig for optional fields: `...(p.mobile !== undefined && { mobile: p.mobile })` — avoids undefined key pollution
-- addPerson takes optional contact as second parameter — existing call sites unchanged
-- Persist version 2 migration is a no-op — optional fields default to undefined, deserializeBillConfig handles absent fields gracefully
-- Contact fields toggle resets to hidden on successful addPerson — clean UX for next person entry
-
-**08-02 decisions:**
-- Payer state stays local (component `useState`): must NOT enter bill store or history — display preference only
-- buildUpiLink returns null (not throws) for invalid inputs — callers use null check to conditionally render UPI button or fallback
-- window.location.href for UPI deep link — standard mobile approach; no-op on desktop (no broken behavior)
-- Green button color for 'Request via UPI' to distinguish from blue action buttons
+Full decision logs archived in:
+- milestones/v1.0-ROADMAP.md
+- milestones/v1.1-ROADMAP.md
+- PROJECT.md Key Decisions table
 
 ### Pending Todos
 
@@ -77,12 +43,17 @@ None.
 
 ### Blockers/Concerns
 
-- [Phase 6]: Middleware ordering — `persist` must wrap `immer`, not the reverse; silent failure mode
-- [RESOLVED 06-01]: Branded types (`Cents`, `PersonId`, `ItemId`) lose brand on JSON round-trip — deserializeBillConfig() implemented and tested
-- [Phase 7]: `useAppEntry` hook coordinates onboarding + history hydration; exact React 19 hook design left to Phase 7 planning
+None — all blockers resolved.
+
+### Tech Debt (non-blocking)
+
+- `as any` casts at undo restore boundary (PeoplePanel:81, ItemsPanel:49) — low severity (v1.0)
+- `useEffect` on subtotal fires on mount in TipTaxPanel — low severity (v1.0)
+- Payer state resets on tab navigation — low severity, by design (v1.1)
+- UPI window.location.href is a no-op on desktop — low severity (v1.1)
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 08-02-PLAN.md — buildUpiLink utility, PaymentSection component, SummaryPanel updated — v1.1 complete
+Stopped at: v1.1 milestone archived
 Resume file: None
