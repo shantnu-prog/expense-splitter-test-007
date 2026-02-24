@@ -16,7 +16,7 @@ export function RoundingFooter({ surplusCents }: RoundingFooterProps) {
   const amount = centsToDollars(cents(surplusCents));
 
   return (
-    <div className="mt-2 px-4 py-3 bg-gray-900/50 rounded-xl">
+    <div className="mt-2 px-4 py-3 glass-card rounded-xl">
       <p className="text-gray-500 text-xs text-center">
         +${amount} rounding surplus (cents rounded up per person)
       </p>
