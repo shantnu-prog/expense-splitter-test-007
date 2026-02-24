@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.2 Polish + PWA — Phase 9 in progress
+**Current focus:** v1.2 Polish + PWA — Phase 10 next
 
 ## Current Position
 
-Phase: 9 of 12 (PWA & Offline) — complete
-Plan: 09-02 complete (phase done)
-Status: Phase 9 complete — PWA & Offline fully configured
-Last activity: 2026-02-24 — Plan 09-02 executed (2 tasks, 1 commit)
+Phase: 10 of 12 (Swipe Navigation & Tab UX) — planned, awaiting execution
+Plan: 1 plan (10-01)
+Status: Phase planned — ready to execute
+Last activity: 2026-02-24 — Phase 10 planned (1 plan, 3 tasks)
 
-Progress: [####░░░░░░] 33% (v1.2) — 2 of 6 plans complete
+Progress: [####░░░░░░] 33% (v1.2) — 2 of 5 plans complete
 
 ## Performance Metrics
 
@@ -70,5 +70,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 09-02-PLAN.md — ReloadPrompt component and App integration (Phase 9 complete)
+Stopped at: Phase 10 planned — 1 plan, 3 tasks, ready to execute
 Resume file: None
