@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-24)
 
 **Core value:** Users can split a restaurant bill accurately and fairly — handling shared items, tip, and tax — in under a minute.
-**Current focus:** v1.3 UI Redesign — Phase 16: Screens + Polish
+**Current focus:** v1.3 shipped — no active milestone
 
 ## Current Position
 
-Phase: 16 — Screens + Polish
-Plan: 02 complete (all plans done)
-Status: Phase 16 complete — v1.3 UI Redesign finished
-Last activity: 2026-02-24 — Phase 16 Plan 02 executed (6 tasks, 102s)
+Phase: —
+Plan: —
+Status: v1.3 UI Redesign shipped and archived
+Last activity: 2026-02-24 — v1.3 milestone completed (4 phases, 8 plans, 30 requirements)
 
 ```
-v1.3 Progress: [████████████████████] 4/4 phases
+v1.3: SHIPPED
 ```
 
 ## Performance Metrics
@@ -38,12 +38,12 @@ v1.3 Progress: [████████████████████] 4/
 - Tests: 144 passing across 12 files
 - LOC: 6,120 total
 
-**v1.3 (in progress):**
-- 4 phases planned (13-16), 30 requirements
-- Phase 13: 2 plans complete
-- Phase 14: 2 plans complete (TabBar icons + glass, SubtotalBar + PersonCard glass)
-- Phase 15: 2 plans complete (row cards + list spacing; inputs, toggles + buttons; 12 tasks, 222s total)
-- Phase 16: 2 plans complete (screens redesign + polish toasts/prompts/summary; 9 tasks, 206s total)
+**v1.3 (shipped 2026-02-24):**
+- 4 phases (13-16), 8 plans, 30 requirements
+- 26 commits, 55 files changed, 4,255 insertions, 1,348 deletions
+- Build: 263 KB JS (80.5 KB gzip), 54 KB CSS (9 KB gzip)
+- LOC: 6,325 total
+- Timeline: 2026-02-24 (single day)
 
 ## Accumulated Context
 
@@ -82,5 +82,5 @@ None — all known tech debt resolved in v1.2 Phase 12.
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed 16-02-PLAN.md (Polish — Toasts, ReloadPrompt, SummaryPanel)
-Resume with: v1.3 UI Redesign complete — all 4 phases (13-16) done
+Stopped at: v1.3 milestone archived
+Resume with: `/gsd:new-milestone` to start next version

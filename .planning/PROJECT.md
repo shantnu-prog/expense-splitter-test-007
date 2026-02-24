@@ -10,12 +10,12 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 
 ## Current State
 
-**Shipped:** v1.2 (2026-02-24)
-**Tech stack:** React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5 (with immer + persist), Vitest 4, vite-plugin-pwa 1.2.0, react-swipeable 7.0.2
+**Shipped:** v1.3 (2026-02-24)
+**Tech stack:** React 19, TypeScript 5.9, Vite 7, Tailwind CSS 4, Zustand 5 (with immer + persist), Vitest 4, vite-plugin-pwa 1.2.0, react-swipeable 7.0.2, @fontsource-variable/inter
 **Tests:** 144 passing across 12 test files
-**Build:** 254 KB (79 KB gzip), PWA with 11 precache entries
-**LOC:** 6,120 (TypeScript/TSX)
-**Architecture:** Client-side only PWA, dark theme, mobile-first with bottom tab navigation + swipe gestures, integer-cent arithmetic (Cents branded type), largest-remainder distribution
+**Build:** 263 KB JS (80.5 KB gzip), 54 KB CSS (9 KB gzip), PWA with 18 precache entries
+**LOC:** 6,325 (TypeScript/TSX/CSS)
+**Architecture:** Client-side only PWA, dark glassmorphism theme, mobile-first with bottom tab navigation + swipe gestures, integer-cent arithmetic (Cents branded type), largest-remainder distribution
 
 ### What's Shipped
 
@@ -38,6 +38,13 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 - Visual consistency: button tap targets, copy checkmark feedback, consistent spacing
 - Tech debt: branded types, useEffect fix, ErrorBoundary, desktop UPI guard
 
+**v1.3 UI Redesign** (2026-02-24): 4 phases, 8 plans
+- Design system: Inter font (self-hosted), glass-card/glass-surface/gradient-primary/press-scale utilities, reduced-motion reset
+- Layout: SVG tab icons, glass TabBar + SubtotalBar, gradient AppShell background
+- Components: All row cards as glass cards, gradient toggles, focus glow inputs, gradient + press-scale buttons
+- Screens: Gradient hero OnboardingScreen + ErrorBoundary, 6 empty states with decorative icons
+- Polish: Glass toasts with slide-up animation, gradient ReloadPrompt, enlarged bill total
+
 ## Requirements
 
 ### Validated
@@ -59,22 +66,20 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 - Summary UX: settlement direction, actionable UPI links, tip preview, payer persistence — v1.2
 - Visual consistency: button sizes, spacing, copy feedback — v1.2
 - Tech debt: branded types, useEffect fix, error boundary, desktop UPI message — v1.2
+- Glassmorphism design system with 5 utility classes — v1.3
+- Inter variable font self-hosted for offline PWA — v1.3
+- SVG tab icons, glass TabBar + SubtotalBar — v1.3
+- All row cards as glass cards with rounded corners — v1.3
+- Gradient primary buttons with press-scale micro-interactions — v1.3
+- Input focus glow, gradient toggles — v1.3
+- Redesigned OnboardingScreen + ErrorBoundary with gradient heroes — v1.3
+- 6 empty states with decorative colored icons — v1.3
+- Glass toast/undo notifications with slide-up animation — v1.3
+- Polished summary panel with larger bill total — v1.3
 
 ### Active
 
-#### v1.3 UI Redesign
-- [ ] Enhanced dark theme with glassmorphism (glass cards, glass surfaces)
-- [ ] Inter font from Google Fonts CDN
-- [ ] Gradient primary buttons (blue-600 → violet-600)
-- [ ] SVG icons in TabBar above labels
-- [ ] Press-scale micro-interactions on interactive elements
-- [ ] Input focus glow effects
-- [ ] Fade-in animations
-- [ ] Redesigned OnboardingScreen with gradient hero
-- [ ] Redesigned ErrorBoundary with gradient hero
-- [ ] Enhanced empty states with decorative icons
-- [ ] Glass toast/undo notifications
-- [ ] Polished summary panel with larger bill total
+None — no active milestone.
 
 ### Out of Scope
 
@@ -116,18 +121,9 @@ Users can split a restaurant bill accurately and fairly — handling shared item
 | ReloadPrompt outside ErrorBoundary | PWA updates still work even if main app crashes | Good |
 | prevSubtotalRef pattern for useEffect | Skips mount fire without eslint-disable comments | Good |
 
-## Current Milestone: v1.3 UI Redesign
+## Next Milestone
 
-**Goal:** Transform the visually plain app into a polished, consumer-grade dark-themed PWA with glassmorphism, gradients, micro-interactions, and Inter font — inspired by Apple's design principles.
-
-**Target changes:**
-- Design system: Inter font, glass-card/glass-surface utilities, gradient-primary, press-scale, animate-fade-in
-- Layout: SVG tab icons, glass TabBar/SubtotalBar, taller tab bar
-- Cards: Glass card treatment for all row components (PersonRow, ItemRow, HistoryRow, AssignmentRow, PersonCard)
-- Inputs: bg-white/5 with focus:ring glow, gradient tip/tax toggles
-- Buttons: Gradient primary, glass secondary, press-scale micro-interactions
-- Screens: Redesigned OnboardingScreen, ErrorBoundary, and empty states with gradient heroes
-- Polish: Glass toasts, slide-up animations, larger bill total, tracking-tight amounts
+No active milestone. Use `/gsd:new-milestone` to start the next version.
 
 ---
-*Last updated: 2026-02-24 after v1.3 milestone started*
+*Last updated: 2026-02-24 after v1.3 shipped*
