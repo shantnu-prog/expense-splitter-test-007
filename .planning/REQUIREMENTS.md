@@ -57,11 +57,11 @@ Requirements for v1.3 UI Redesign. Each maps to roadmap phases.
 
 ### Polish
 
-- [ ] **PLSH-01**: Toast uses glass-card with slide-up animation
-- [ ] **PLSH-02**: UndoToast uses glass-card with slide-up animation and press-scale undo button
-- [ ] **PLSH-03**: ReloadPrompt uses glass-card with gradient Update button
-- [ ] **PLSH-04**: SummaryPanel shows larger bill total (text-2xl font-bold) with glass hint banner
-- [ ] **PLSH-05**: RoundingFooter uses glass-card styling
+- [x] **PLSH-01**: Toast uses glass-card with slide-up animation
+- [x] **PLSH-02**: UndoToast uses glass-card with slide-up animation and press-scale undo button
+- [x] **PLSH-03**: ReloadPrompt uses glass-card with gradient Update button
+- [x] **PLSH-04**: SummaryPanel shows larger bill total (text-2xl font-bold) with glass hint banner
+- [x] **PLSH-05**: RoundingFooter uses glass-card styling
 
 ## Future Requirements
 
@@ -113,11 +113,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCRN-01 | Phase 16 | Pending |
 | SCRN-02 | Phase 16 | Pending |
 | SCRN-03 | Phase 16 | Pending |
-| PLSH-01 | Phase 16 | Pending |
-| PLSH-02 | Phase 16 | Pending |
-| PLSH-03 | Phase 16 | Pending |
-| PLSH-04 | Phase 16 | Pending |
-| PLSH-05 | Phase 16 | Pending |
+| PLSH-01 | Phase 16 | Complete |
+| PLSH-02 | Phase 16 | Complete |
+| PLSH-03 | Phase 16 | Complete |
+| PLSH-04 | Phase 16 | Complete |
+| PLSH-05 | Phase 16 | Complete |
 
 **Coverage:**
 - v1.3 requirements: 30 total
