@@ -37,10 +37,10 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 
 ### Tech Debt
 
-- [ ] **DEBT-01**: Remove `as any` casts at undo restore boundary in PeoplePanel and ItemsPanel — use proper branded-type narrowing
-- [ ] **DEBT-02**: Fix `useEffect` on subtotal in TipTaxPanel that fires on mount — use a ref to track previous value
-- [ ] **DEBT-03**: Add top-level React error boundary with "Something went wrong" fallback UI
-- [ ] **DEBT-04**: UPI deep link on desktop shows a user-facing message ("Open on mobile to use UPI") instead of silently failing
+- [x] **DEBT-01**: Remove `as any` casts at undo restore boundary in PeoplePanel and ItemsPanel — use proper branded-type narrowing
+- [x] **DEBT-02**: Fix `useEffect` on subtotal in TipTaxPanel that fires on mount — use a ref to track previous value
+- [x] **DEBT-03**: Add top-level React error boundary with "Something went wrong" fallback UI
+- [x] **DEBT-04**: UPI deep link on desktop shows a user-facing message ("Open on mobile to use UPI") instead of silently failing
 
 ## Out of Scope
 
@@ -74,10 +74,10 @@ Requirements for the Polish + PWA release. Each maps to roadmap phases.
 | VIS-02 | Phase 12 | Complete (12-01) |
 | VIS-03 | Phase 12 | Complete (12-01) |
 | VIS-04 | Phase 12 | Complete (12-01) |
-| DEBT-01 | Phase 12 | Pending |
-| DEBT-02 | Phase 12 | Pending |
-| DEBT-03 | Phase 12 | Pending |
-| DEBT-04 | Phase 12 | Pending |
+| DEBT-01 | Phase 12 | Complete |
+| DEBT-02 | Phase 12 | Complete |
+| DEBT-03 | Phase 12 | Complete |
+| DEBT-04 | Phase 12 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 20 total
