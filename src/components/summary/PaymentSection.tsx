@@ -65,9 +65,11 @@ export function PaymentSection({ people, results }: PaymentSectionProps) {
 
           {debtors.map(({ person, result }) => {
             const amount = centsToDollars(cents(result.roundedTotalCents));
-            const upiUrl = payer.upiVpa?.trim()
+            const hasPayerVpa = !!payer.upiVpa?.trim();
+            const hasPersonVpa = !!person.upiVpa?.trim();
+            const upiUrl = (hasPayerVpa && hasPersonVpa)
               ? buildUpiLink({
-                  payeeVpa: payer.upiVpa.trim(),
+                  payeeVpa: payer.upiVpa!.trim(),
                   payeeName: payer.name,
                   amountCents: result.roundedTotalCents,
                   note: 'Bill split via SplitCheck',
